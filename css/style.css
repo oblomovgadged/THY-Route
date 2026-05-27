@@ -1799,3 +1799,156 @@ input, textarea, select {
   }
 }
 
+/* ============================================
+   TRIP TYPE & STEP PROGRESS & TRANSITIONS
+   ============================================ */
+
+/* Trip Type Segmented Control */
+.trip-type-selector {
+  display: flex;
+  background: var(--bg-card);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  width: fit-content;
+  margin-bottom: var(--space-sm);
+}
+
+.trip-type-btn {
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  transition: var(--transition-base);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.trip-type-btn:hover {
+  color: var(--text-primary);
+}
+
+.trip-type-btn.active {
+  background: linear-gradient(135deg, var(--thy-red), var(--thy-red-dark));
+  color: white;
+  box-shadow: 0 2px 8px rgba(227, 24, 55, 0.3);
+}
+
+/* Return Date Group Animation */
+#returnDateGroup {
+  transition: opacity var(--transition-base), transform var(--transition-base), max-height var(--transition-base), margin var(--transition-base);
+  opacity: 1;
+  transform: scaleY(1);
+  transform-origin: top;
+  max-height: 100px;
+}
+
+#returnDateGroup.hidden-date {
+  opacity: 0;
+  transform: scaleY(0);
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Booking Steps Progress Indicator */
+.booking-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--space-md) 0 var(--space-lg);
+  padding: 0 var(--space-md);
+  position: relative;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 2;
+  position: relative;
+}
+
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-subtle);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  transition: var(--transition-base);
+}
+
+.step-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition-base);
+}
+
+.step-line {
+  position: absolute;
+  top: 14px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: var(--border-subtle);
+  z-index: 1;
+  transition: var(--transition-base);
+}
+
+/* Active Step State */
+.step-item.active .step-num {
+  border-color: var(--thy-gold);
+  background: rgba(200, 169, 81, 0.15);
+  color: var(--thy-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+.step-item.active .step-label {
+  color: var(--text-primary);
+}
+
+/* Completed Step State */
+.step-item.completed .step-num {
+  background: #22C55E;
+  border-color: #22C55E;
+  color: white;
+}
+
+.step-item.completed .step-label {
+  color: #22C55E;
+}
+
+.booking-steps.step-2-active .step-line {
+  background: linear-gradient(90deg, #22C55E, var(--thy-gold));
+}
+
+/* Fade Transitions for Flight Items */
+.flight-list {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.flight-list.fade-out {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.flight-list.fade-in {
+  opacity: 0;
+  transform: translateY(8px);
+}
+

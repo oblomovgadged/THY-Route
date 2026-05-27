@@ -168,7 +168,7 @@
     );
   });
 
-  // ---- INITIALIZE BOOKING DATES ----
+  // ---- INITIALIZE BOOKING DATES & TRIP TYPE ----
   const today = new Date();
   const returnDate = new Date(today);
   returnDate.setDate(returnDate.getDate() + 4);
@@ -183,6 +183,37 @@
   const retDateInput = document.getElementById('flightReturnDate');
   if (depDateInput) depDateInput.value = formatDateLocal(today);
   if (retDateInput) retDateInput.value = formatDateLocal(returnDate);
+
+  let currentTripType = 'round-trip';
+  const btnRoundTrip = document.getElementById('btnRoundTrip');
+  const btnOneWay = document.getElementById('btnOneWay');
+  const returnDateGroup = document.getElementById('returnDateGroup');
+
+  if (btnRoundTrip && btnOneWay) {
+    btnRoundTrip.addEventListener('click', () => {
+      currentTripType = 'round-trip';
+      btnRoundTrip.classList.add('active');
+      btnOneWay.classList.remove('active');
+      returnDateGroup?.classList.remove('hidden-date');
+      if (retDateInput) {
+        retDateInput.removeAttribute('disabled');
+        const defaultRet = new Date();
+        defaultRet.setDate(defaultRet.getDate() + 4);
+        retDateInput.value = formatDateLocal(defaultRet);
+      }
+    });
+
+    btnOneWay.addEventListener('click', () => {
+      currentTripType = 'one-way';
+      btnOneWay.classList.add('active');
+      btnRoundTrip.classList.remove('active');
+      returnDateGroup?.classList.add('hidden-date');
+      if (retDateInput) {
+        retDateInput.setAttribute('disabled', 'true');
+        retDateInput.value = '';
+      }
+    });
+  }
 
   // ---- FLIGHT SEARCH & SELECTION ----
   document.getElementById('btnSearchFlights')?.addEventListener('click', () => {
@@ -205,104 +236,199 @@
       return;
     }
 
-    if (new Date(retDate) < new Date(depDate)) {
-      THY.toast('Dönüş tarihi gidiş tarihinden önce olamaz.', 'error');
+    if (!depDate) {
+      THY.toast('Lütfen gidiş tarihini seçin.', 'error');
       return;
+    }
+
+    if (currentTripType === 'round-trip') {
+      if (!retDate) {
+        THY.toast('Lütfen dönüş tarihini seçin.', 'error');
+        return;
+      }
+      if (new Date(retDate) < new Date(depDate)) {
+        THY.toast('Dönüş tarihi gidiş tarihinden önce olamaz.', 'error');
+        return;
+      }
     }
     
     const listContainer = document.getElementById('flightListContainer');
     if (!listContainer) return;
-    listContainer.innerHTML = '';
     
-    document.getElementById('resultsRouteLabel').textContent = `${depCode} - ${destCode}`;
-    
-    const flightOptions = [
-      { dep: "08:25", arr: "11:45", flightNo: "TK 1862", gate: "A4" },
-      { dep: "13:10", arr: "16:30", flightNo: "TK 1864", gate: "B12" },
-      { dep: "18:55", arr: "22:15", flightNo: "TK 1866", gate: "C7" }
-    ];
-    
-    flightOptions.forEach((fo, idx) => {
-      const baseVal = cabin === 'business' ? 14900 : 3400;
-      const price = baseVal + idx * 800 + Math.floor(Math.random() * 300);
-      
-      const item = document.createElement('div');
-      item.className = 'flight-item';
-      item.innerHTML = `
-        <div class="flight-carrier">
-          <div class="flight-logo-small">
-            <svg viewBox="0 0 100 100">
-              <path d="M50 5 C50 5, 85 25, 85 55 C85 75, 70 95, 50 95 C30 95, 15 75, 15 55 C15 25, 50 5, 50 5Z" fill="white"/>
-              <path d="M50 20 L55 45 L78 45 L59 58 L66 82 L50 67 L34 82 L41 58 L22 45 L45 45 Z" fill="#E31837"/>
-            </svg>
-          </div>
-          <span class="flight-no">${fo.flightNo}</span>
-        </div>
-        <div class="flight-schedule">
-          <div class="schedule-block">
-            <span class="schedule-time">${fo.dep}</span>
-            <span class="schedule-code">${depCode}</span>
-          </div>
-          <div class="flight-duration-path">
-            <span class="duration-text">3sa 20dk</span>
-            <div class="duration-line">
-              <span class="duration-plane">✈️</span>
-            </div>
-            <span class="duration-text">Direkt</span>
-          </div>
-          <div class="schedule-block">
-            <span class="schedule-time">${fo.arr}</span>
-            <span class="schedule-code">${destCode}</span>
-          </div>
-        </div>
-        <div class="flight-price-action">
-          <div class="price-tag">
-            <span class="price-amount">${price.toLocaleString('tr-TR')}</span>
-            <span class="price-currency">TRY</span>
-          </div>
-          <button class="btn btn-primary btn-select-flight" 
-            data-no="${fo.flightNo}" 
-            data-dep="${depCode}" 
-            data-arr="${destCode}"
-            data-gate="${fo.gate}">Seç</button>
-        </div>
-      `;
-      listContainer.appendChild(item);
-    });
+    let selectedOutbound = null;
+    let selectedInbound = null;
 
-    listContainer.querySelectorAll('.btn-select-flight').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const no = btn.dataset.no;
-        const dep = btn.dataset.dep;
-        const arr = btn.dataset.arr;
-        const gate = btn.dataset.gate;
+    function renderFlights(direction) {
+      // 1. Fade out current content
+      listContainer.classList.add('fade-out');
+      listContainer.style.pointerEvents = 'none'; // Disable clicks during transition
+
+      setTimeout(() => {
+        listContainer.innerHTML = '';
         
-        // Update Boarding cockpit header
-        const boardNo = document.getElementById('flightCode');
-        const boardDep = document.getElementById('flightDep');
-        const boardArr = document.getElementById('flightArr');
-        const boardGate = document.getElementById('flightGate');
-        if (boardNo) boardNo.textContent = no;
-        if (boardDep) boardDep.textContent = dep;
-        if (boardArr) boardArr.textContent = arr;
-        if (boardGate) boardGate.textContent = gate;
+        const isOutbound = direction === 'outbound';
+        const fromCode = isOutbound ? depCode : destCode;
+        const toCode = isOutbound ? destCode : depCode;
+        const routeLabel = isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`;
         
-        const destAp = AIRPORTS.find(a => a.code === arr);
-        const days = Math.max(1, Math.ceil((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)));
-        
-        THY.toast('Biniş Kartınız Hazırlanıyor... ✈️', 'success');
-        
-        setTimeout(() => {
-          document.getElementById('landingScreen').classList.add('hidden');
-          document.getElementById('mapScreen').classList.remove('hidden');
-          
-          if (destAp && typeof THY.planAutoItinerary === 'function') {
-            THY.planAutoItinerary(destAp, days);
+        document.getElementById('resultsRouteLabel').textContent = routeLabel;
+
+        // Update Step Progress Indicators
+        const stepsContainer = document.getElementById('bookingSteps');
+        const stepOutbound = document.getElementById('stepOutbound');
+        const stepInbound = document.getElementById('stepInbound');
+
+        if (currentTripType === 'one-way') {
+          if (stepsContainer) stepsContainer.style.display = 'none';
+        } else {
+          if (stepsContainer) stepsContainer.style.display = 'flex';
+          if (isOutbound) {
+            stepOutbound?.classList.add('active');
+            stepOutbound?.classList.remove('completed');
+            stepInbound?.classList.remove('active');
+            stepInbound?.classList.remove('completed');
+            stepsContainer?.classList.remove('step-2-active');
+          } else {
+            stepOutbound?.classList.remove('active');
+            stepOutbound?.classList.add('completed');
+            stepInbound?.classList.add('active');
+            stepsContainer?.classList.add('step-2-active');
           }
-        }, 1500);
-      });
-    });
+        }
+        
+        // Simulated flights
+        const flightOptions = isOutbound ? [
+          { dep: "08:25", arr: "11:45", flightNo: "TK 1862", gate: "A4" },
+          { dep: "13:10", arr: "16:30", flightNo: "TK 1864", gate: "B12" },
+          { dep: "18:55", arr: "22:15", flightNo: "TK 1866", gate: "C7" }
+        ] : [
+          { dep: "09:40", arr: "13:00", flightNo: "TK 1863", gate: "D3" },
+          { dep: "15:20", arr: "18:40", flightNo: "TK 1865", gate: "E1" },
+          { dep: "20:50", arr: "00:10", flightNo: "TK 1867", gate: "F8" }
+        ];
+        
+        flightOptions.forEach((fo, idx) => {
+          const baseVal = cabin === 'business' ? 14900 : 3400;
+          const price = baseVal + idx * 800 + Math.floor(Math.random() * 300);
+          
+          const item = document.createElement('div');
+          item.className = 'flight-item';
+          item.innerHTML = `
+            <div class="flight-carrier">
+              <div class="flight-logo-small">
+                <svg viewBox="0 0 100 100">
+                  <path d="M50 5 C50 5, 85 25, 85 55 C85 75, 70 95, 50 95 C30 95, 15 75, 15 55 C15 25, 50 5, 50 5Z" fill="white"/>
+                  <path d="M50 20 L55 45 L78 45 L59 58 L66 82 L50 67 L34 82 L41 58 L22 45 L45 45 Z" fill="#E31837"/>
+                </svg>
+              </div>
+              <span class="flight-no">${fo.flightNo}</span>
+            </div>
+            <div class="flight-schedule">
+              <div class="schedule-block">
+                <span class="schedule-time">${fo.dep}</span>
+                <span class="schedule-code">${fromCode}</span>
+              </div>
+              <div class="flight-duration-path">
+                <span class="duration-text">3sa 20dk</span>
+                <div class="duration-line">
+                  <span class="duration-plane">✈️</span>
+                </div>
+                <span class="duration-text">Direkt</span>
+              </div>
+              <div class="schedule-block">
+                <span class="schedule-time">${fo.arr}</span>
+                <span class="schedule-code">${toCode}</span>
+              </div>
+            </div>
+            <div class="flight-price-action">
+              <div class="price-tag">
+                <span class="price-amount">${price.toLocaleString('tr-TR')}</span>
+                <span class="price-currency">TRY</span>
+              </div>
+              <button class="btn btn-primary btn-select-flight" 
+                data-no="${fo.flightNo}" 
+                data-dep="${fromCode}" 
+                data-arr="${toCode}"
+                data-gate="${fo.gate}">Seç</button>
+            </div>
+          `;
+          listContainer.appendChild(item);
+        });
+  
+        // Attach event listeners to new buttons
+        listContainer.querySelectorAll('.btn-select-flight').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const no = btn.dataset.no;
+            const dep = btn.dataset.dep;
+            const arr = btn.dataset.arr;
+            const gate = btn.dataset.gate;
+            
+            if (isOutbound) {
+              selectedOutbound = { no, dep, arr, gate };
+              if (currentTripType === 'one-way') {
+                completeBooking();
+              } else {
+                THY.toast('Gidiş uçuşu seçildi! Şimdi dönüş uçuşunuzu seçin. ✈️', 'success');
+                renderFlights('inbound');
+              }
+            } else {
+              selectedInbound = { no, dep, arr, gate };
+              completeBooking();
+            }
+          });
+        });
 
+        function completeBooking() {
+          // Populate Boarding cockpit header with outbound flight (main flight)
+          const boardNo = document.getElementById('flightCode');
+          const boardDep = document.getElementById('flightDep');
+          const boardArr = document.getElementById('flightArr');
+          const boardGate = document.getElementById('flightGate');
+          if (boardNo) boardNo.textContent = selectedOutbound.no;
+          if (boardDep) boardDep.textContent = selectedOutbound.dep;
+          if (boardArr) boardArr.textContent = selectedOutbound.arr;
+          if (boardGate) boardGate.textContent = selectedOutbound.gate;
+          
+          const destAp = AIRPORTS.find(a => a.code === selectedOutbound.arr);
+          
+          let days = 3; // Default 3 days for one-way flight route
+          if (currentTripType === 'round-trip' && depDate && retDate) {
+            days = Math.max(1, Math.ceil((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)));
+          }
+          
+          if (currentTripType === 'one-way') {
+            THY.toast('Tek Yön Uçuş: 3 Günlük Rota Planlanıyor... ✈️', 'success');
+          } else {
+            THY.toast('Biniş Kartlarınız Hazırlanıyor... ✈️', 'success');
+            if (stepInbound) {
+              stepInbound.classList.remove('active');
+              stepInbound.classList.add('completed');
+            }
+          }
+          
+          setTimeout(() => {
+            document.getElementById('landingScreen').classList.add('hidden');
+            document.getElementById('mapScreen').classList.remove('hidden');
+            
+            if (destAp && typeof THY.planAutoItinerary === 'function') {
+              THY.planAutoItinerary(destAp, days);
+            }
+          }, 1500);
+        }
+
+        // 2. Animate list back in
+        listContainer.classList.remove('fade-out');
+        listContainer.classList.add('fade-in');
+        
+        // Force reflow
+        void listContainer.offsetWidth;
+        
+        listContainer.classList.remove('fade-in');
+        listContainer.style.pointerEvents = 'auto'; // Enable clicks
+      }, 250);
+    }
+  
+    renderFlights('outbound');
     document.getElementById('bookingCard').classList.add('hidden');
     document.getElementById('flightResultsCard').classList.remove('hidden');
   });

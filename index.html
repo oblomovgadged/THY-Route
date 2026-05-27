@@ -68,6 +68,12 @@
           <h2 class="booking-card-title">Nereye uçmak istersiniz?</h2>
           
           <div class="booking-form">
+            <!-- Trip Type Selector -->
+            <div class="trip-type-selector">
+              <button type="button" class="trip-type-btn active" id="btnRoundTrip" data-type="round-trip">Gidiş-Dönüş</button>
+              <button type="button" class="trip-type-btn" id="btnOneWay" data-type="one-way">Tek Yön</button>
+            </div>
+
             <!-- Departure (Autocomplete) -->
             <div class="form-group-booking">
               <label>Kalkış Noktası</label>
@@ -98,7 +104,7 @@
                   <input type="date" id="flightDepartureDate">
                 </div>
               </div>
-              <div class="form-group-booking">
+              <div class="form-group-booking" id="returnDateGroup">
                 <label>Dönüş Tarihi (Kaç Gün Kalacaksınız?)</label>
                 <div class="input-wrapper">
                   <span class="input-icon">📅</span>
@@ -138,6 +144,20 @@
         <div class="flight-results-card hidden" id="flightResultsCard">
           <div class="results-header">
             <button class="back-to-search-btn" id="btnBackToSearch">← Aramayı Düzenle</button>
+            
+            <!-- Booking Step Progress Indicator -->
+            <div class="booking-steps" id="bookingSteps">
+              <div class="step-item active" id="stepOutbound">
+                <span class="step-num">1</span>
+                <span class="step-label">Gidiş Uçuşu</span>
+              </div>
+              <div class="step-line" id="stepLine"></div>
+              <div class="step-item" id="stepInbound">
+                <span class="step-num">2</span>
+                <span class="step-label">Dönüş Uçuşu</span>
+              </div>
+            </div>
+
             <h3 class="results-title">Uygun Uçuşlar (<span id="resultsRouteLabel">IST - FCO</span>)</h3>
           </div>
           <div class="flight-list" id="flightListContainer">
