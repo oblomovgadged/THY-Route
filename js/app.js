@@ -55,6 +55,23 @@
     return R * c;
   }
 
+  // Helper to normalize Turkish characters and diacritics for robust searching
+  function normalizeText(text) {
+    if (!text) return '';
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/ı/g, 'i')
+      .replace(/ö/g, 'o')
+      .replace(/ü/g, 'u')
+      .replace(/ş/g, 's')
+      .replace(/ç/g, 'c')
+      .replace(/ğ/g, 'g')
+      .replace(/İ/g, 'i')
+      .replace(/I/g, 'i')
+      .toLowerCase();
+  }
+
   // ---- AUTOCOMPLETE SUGGESTIONS ENGINE ----
   function setupAutocomplete(inputId, suggestionsId) {
     const input = document.getElementById(inputId);
@@ -62,7 +79,7 @@
     if (!input || !suggestions) return;
 
     input.addEventListener('input', (e) => {
-      const val = e.target.value.trim().toLowerCase();
+      const val = normalizeText(e.target.value.trim());
       suggestions.innerHTML = '';
       if (!val) {
         suggestions.classList.remove('active');
@@ -70,10 +87,10 @@
       }
 
       const filtered = AIRPORTS.filter(ap => 
-        ap.city.toLowerCase().includes(val) || 
-        ap.code.toLowerCase().includes(val) || 
-        ap.name.toLowerCase().includes(val) ||
-        ap.country.toLowerCase().includes(val)
+        normalizeText(ap.city).includes(val) || 
+        normalizeText(ap.code).includes(val) || 
+        normalizeText(ap.name).includes(val) ||
+        normalizeText(ap.country).includes(val)
       );
 
       if (filtered.length === 0) {
@@ -155,15 +172,19 @@
 
   // ---- INITIALIZE BOOKING DATES ----
   const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const returnDate = new Date(tomorrow);
+  const returnDate = new Date(today);
   returnDate.setDate(returnDate.getDate() + 4);
+
+  const formatDateLocal = (date) => {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+    return localDate.toISOString().split('T')[0];
+  };
 
   const depDateInput = document.getElementById('flightDepartureDate');
   const retDateInput = document.getElementById('flightReturnDate');
-  if (depDateInput) depDateInput.value = tomorrow.toISOString().split('T')[0];
-  if (retDateInput) retDateInput.value = returnDate.toISOString().split('T')[0];
+  if (depDateInput) depDateInput.value = formatDateLocal(today);
+  if (retDateInput) retDateInput.value = formatDateLocal(returnDate);
 
   // ---- FLIGHT SEARCH & SELECTION ----
   document.getElementById('btnSearchFlights')?.addEventListener('click', () => {
