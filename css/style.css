@@ -2004,3 +2004,40 @@ input, textarea, select {
   gap: var(--space-sm);
 }
 
+/* Waypoint Notes Styling */
+.waypoint-note {
+  font-size: 10px;
+  color: var(--text-primary);
+  background: rgba(200, 169, 81, 0.06);
+  border-left: 2px solid var(--thy-gold);
+  padding: 5px 8px;
+  margin-top: 6px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.4;
+  word-break: break-word;
+  font-style: italic;
+}
+
+.waypoint-note-btn {
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px;
+  opacity: 0.6;
+  transition: opacity 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.waypoint-note-btn:hover {
+  opacity: 1;
+  color: var(--thy-gold);
+  transform: scale(1.15);
+}
+

@@ -18,6 +18,10 @@ function initMap() {
   let waypointMarkers = [];
   let placeMarkers = [];
   let infoWindow = null;
+  let activeNoteIndex = null;
+  const noteModal = document.getElementById('noteModal');
+  const noteTxt = document.getElementById('noteTxt');
+  const noteTargetName = document.getElementById('noteModalTargetName');
 
   THY.waypoints = [];
 
@@ -194,11 +198,11 @@ function initMap() {
         <div class="waypoint-marker">${i + 1}</div>
         <div class="waypoint-info">
           <div class="waypoint-name">${wp.name}</div>
-          ${wp.note ? `<div class="waypoint-note" style="font-size: 10px; color: var(--thy-gold); margin-top: 2px; font-style: italic; font-weight: 500;">📝 Not: ${wp.note}</div>` : ''}
+          ${wp.note ? `<div class="waypoint-note">📝 Not: ${wp.note}</div>` : ''}
           <div class="waypoint-coords">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</div>
         </div>
         <div class="waypoint-actions" style="display: flex; gap: 6px; align-items: center;">
-          <button class="waypoint-note-btn" data-index="${i}" title="Not Ekle/Düzenle" style="background: none; border: none; cursor: pointer; font-size: 11px; padding: 4px; opacity: 0.8; transition: opacity 0.2s;">📝</button>
+          <button class="waypoint-note-btn" data-index="${i}" title="Not Ekle/Düzenle">📝</button>
           <button class="waypoint-remove" data-index="${i}" title="Kaldır">✕</button>
         </div>
       `;
@@ -218,13 +222,10 @@ function initMap() {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const idx = parseInt(e.currentTarget.dataset.index);
-        const currentNote = THY.waypoints[idx].note || '';
-        const newNote = prompt(`"${THY.waypoints[idx].name}" için not girin:`, currentNote);
-        if (newNote !== null) {
-          THY.waypoints[idx].note = newNote.trim();
-          updateWaypointUI();
-          THY.updateEmailPreview();
-        }
+        activeNoteIndex = idx;
+        if (noteTargetName) noteTargetName.textContent = `📍 ${THY.waypoints[idx].name}`;
+        if (noteTxt) noteTxt.value = THY.waypoints[idx].note || '';
+        noteModal?.classList.add('active');
       });
     });
   }
@@ -618,6 +619,33 @@ function initMap() {
     const splash = document.getElementById('splashScreen');
     if (splash) splash.classList.add('hidden');
   }, 2000);
+
+  // ---- Custom Note Modal Logic ----
+  function closeNoteModal() {
+    noteModal?.classList.remove('active');
+    activeNoteIndex = null;
+  }
+
+  document.getElementById('btnCloseNoteModal')?.addEventListener('click', closeNoteModal);
+  document.getElementById('btnCancelNote')?.addEventListener('click', closeNoteModal);
+
+  document.getElementById('btnSaveNote')?.addEventListener('click', () => {
+    if (activeNoteIndex !== null && activeNoteIndex >= 0 && activeNoteIndex < THY.waypoints.length) {
+      THY.waypoints[activeNoteIndex].note = noteTxt.value.trim();
+      updateWaypointUI();
+      THY.updateEmailPreview();
+    }
+    closeNoteModal();
+  });
+
+  document.getElementById('btnDeleteNote')?.addEventListener('click', () => {
+    if (activeNoteIndex !== null && activeNoteIndex >= 0 && activeNoteIndex < THY.waypoints.length) {
+      THY.waypoints[activeNoteIndex].note = '';
+      updateWaypointUI();
+      THY.updateEmailPreview();
+    }
+    closeNoteModal();
+  });
 
   console.log('🗺️ THY Route Map Engine initialized — Tokyo loaded');
 }

@@ -458,6 +458,27 @@
     </div>
   </div>
 
+  <!-- NOTE MODAL -->
+  <div class="modal-overlay" id="noteModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">📝 Not Ekle / Düzenle</h3>
+        <button class="modal-close" id="btnCloseNoteModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="noteModalTargetName" style="font-size: 13px; color: var(--thy-gold); margin-bottom: var(--space-sm); font-weight: 700;"></div>
+        <textarea class="json-area" id="noteTxt" placeholder="Bu konum için planlarınızı veya notunuzu yazın..." style="height: 120px; resize: none;"></textarea>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: space-between; width: 100%;">
+        <button class="btn btn-secondary" id="btnDeleteNote" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; border-color: rgba(239, 68, 68, 0.15);">Notu Sil</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-secondary" id="btnCancelNote">İptal</button>
+          <button class="btn btn-primary" id="btnSaveNote">Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- App Scripts -->
   <script src="js/app.js?v=2.2"></script>
   <script src="js/map.js?v=2.2"></script>
