@@ -39,8 +39,9 @@ self.addEventListener('activate', (event) => {
 
 // Fetch - network first, fallback to cache
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET and Google Maps API requests
+  // Skip non-GET, non-HTTP, and Google Maps API requests
   if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith('http')) return;
   if (event.request.url.includes('googleapis.com') || 
       event.request.url.includes('gstatic.com') ||
       event.request.url.includes('emailjs.com')) {
