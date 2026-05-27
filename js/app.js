@@ -22,6 +22,277 @@
     }, duration);
   };
 
+  };
+
+  // ---- AIRPORT DATABASE & GLOBAL DATA ----
+  const AIRPORTS = [
+    { code: "IST", city: "İstanbul", name: "İstanbul Havalimanı", country: "Türkiye", lat: 41.275, lng: 28.751 },
+    { code: "SAW", city: "İstanbul", name: "Sabiha Gökçen Havalimanı", country: "Türkiye", lat: 40.898, lng: 29.309 },
+    { code: "ESB", city: "Ankara", name: "Esenboğa Havalimanı", country: "Türkiye", lat: 40.128, lng: 32.995 },
+    { code: "ADB", city: "İzmir", name: "Adnan Menderes Havalimanı", country: "Türkiye", lat: 38.292, lng: 27.156 },
+    { code: "AYT", city: "Antalya", name: "Antalya Havalimanı", country: "Türkiye", lat: 36.900, lng: 30.792 },
+    { code: "FCO", city: "Roma", name: "Fiumicino Leonardo da Vinci", country: "İtalya", lat: 41.800, lng: 12.238 },
+    { code: "CDG", city: "Paris", name: "Charles de Gaulle Havalimanı", country: "Fransa", lat: 49.009, lng: 2.547 },
+    { code: "LHR", city: "Londra", name: "Heathrow Havalimanı", country: "İngiltere", lat: 51.470, lng: -0.454 },
+    { code: "JFK", city: "New York", name: "John F. Kennedy Havalimanı", country: "ABD", lat: 40.641, lng: -73.778 },
+    { code: "NRT", city: "Tokyo", name: "Narita Uluslararası Havalimanı", country: "Japonya", lat: 35.772, lng: 140.392 },
+    { code: "HND", city: "Tokyo", name: "Haneda Havalimanı", country: "Japonya", lat: 35.549, lng: 139.779 },
+    { code: "DXB", city: "Dubai", name: "Dubai Uluslararası Havalimanı", country: "BAE", lat: 25.253, lng: 55.364 },
+    { code: "AMS", city: "Amsterdam", name: "Schiphol Havalimanı", country: "Hollanda", lat: 52.313, lng: 4.764 },
+    { code: "MAD", city: "Madrid", name: "Barajas Havalimanı", country: "İspanya", lat: 40.490, lng: -3.567 },
+    { code: "MUC", city: "Münih", name: "Münih Havalimanı", country: "Almanya", lat: 48.353, lng: 11.786 }
+  ];
+
+  // Haversine formula to compute distance between two lat/lng points
+  function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  // ---- AUTOCOMPLETE SUGGESTIONS ENGINE ----
+  function setupAutocomplete(inputId, suggestionsId) {
+    const input = document.getElementById(inputId);
+    const suggestions = document.getElementById(suggestionsId);
+    if (!input || !suggestions) return;
+
+    input.addEventListener('input', (e) => {
+      const val = e.target.value.trim().toLowerCase();
+      suggestions.innerHTML = '';
+      if (!val) {
+        suggestions.classList.remove('active');
+        return;
+      }
+
+      const filtered = AIRPORTS.filter(ap => 
+        ap.city.toLowerCase().includes(val) || 
+        ap.code.toLowerCase().includes(val) || 
+        ap.name.toLowerCase().includes(val) ||
+        ap.country.toLowerCase().includes(val)
+      );
+
+      if (filtered.length === 0) {
+        suggestions.classList.remove('active');
+        return;
+      }
+
+      filtered.forEach(ap => {
+        const div = document.createElement('div');
+        div.className = 'suggestion-item';
+        div.innerHTML = `
+          <span>🛫 <strong>${ap.city}</strong> - ${ap.name} (${ap.country})</span>
+          <span class="suggestion-code">${ap.code}</span>
+        `;
+        div.addEventListener('click', () => {
+          input.value = `${ap.city} (${ap.code})`;
+          input.dataset.code = ap.code;
+          input.dataset.lat = ap.lat;
+          input.dataset.lng = ap.lng;
+          suggestions.innerHTML = '';
+          suggestions.classList.remove('active');
+        });
+        suggestions.appendChild(div);
+      });
+      suggestions.classList.add('active');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+        suggestions.classList.remove('active');
+      }
+    });
+  }
+
+  // Initialize Autocompletes
+  setupAutocomplete('flightDepartureInput', 'depSuggestions');
+  setupAutocomplete('flightDestinationInput', 'destSuggestions');
+
+  // ---- NEAREST AIRPORT GEOLOCATION ----
+  document.getElementById('btnDetectLocation')?.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      THY.toast('Tarayıcınız konum servisini desteklemiyor.', 'error');
+      return;
+    }
+    THY.toast('Konumunuz tespit ediliyor...', 'info');
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const uLat = position.coords.latitude;
+        const uLng = position.coords.longitude;
+        
+        let nearest = null;
+        let minDist = Infinity;
+        
+        AIRPORTS.forEach(ap => {
+          const d = getDistance(uLat, uLng, ap.lat, ap.lng);
+          if (d < minDist) {
+            minDist = d;
+            nearest = ap;
+          }
+        });
+        
+        if (nearest) {
+          const depInput = document.getElementById('flightDepartureInput');
+          if (depInput) {
+            depInput.value = `${nearest.city} (${nearest.code})`;
+            depInput.dataset.code = nearest.code;
+            depInput.dataset.lat = nearest.lat;
+            depInput.dataset.lng = nearest.lng;
+            THY.toast(`Konum algılandı: En yakın havalimanı ${nearest.name} (${nearest.code})`, 'success');
+          }
+        }
+      },
+      (error) => {
+        console.error(error);
+        THY.toast('Konum bilgisi alınamadı. Lütfen listeden seçin.', 'error');
+      }
+    );
+  });
+
+  // ---- INITIALIZE BOOKING DATES ----
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const returnDate = new Date(tomorrow);
+  returnDate.setDate(returnDate.getDate() + 4);
+
+  const depDateInput = document.getElementById('flightDepartureDate');
+  const retDateInput = document.getElementById('flightReturnDate');
+  if (depDateInput) depDateInput.value = tomorrow.toISOString().split('T')[0];
+  if (retDateInput) retDateInput.value = returnDate.toISOString().split('T')[0];
+
+  // ---- FLIGHT SEARCH & SELECTION ----
+  document.getElementById('btnSearchFlights')?.addEventListener('click', () => {
+    const depInput = document.getElementById('flightDepartureInput');
+    const destInput = document.getElementById('flightDestinationInput');
+    
+    if (!depInput?.value || !destInput?.value) {
+      THY.toast('Lütfen kalkış ve varış noktalarını seçin.', 'error');
+      return;
+    }
+    
+    const depCode = depInput.dataset.code;
+    const destCode = destInput.dataset.code;
+    const depDate = document.getElementById('flightDepartureDate')?.value;
+    const retDate = document.getElementById('flightReturnDate')?.value;
+    const cabin = document.getElementById('flightCabinClass')?.value;
+    
+    if (depCode === destCode) {
+      THY.toast('Kalkış ve varış noktaları aynı olamaz.', 'error');
+      return;
+    }
+
+    if (new Date(retDate) < new Date(depDate)) {
+      THY.toast('Dönüş tarihi gidiş tarihinden önce olamaz.', 'error');
+      return;
+    }
+    
+    const listContainer = document.getElementById('flightListContainer');
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+    
+    document.getElementById('resultsRouteLabel').textContent = `${depCode} - ${destCode}`;
+    
+    const flightOptions = [
+      { dep: "08:25", arr: "11:45", flightNo: "TK 1862", gate: "A4" },
+      { dep: "13:10", arr: "16:30", flightNo: "TK 1864", gate: "B12" },
+      { dep: "18:55", arr: "22:15", flightNo: "TK 1866", gate: "C7" }
+    ];
+    
+    flightOptions.forEach((fo, idx) => {
+      const baseVal = cabin === 'business' ? 14900 : 3400;
+      const price = baseVal + idx * 800 + Math.floor(Math.random() * 300);
+      
+      const item = document.createElement('div');
+      item.className = 'flight-item';
+      item.innerHTML = `
+        <div class="flight-carrier">
+          <div class="flight-logo-small">
+            <svg viewBox="0 0 100 100">
+              <path d="M50 5 C50 5, 85 25, 85 55 C85 75, 70 95, 50 95 C30 95, 15 75, 15 55 C15 25, 50 5, 50 5Z" fill="white"/>
+              <path d="M50 20 L55 45 L78 45 L59 58 L66 82 L50 67 L34 82 L41 58 L22 45 L45 45 Z" fill="#E31837"/>
+            </svg>
+          </div>
+          <span class="flight-no">${fo.flightNo}</span>
+        </div>
+        <div class="flight-schedule">
+          <div class="schedule-block">
+            <span class="schedule-time">${fo.dep}</span>
+            <span class="schedule-code">${depCode}</span>
+          </div>
+          <div class="flight-duration-path">
+            <span class="duration-text">3sa 20dk</span>
+            <div class="duration-line">
+              <span class="duration-plane">✈️</span>
+            </div>
+            <span class="duration-text">Direkt</span>
+          </div>
+          <div class="schedule-block">
+            <span class="schedule-time">${fo.arr}</span>
+            <span class="schedule-code">${destCode}</span>
+          </div>
+        </div>
+        <div class="flight-price-action">
+          <div class="price-tag">
+            <span class="price-amount">${price.toLocaleString('tr-TR')}</span>
+            <span class="price-currency">TRY</span>
+          </div>
+          <button class="btn btn-primary btn-select-flight" 
+            data-no="${fo.flightNo}" 
+            data-dep="${depCode}" 
+            data-arr="${destCode}"
+            data-gate="${fo.gate}">Seç</button>
+        </div>
+      `;
+      listContainer.appendChild(item);
+    });
+
+    listContainer.querySelectorAll('.btn-select-flight').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const no = btn.dataset.no;
+        const dep = btn.dataset.dep;
+        const arr = btn.dataset.arr;
+        const gate = btn.dataset.gate;
+        
+        // Update Boarding cockpit header
+        const boardNo = document.getElementById('flightCode');
+        const boardDep = document.getElementById('flightDep');
+        const boardArr = document.getElementById('flightArr');
+        const boardGate = document.getElementById('flightGate');
+        if (boardNo) boardNo.textContent = no;
+        if (boardDep) boardDep.textContent = dep;
+        if (boardArr) boardArr.textContent = arr;
+        if (boardGate) boardGate.textContent = gate;
+        
+        const destAp = AIRPORTS.find(a => a.code === arr);
+        const days = Math.max(1, Math.ceil((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)));
+        
+        THY.toast('Biniş Kartınız Hazırlanıyor... ✈️', 'success');
+        
+        setTimeout(() => {
+          document.getElementById('landingScreen').classList.add('hidden');
+          document.getElementById('mapScreen').classList.remove('hidden');
+          
+          if (destAp && typeof THY.planAutoItinerary === 'function') {
+            THY.planAutoItinerary(destAp, days);
+          }
+        }, 1500);
+      });
+    });
+
+    document.getElementById('bookingCard').classList.add('hidden');
+    document.getElementById('flightResultsCard').classList.remove('hidden');
+  });
+
+  document.getElementById('btnBackToSearch')?.addEventListener('click', () => {
+    document.getElementById('flightResultsCard').classList.add('hidden');
+    document.getElementById('bookingCard').classList.remove('hidden');
+  });
+
   // ---- FLIGHT BOARD CLOCK ----
   function updateClock() {
     const now = new Date();

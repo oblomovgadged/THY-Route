@@ -447,6 +447,105 @@ function initMap() {
     THY.searchNearbyPlaces(type);
   });
 
+  // ---- AUTO ITINERARY RECOMMENDER ----
+  THY.planAutoItinerary = (destAp, days) => {
+    // 1. Pan map to destination
+    map.panTo({ lat: destAp.lat, lng: destAp.lng });
+    map.setZoom(13);
+    
+    // 2. Clear old route
+    THY.clearRoute();
+    
+    // 3. Recommended sights database for major cities
+    const sightsDatabase = {
+      FCO: [ // Rome
+        { name: "Kolezyum (Colosseum)", lat: 41.8902, lng: 12.4922 },
+        { name: "Trevi Aşk Çeşmesi (Trevi Fountain)", lat: 41.9009, lng: 12.4833 },
+        { name: "Panteon (Pantheon)", lat: 41.8986, lng: 12.4769 },
+        { name: "Vatikan Müzeleri (Vatican)", lat: 41.9070, lng: 12.4535 },
+        { name: "Aziz Petrus Bazilikası", lat: 41.9022, lng: 12.4539 },
+        { name: "İspanyol Merdivenleri", lat: 41.9060, lng: 12.4828 },
+        { name: "Navona Meydanı", lat: 41.8989, lng: 12.4731 },
+        { name: "Kutsal Melek Kalesi", lat: 41.9031, lng: 12.4663 }
+      ],
+      NRT: [ // Tokyo Narita
+        { name: "Senso-ji Tapınağı", lat: 35.7148, lng: 139.7967 },
+        { name: "Shibuya Yaya Geçidi", lat: 35.6595, lng: 139.7005 },
+        { name: "Meiji Jingu Tapınağı", lat: 35.6764, lng: 139.6993 },
+        { name: "Tokyo Kulesi", lat: 35.6586, lng: 139.7454 },
+        { name: "Shinjuku Parkı", lat: 35.6852, lng: 139.7101 },
+        { name: "Ueno Parkı", lat: 35.7154, lng: 139.7740 },
+        { name: "Akihabara Elektrik Şehri", lat: 35.6997, lng: 139.7715 }
+      ],
+      HND: [ // Tokyo Haneda
+        { name: "Senso-ji Tapınağı", lat: 35.7148, lng: 139.7967 },
+        { name: "Shibuya Yaya Geçidi", lat: 35.6595, lng: 139.7005 },
+        { name: "Meiji Jingu Tapınağı", lat: 35.6764, lng: 139.6993 },
+        { name: "Tokyo Kulesi", lat: 35.6586, lng: 139.7454 },
+        { name: "Shinjuku Parkı", lat: 35.6852, lng: 139.7101 },
+        { name: "Ueno Parkı", lat: 35.7154, lng: 139.7740 }
+      ],
+      CDG: [ // Paris
+        { name: "Eyfel Kulesi", lat: 48.8584, lng: 2.2945 },
+        { name: "Louvre Müzesi", lat: 48.8606, lng: 2.3376 },
+        { name: "Notre Dame Katedrali", lat: 48.8530, lng: 2.3499 },
+        { name: "Zafer Takı", lat: 48.8738, lng: 2.2950 },
+        { name: "Ressamlar Tepesi (Montmartre)", lat: 48.8867, lng: 2.3431 },
+        { name: "Lüksemburg Bahçesi", lat: 48.8462, lng: 2.3372 }
+      ],
+      LHR: [ // London
+        { name: "British Museum", lat: 51.5194, lng: -0.1270 },
+        { name: "Londra Kalesi", lat: 51.5081, lng: -0.0759 },
+        { name: "London Eye", lat: 51.5033, lng: -0.1195 },
+        { name: "Buckingham Sarayı", lat: 51.5014, lng: -0.1419 },
+        { name: "Big Ben & Westminster", lat: 51.5007, lng: -0.1246 },
+        { name: "Hyde Park", lat: 51.5073, lng: -0.1657 }
+      ],
+      JFK: [ // New York
+        { name: "Times Meydanı", lat: 40.7580, lng: -73.9855 },
+        { name: "Central Park", lat: 40.7829, lng: -73.9654 },
+        { name: "Özgürlük Anıtı", lat: 40.6892, lng: -74.0445 },
+        { name: "Empire State Binası", lat: 40.7484, lng: -73.9857 },
+        { name: "Brooklyn Köprüsü", lat: 40.7061, lng: -73.9969 },
+        { name: "Metropolitan Sanat Müzesi", lat: 40.7794, lng: -73.9632 }
+      ]
+    };
+
+    const sights = sightsDatabase[destAp.code] || [];
+    if (sights.length > 0) {
+      const takeCount = Math.min(sights.length, days * 2);
+      THY.toast(`${destAp.city} için ${days} günlük seyahat planı hazırlanıyor...`, 'info');
+      
+      sights.slice(0, takeCount).forEach((s, idx) => {
+        setTimeout(() => {
+          THY.addWaypoint(s.lat, s.lng, s.name);
+        }, idx * 300);
+      });
+    } else {
+      // Dynamic fallback via Google Places Nearby Search
+      THY.toast(`${destAp.city} civarı keşfediliyor...`, 'info');
+      const request = {
+        location: { lat: destAp.lat, lng: destAp.lng },
+        radius: 6000,
+        type: 'tourist_attraction'
+      };
+
+      placesService.nearbySearch(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          const takeCount = Math.min(results.length, days * 2);
+          results.slice(0, takeCount).forEach((place, idx) => {
+            const loc = place.geometry.location;
+            setTimeout(() => {
+              THY.addWaypoint(loc.lat(), loc.lng(), place.name);
+            }, idx * 300);
+          });
+        } else {
+          THY.addWaypoint(destAp.lat, destAp.lng, `${destAp.city} Havalimanı`);
+        }
+      });
+    }
+  };
+
   // ---- Initial Places Load ----
   // Load restaurants around Tokyo on start
   setTimeout(() => {
