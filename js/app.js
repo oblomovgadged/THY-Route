@@ -274,6 +274,12 @@
         const routeLabel = isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`;
         
         document.getElementById('resultsRouteLabel').textContent = routeLabel;
+        
+        const bannerText = isOutbound 
+          ? `🛫 GİDİŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})` 
+          : `🛬 DÖNÜŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})`;
+        const bannerEl = document.getElementById('resultsRouteBanner');
+        if (bannerEl) bannerEl.textContent = bannerText;
  
         // Update Step Progress Indicators
         const stepsContainer = document.getElementById('bookingSteps');
@@ -790,7 +796,7 @@
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('/sw.js?v=2.2')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }

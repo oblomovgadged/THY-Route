@@ -1952,3 +1952,24 @@ input, textarea, select {
   transform: translateY(8px);
 }
 
+/* Results Header Banner */
+.results-header-banner {
+  background: rgba(227, 24, 55, 0.12);
+  border-left: 4px solid var(--thy-red);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-glow);
+}
+
+.results-header-banner-text {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--thy-red-light);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
