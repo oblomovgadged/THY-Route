@@ -90,6 +90,22 @@
     }
   };
 
+  // ---- DYNAMIC URL SHORTENER (is.gd CORS API) ----
+  THY.getShortenedUrl = async (longUrl) => {
+    try {
+      const res = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`);
+      if (!res.ok) throw new Error('Network error');
+      const data = await res.json();
+      if (data && data.shorturl) {
+        return data.shorturl;
+      }
+      throw new Error(data.errormessage || 'Response error');
+    } catch (err) {
+      console.warn('[Shortener] API connection failed, using local fallback:', err);
+      return longUrl;
+    }
+  };
+
   const parseSharedRoute = () => {
     const params = new URLSearchParams(window.location.search);
     const importRoute = params.get('importRoute');
@@ -1184,7 +1200,7 @@
   });
 
   // ---- EMAIL SENDING ----
-  document.getElementById('btnSendEmail')?.addEventListener('click', () => {
+  document.getElementById('btnSendEmail')?.addEventListener('click', async () => {
     const settings = JSON.parse(localStorage.getItem('thy_emailjs_settings') || '{}');
     if (!settings.serviceId || !settings.templateId || !settings.publicKey) {
       THY.toast('Önce Ayarlar sekmesinden EmailJS bilgilerini girin!', 'error');
@@ -1200,6 +1216,8 @@
       return;
     }
 
+    THY.toast('Uçuş Özeti Hazırlanıyor...', 'info');
+
     // Build route summary as a Captain's Logbook brochure
     let routeSummary = 'Henüz rota oluşturulmadı.';
     if (THY.waypoints && THY.waypoints.length > 0) {
@@ -1208,8 +1226,9 @@
       const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
       const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-      // Generate sharing link
-      const inviteLink = THY.generateShareUrl();
+      // Generate and shorten invite link
+      const longUrl = THY.generateShareUrl();
+      const inviteLink = await THY.getShortenedUrl(longUrl);
 
       let listStr = THY.waypoints.map((wp, i) => {
         let wpStr = `[DURAK ${i + 1}] 📍 ${wp.name}\n`;
@@ -1269,14 +1288,21 @@ ${inviteLink}
   });
 
   // ---- COPY INVITE LINK ----
-  document.getElementById('btnCopyInviteLink')?.addEventListener('click', () => {
+  document.getElementById('btnCopyInviteLink')?.addEventListener('click', async () => {
     if (!THY.waypoints || THY.waypoints.length === 0) {
       THY.toast('Davet linki oluşturmak için önce rotaya nokta ekleyin!', 'error');
       return;
     }
-    const shareUrl = THY.generateShareUrl();
+    THY.toast('Davet bağlantısı kısaltılıyor...', 'info');
+    const longUrl = THY.generateShareUrl();
+    const shareUrl = await THY.getShortenedUrl(longUrl);
+    
     navigator.clipboard.writeText(shareUrl).then(() => {
-      THY.toast('Davet linki başarıyla panoya kopyalandı! 🔗', 'success');
+      if (shareUrl !== longUrl) {
+        THY.toast('Kısa davet linki kopyalandı! 🔗', 'success');
+      } else {
+        THY.toast('Davet linki kopyalandı! (Kısaltma servisi çevrimdışı, standart link kullanıldı) 🔗', 'info');
+      }
       if (typeof THY.playSplitFlapSound === 'function') {
         THY.playSplitFlapSound(5);
       }
@@ -1300,9 +1326,6 @@ ${inviteLink}
     const depCode = document.getElementById('flightDep')?.textContent || 'IST';
     const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
     const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
-
-    // Generate link for preview
-    const inviteLink = THY.generateShareUrl();
 
     let routeHtml = '';
     THY.waypoints.forEach((wp, i) => {
@@ -1376,7 +1399,9 @@ ${inviteLink}
         <!-- Collaboration Link Area -->
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; margin-top: 16px; word-break: break-all;">
           <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;">🔗 Düzenleme ve Davet Bağlantısı</div>
-          <a href="${inviteLink}" target="_blank" style="font-size: 11px; color: var(--thy-red-light); text-decoration: underline; line-height: 1.4;">${inviteLink}</a>
+          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+            Bağlantı kopyalandığında veya e-posta gönderildiğinde otomatik olarak kısaltılacaktır (örn: <span style="color: var(--thy-gold-light); font-weight: 600;">https://is.gd/...</span>).
+          </div>
         </div>
 
         <!-- Footer -->
