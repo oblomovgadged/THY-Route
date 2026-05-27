@@ -1514,14 +1514,6 @@
 
     THY.toast('Uçuş Özeti Hazırlanıyor...', 'info');
 
-    // Build route summary as a Captain's Logbook brochure
-    let routeSummary = 'Henüz rota oluşturulmadı.';
-    if (THY.waypoints && THY.waypoints.length > 0) {
-      const flightCode = document.getElementById('flightCode')?.textContent || 'TK 1982';
-      const depCode = document.getElementById('flightDep')?.textContent || 'IST';
-      const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
-      const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
-
     // Generate and shorten invite link (defined outside waypoints check so inviteLink is always populated)
     const longUrl = THY.generateShareUrl();
     const inviteLink = await THY.getShortenedUrl(longUrl);
