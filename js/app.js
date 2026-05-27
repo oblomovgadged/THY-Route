@@ -9,6 +9,41 @@
   // ---- TOAST SYSTEM ----
   window.THY = window.THY || {};
 
+  // ---- TRIP ID GENERATOR ----
+  THY.generateTripId = () => {
+    const now = new Date();
+    const id = `TRIP-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*9999)).padStart(4,'0')}`;
+    return id;
+  };
+
+  // Initialize Trip ID & URL Parsing
+  THY.currentTripId = null;
+
+  const parseSharedRoute = () => {
+    const params = new URLSearchParams(window.location.search);
+    const urlTripId = params.get('tripId');
+    if (urlTripId) {
+      THY.currentTripId = urlTripId;
+      localStorage.setItem('thy_current_trip_id', urlTripId);
+      console.log("🔗 Shared tripId loaded from URL:", urlTripId);
+    } else {
+      const cachedTripId = localStorage.getItem('thy_current_trip_id');
+      if (cachedTripId) {
+        THY.currentTripId = cachedTripId;
+      } else {
+        THY.currentTripId = THY.generateTripId();
+        localStorage.setItem('thy_current_trip_id', THY.currentTripId);
+      }
+    }
+  };
+  parseSharedRoute();
+
+  // Set the trip ID badge on DOM load
+  document.addEventListener('DOMContentLoaded', () => {
+    const tripBadge = document.getElementById('tripIdBadge');
+    if (tripBadge) tripBadge.textContent = THY.currentTripId;
+  });
+
   THY.toast = (message, type = 'info', duration = 3500) => {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -269,24 +304,7 @@
       });
   };
 
-  const parseSharedRoute = () => {
-    const params = new URLSearchParams(window.location.search);
-    const urlTripId = params.get('tripId');
-    if (urlTripId) {
-      THY.currentTripId = urlTripId;
-      localStorage.setItem('thy_current_trip_id', urlTripId);
-      console.log("🔗 Shared tripId loaded from URL:", urlTripId);
-    } else {
-      const cachedTripId = localStorage.getItem('thy_current_trip_id');
-      if (cachedTripId) {
-        THY.currentTripId = cachedTripId;
-      } else {
-        THY.currentTripId = THY.generateTripId();
-        localStorage.setItem('thy_current_trip_id', THY.currentTripId);
-      }
-    }
-  };
-  parseSharedRoute();
+
 
   // ---- AIRPORT DATABASE & GLOBAL DATA ----
   const AIRPORTS = [
@@ -582,17 +600,17 @@
 
   const depInput = document.getElementById('flightDepartureInput');
   const destInput = document.getElementById('flightDestinationInput');
-  if (depInput) {
-    depInput.value = '';
-    depInput.removeAttribute('data-code');
-    depInput.removeAttribute('data-lat');
-    depInput.removeAttribute('data-lng');
+  if (depInput && !depInput.value) {
+    depInput.value = 'İstanbul (IST)';
+    depInput.dataset.code = 'IST';
+    depInput.dataset.lat = '41.275';
+    depInput.dataset.lng = '28.751';
   }
-  if (destInput) {
-    destInput.value = '';
-    destInput.removeAttribute('data-code');
-    destInput.removeAttribute('data-lat');
-    destInput.removeAttribute('data-lng');
+  if (destInput && !destInput.value) {
+    destInput.value = 'Roma (FCO)';
+    destInput.dataset.code = 'FCO';
+    destInput.dataset.lat = '41.800';
+    destInput.dataset.lng = '12.238';
   }
 
   const depDateInput = document.getElementById('flightDepartureDate');
@@ -1476,16 +1494,7 @@
   document.getElementById('btnSaveSettings')?.addEventListener('click', saveSettings);
   loadSettings();
 
-  // ---- TRIP ID GENERATOR ----
-  THY.generateTripId = () => {
-    const now = new Date();
-    const id = `TRIP-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${String(Math.floor(Math.random()*9999)).padStart(4,'0')}`;
-    return id;
-  };
 
-  THY.currentTripId = THY.generateTripId();
-  const tripBadge = document.getElementById('tripIdBadge');
-  if (tripBadge) tripBadge.textContent = THY.currentTripId;
 
   // ---- IMPORT / EXPORT MODALS ----
   const importModal = document.getElementById('importModal');
