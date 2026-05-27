@@ -22,6 +22,39 @@
     }, duration);
   };
 
+  // ---- RETRO SPLIT-FLAP MECHANICAL SOUND SYNTHESIZER ----
+  THY.playSplitFlapSound = (ticks = 5) => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      
+      const ctx = new AudioContext();
+      let time = ctx.currentTime;
+      
+      for (let i = 0; i < ticks; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'triangle';
+        // Mechanical variation of flap click pitches
+        osc.frequency.setValueAtTime(140 - (i * 6) + (Math.random() * 20), time);
+        
+        gain.gain.setValueAtTime(0.08, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.035);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(time);
+        osc.stop(time + 0.04);
+        
+        time += 0.06 + Math.random() * 0.02; // realistic mechanical jitter
+      }
+    } catch (e) {
+      console.warn('[Web Audio] Audio playback bypassed/blocked:', e);
+    }
+  };
+
   // ---- AIRPORT DATABASE & GLOBAL DATA ----
   const AIRPORTS = [
     // Türkiye - Domestic
@@ -725,6 +758,9 @@
         });
  
         function completeBooking() {
+          if (typeof THY.playSplitFlapSound === 'function') {
+            THY.playSplitFlapSound(16);
+          }
           // Populate Boarding cockpit header with outbound flight (main flight)
           const boardNo = document.getElementById('flightCode');
           const boardDep = document.getElementById('flightDep');
@@ -1052,10 +1088,43 @@
       return;
     }
 
-    // Build route summary
+    // Build route summary as a Captain's Logbook brochure
     let routeSummary = 'Henüz rota oluşturulmadı.';
     if (THY.waypoints && THY.waypoints.length > 0) {
-      routeSummary = THY.waypoints.map((wp, i) => `${i + 1}. ${wp.name} (${wp.lat.toFixed(4)}, ${wp.lng.toFixed(4)})${wp.note ? ` - Not: ${wp.note}` : ''}`).join('\n');
+      const flightCode = document.getElementById('flightCode')?.textContent || 'TK 1982';
+      const depCode = document.getElementById('flightDep')?.textContent || 'IST';
+      const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
+      const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+      let listStr = THY.waypoints.map((wp, i) => {
+        let wpStr = `[DURAK ${i + 1}] 📍 ${wp.name}\n`;
+        wpStr += `   Koordinat: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E\n`;
+        if (wp.note) {
+          wpStr += `   📝 Kaptan Pilot Notu: "${wp.note}"\n`;
+        }
+        return wpStr;
+      }).join('\n───────────────────────────────────\n\n');
+
+      routeSummary = `
+===================================================
+      🛫 TURKISH AIRLINES - KAPTANIN SEYİR DEFTERİ 🛫
+===================================================
+Defter Kayıt ID : ${THY.currentTripId}
+Kayıt Tarihi    : ${dateStr}
+Canlı Uçuş Kodu : ${flightCode}
+Uçuş Güzergahı  : ${depCode} ➔ ${arrCode}
+Kontrol Noktası : ${THY.waypoints.length} Durak
+===================================================
+
+YOLCULUK GÜZERGAH DETAYLARI:
+───────────────────────────────────
+
+${listStr}
+
+───────────────────────────────────
+"Gökyüzünde güvenle planlandı. İyi uçuşlar dileriz."
+===================================================
+`;
     }
 
     const templateParams = {
@@ -1086,20 +1155,90 @@
     if (!body) return;
 
     if (!THY.waypoints || THY.waypoints.length === 0) {
-      body.innerHTML = '<p style="opacity:0.5;">Rota oluşturulduktan sonra rapor önizlemesi burada görünecek.</p>';
+      body.innerHTML = '<p style="opacity:0.5; text-align: center; padding: 20px 0;">Rota oluşturulduktan sonra Kaptan Pilotun Seyir Defteri burada hazırlanacak.</p>';
       return;
     }
 
-    let html = `
-      <p><strong>Trip ID:</strong> ${THY.currentTripId}</p>
-      <p><strong>Tarih:</strong> ${new Date().toLocaleDateString('tr-TR')}</p>
-      <p><strong>Toplam Durak:</strong> ${THY.waypoints.length}</p>
-      <hr style="border-color: rgba(148,163,184,0.15); margin: 8px 0;">
-      <p><strong>Güzergah:</strong></p>
-    `;
+    const flightCode = document.getElementById('flightCode')?.textContent || 'TK 1982';
+    const depCode = document.getElementById('flightDep')?.textContent || 'IST';
+    const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
+    const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    let routeHtml = '';
     THY.waypoints.forEach((wp, i) => {
-      html += `<p>${i + 1}. 📍 ${wp.name}${wp.note ? `<br><span style="font-size:11px; color:#C8A951; margin-left: 20px; font-style: italic;">📝 Not: ${wp.note}</span>` : ''}</p>`;
+      const isFirst = i === 0;
+      const isLast = i === THY.waypoints.length - 1;
+      
+      routeHtml += `
+        <div style="position: relative; padding-left: 28px; margin-bottom: 12px;">
+          <!-- Vertical timeline line -->
+          ${!isLast ? `<div style="position: absolute; left: 8px; top: 16px; bottom: -16px; width: 1px; background: rgba(200, 169, 81, 0.3); border-left: 1px dashed var(--thy-gold);"></div>` : ''}
+          
+          <!-- Node Dot -->
+          <div style="position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: ${isFirst || isLast ? 'var(--thy-red)' : 'var(--bg-primary)'}; border: 2px solid var(--thy-gold); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: white;">
+            ${isFirst ? '🛫' : (isLast ? '🛬' : '')}
+          </div>
+          
+          <!-- Stop Detail -->
+          <div style="font-weight: 600; font-size: 13px; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+            <span>Nokta ${i + 1}: ${wp.name}</span>
+          </div>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 1px;">
+            COORD: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E
+          </div>
+          ${wp.note ? `
+            <div style="margin-top: 4px; padding: 6px 10px; background: rgba(200, 169, 81, 0.05); border-left: 2px solid var(--thy-gold); font-size: 11px; color: var(--thy-gold-light); font-style: italic; border-radius: 0 4px 4px 0;">
+              📝 Kaptan Notu: "${wp.note}"
+            </div>
+          ` : ''}
+        </div>
+      `;
     });
+
+    let html = `
+      <div style="font-family: 'Inter', sans-serif; color: var(--text-primary); background: #0E131F; border: 1px solid rgba(200, 169, 81, 0.2); border-radius: 8px; padding: 16px; box-shadow: var(--shadow-md);">
+        
+        <!-- Header Banner -->
+        <div style="text-align: center; border-bottom: 2px double rgba(200, 169, 81, 0.3); padding-bottom: 12px; margin-bottom: 16px;">
+          <div style="font-size: 9px; font-weight: 800; color: var(--thy-gold); letter-spacing: 3px; text-transform: uppercase;">Turkish Airlines | Flight Log</div>
+          <h4 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 4px 0; letter-spacing: 1px;">📋 KAPTAN PİLOTUN SEYİR DEFTERİ</h4>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted);">${THY.currentTripId}</div>
+        </div>
+
+        <!-- Metadata Grid -->
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 11px;">
+          <tr>
+            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>UÇUŞ KODU:</strong></td>
+            <td style="padding: 4px 0; text-align: right; color: var(--thy-gold-light); font-family: 'JetBrains Mono', monospace;"><strong>${flightCode}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>GÜZERGAH:</strong></td>
+            <td style="padding: 4px 0; text-align: right; color: var(--text-primary);"><strong>${depCode} ➔ ${arrCode}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>SEYİR TARİHİ:</strong></td>
+            <td style="padding: 4px 0; text-align: right; color: var(--text-primary);">${dateStr}</td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>KONTROL NOKTASI:</strong></td>
+            <td style="padding: 4px 0; text-align: right; color: var(--text-primary);">${THY.waypoints.length} Durak</td>
+          </tr>
+        </table>
+
+        <!-- Log Entry Area -->
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+          <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;">Seyir Güzergah Raporu</div>
+          <div>
+            ${routeHtml}
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="border-top: 1px dashed rgba(148, 163, 184, 0.15); margin-top: 20px; padding-top: 12px; text-align: center; font-size: 10px; color: var(--text-muted); font-style: italic;">
+          "Gökyüzünde güvenle planlandı. İyi uçuşlar dileriz."
+        </div>
+      </div>
+    `;
 
     body.innerHTML = html;
   };
@@ -1136,6 +1275,84 @@
   document.getElementById('btnDismissPwa')?.addEventListener('click', () => {
     document.getElementById('pwaInstallBanner')?.classList.remove('visible');
   });
+
+  // ---- LOAD LIVE FLIGHT TO COCKPIT BOARD ----
+  THY.loadLiveFlightBoard = async () => {
+    const accessKey = '7b44b2dfa6bc8aae041fc12c67e7cee8';
+    const targetUrl = encodeURIComponent(`http://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&limit=10`);
+    const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
+
+    try {
+      console.log('📡 Fetching live THY flight board feed via CORS proxy...');
+      const res = await fetch(proxyUrl);
+      if (!res.ok) throw new Error('Proxy call failed');
+      const data = await res.json();
+
+      if (data && data.data && data.data.length > 0) {
+        const liveFlight = data.data.find(f => f.departure?.iata && f.arrival?.iata);
+        if (liveFlight) {
+          const code = liveFlight.flight?.iata || `TK ${liveFlight.flight?.number || '1982'}`;
+          const dep = liveFlight.departure?.iata;
+          const arr = liveFlight.arrival?.iata;
+          const gate = liveFlight.departure?.gate || 'A' + Math.floor(Math.random() * 12 + 1);
+          
+          let statusTextStr = 'KALKIŞ HAZIR';
+          const statusMap = {
+            active: 'UÇUŞTA',
+            landed: 'VARIS YAPILDI',
+            scheduled: 'BİNİŞ BAŞLADI',
+            cancelled: 'İPTAL EDİLDİ',
+            delayed: 'GECİKMELİ'
+          };
+          if (liveFlight.flight_status && statusMap[liveFlight.flight_status]) {
+            statusTextStr = statusMap[liveFlight.flight_status];
+          }
+
+          const boardNo = document.getElementById('flightCode');
+          const boardDep = document.getElementById('flightDep');
+          const boardArr = document.getElementById('flightArr');
+          const boardGate = document.getElementById('flightGate');
+          const statusText = document.getElementById('statusText');
+
+          if (boardNo) boardNo.textContent = code;
+          if (boardDep) boardDep.textContent = dep;
+          if (boardArr) boardArr.textContent = arr;
+          if (boardGate) boardGate.textContent = gate;
+          if (statusText) {
+            statusText.textContent = statusTextStr;
+            const colors = {
+              'BİNİŞ BAŞLADI': '#FF2D4D',
+              'KAPI KAPANIYOR': '#FF8C00',
+              'KALKIŞ HAZIR': '#22C55E',
+              'UÇUŞTA': '#3B82F6',
+              'İNİŞ YAPILIYOR': '#A855F7',
+              'VARIS YAPILDI': '#22C55E',
+              'İPTAL EDİLDİ': '#E31837',
+              'GECİKMELİ': '#FF8C00'
+            };
+            const color = colors[statusTextStr] || '#FF2D4D';
+            statusText.style.color = color;
+            const badge = document.getElementById('statusBadge');
+            if (badge) badge.style.borderColor = color;
+          }
+
+          console.log(`✈️ Live flight board loaded: ${code} from ${dep} to ${arr}`);
+          THY.toast(`Canlı THY uçuşu panoya yüklendi: ${code} (${dep}➔${arr})`, 'success');
+          
+          if (typeof THY.playSplitFlapSound === 'function') {
+            THY.playSplitFlapSound(12);
+          }
+          return;
+        }
+      }
+      throw new Error('No suitable flight found');
+    } catch (e) {
+      console.warn('Could not load live board feed, using offline simulator defaults.', e);
+    }
+  };
+
+  // Run board load on startup
+  THY.loadLiveFlightBoard();
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {

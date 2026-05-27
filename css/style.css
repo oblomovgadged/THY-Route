@@ -60,6 +60,7 @@
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-aerodynamic: 650ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Z-Index */
   --z-map: 1;
@@ -340,7 +341,7 @@ input, textarea, select {
   right: 412px; /* 380px panel width + 16px right margin + 16px gap */
   bottom: 0;
   z-index: var(--z-map);
-  transition: right var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1);
+  transition: right var(--transition-aerodynamic);
 }
 
 .panel-collapsed .map-container {
@@ -371,7 +372,7 @@ input, textarea, select {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1), opacity var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1);
+  transition: transform var(--transition-aerodynamic), opacity var(--transition-aerodynamic);
 }
 
 .side-panel.collapsed {
@@ -397,7 +398,7 @@ input, textarea, select {
   font-size: 18px;
   color: var(--text-primary);
   box-shadow: var(--shadow-md);
-  transition: transform var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1), opacity var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1), background var(--transition-base), border-color var(--transition-base);
+  transition: transform var(--transition-aerodynamic), opacity var(--transition-aerodynamic), background var(--transition-base), border-color var(--transition-base);
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
@@ -965,7 +966,7 @@ input, textarea, select {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  transition: transform var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1), opacity var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1);
+  transition: transform var(--transition-aerodynamic), opacity var(--transition-aerodynamic);
   transform: translateX(0);
   opacity: 1;
 }
@@ -1279,7 +1280,7 @@ input, textarea, select {
     top: 56px;
     right: 0;
     bottom: 50vh;
-    transition: bottom var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1);
+    transition: bottom var(--transition-aerodynamic);
   }
 
   .panel-collapsed .map-container {
@@ -1302,7 +1303,7 @@ input, textarea, select {
 
   .map-controls {
     top: 72px;
-    transition: transform var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1), opacity var(--transition-slow) cubic-bezier(0.85, 0, 0.15, 1);
+    transition: transform var(--transition-aerodynamic), opacity var(--transition-aerodynamic);
   }
 
   .panel-collapsed .map-controls {

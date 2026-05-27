@@ -76,6 +76,9 @@ function initMap() {
 
   // ---- Waypoint Management ----
   THY.addWaypoint = (lat, lng, name, note = '') => {
+    if (typeof THY.playSplitFlapSound === 'function') {
+      THY.playSplitFlapSound(4);
+    }
     const wp = { lat, lng, name: name || `Nokta ${THY.waypoints.length + 1}`, note: note || '' };
     THY.waypoints.push(wp);
 
@@ -109,6 +112,9 @@ function initMap() {
   };
 
   THY.removeWaypoint = (index) => {
+    if (typeof THY.playSplitFlapSound === 'function') {
+      THY.playSplitFlapSound(6);
+    }
     THY.waypoints.splice(index, 1);
     waypointMarkers[index].setMap(null);
     waypointMarkers.splice(index, 1);
@@ -124,6 +130,9 @@ function initMap() {
   };
 
   THY.clearRoute = () => {
+    if (typeof THY.playSplitFlapSound === 'function') {
+      THY.playSplitFlapSound(8);
+    }
     THY.waypoints = [];
     waypointMarkers.forEach(m => m.setMap(null));
     waypointMarkers = [];
@@ -483,19 +492,13 @@ function initMap() {
       THY.toast('Yer arama servisi henüz hazır değil.', 'error');
       return;
     }
-    let latLng;
-    if (customCenter) {
-      latLng = customCenter;
-    } else {
-      const center = map.getCenter();
-      if (!center) {
-        THY.toast('Harita merkezi alınamadı.', 'error');
-        return;
-      }
-      latLng = { lat: center.lat(), lng: center.lng() };
+    const center = customCenter || map.getCenter();
+    if (!center) {
+      THY.toast('Harita merkezi alınamadı.', 'error');
+      return;
     }
     const request = {
-      location: latLng,
+      location: center,
       radius: 2000,
       type: type
     };
@@ -558,6 +561,9 @@ function initMap() {
 
   // ---- AUTO ITINERARY RECOMMENDER ----
   THY.planAutoItinerary = (destAp, days) => {
+    if (typeof THY.playSplitFlapSound === 'function') {
+      THY.playSplitFlapSound(15);
+    }
     // Recommended sights database for major cities
     const sightsDatabase = {
       FCO: [ // Rome
