@@ -215,6 +215,96 @@
     });
   }
 
+  // ---- TURKISH AIRLINES LIVE API INTEGRATION ----
+  async function fetchThyLiveFlights(fromCode, toCode, date, cabin) {
+    const thySettings = JSON.parse(localStorage.getItem('thy_api_settings') || '{}');
+    if (!thySettings.clientId || !thySettings.clientSecret) {
+      return null; // Fallback to simulated dynamic data
+    }
+
+    try {
+      // Step 1: SSO Token Request (OAuth 2.0 Client Credentials Grant)
+      const tokenRes = await fetch('https://api.turkishairlines.com/v2/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          grant_type: 'client_credentials',
+          client_id: thySettings.clientId,
+          client_secret: thySettings.clientSecret
+        })
+      });
+
+      if (!tokenRes.ok) {
+        throw new Error('SSO Token Call failed: ' + tokenRes.statusText);
+      }
+
+      const tokenData = await tokenRes.json();
+      const token = tokenData.access_token;
+
+      // Step 2: Get Flight Availability Request
+      const transactionId = 'TX-' + Math.floor(Math.random() * 1000000);
+      const requestBody = {
+        "requestHeader": {
+          "clientTransactionId": transactionId,
+          "channel": "WEB"
+        },
+        "originDestinationInformation": [
+          {
+            "departureDateTime": {
+              "date": date // Format: YYYY-MM-DD
+            },
+            "origin": fromCode,
+            "destination": toCode
+          }
+        ],
+        "passengerCount": 1
+      };
+
+      const res = await fetch('https://api.turkishairlines.com/v2/test/flightavailability', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'transactionId': transactionId
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!res.ok) {
+        throw new Error('Flight Availability Call failed: ' + res.statusText);
+      }
+
+      const data = await res.json();
+      
+      // Parse THY response schema to match app's flight format
+      const flights = [];
+      const options = data?.data?.availabilityResult?.originDestinationOptions;
+      if (options && options.length > 0) {
+        options.forEach(opt => {
+          if (opt.flightSegments) {
+            opt.flightSegments.forEach(seg => {
+              const depTime = new Date(seg.departureDateTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+              const arrTime = new Date(seg.arrivalDateTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+              const flightNo = (seg.carrierCode || 'TK') + ' ' + (seg.flightNumber || '1862');
+              const gate = seg.departureTerminal || 'A' + Math.floor(Math.random() * 12 + 1);
+              flights.push({ dep: depTime, arr: arrTime, flightNo, gate });
+            });
+          }
+        });
+      }
+      
+      return flights.length > 0 ? flights : null;
+
+    } catch (err) {
+      console.warn('THY API Client connection bypassed/CORS block. Details:', err);
+      // Warning toast for presentation setup
+      THY.toast('THY Live API: CORS veya yetkilendirme engeli. Canlı dinamik simülasyona dönüldü.', 'info', 4500);
+      return null; // Fallback to simulated dynamic data
+    }
+  }
+
   // ---- FLIGHT SEARCH & SELECTION ----
   document.getElementById('btnSearchFlights')?.addEventListener('click', () => {
     const depInput = document.getElementById('flightDepartureInput');
@@ -264,7 +354,7 @@
       listContainer.classList.add('fade-out');
       listContainer.style.pointerEvents = 'none'; // Disable clicks during transition
  
-      setTimeout(() => {
+      setTimeout(async () => {
         listContainer.innerHTML = '';
         lastTransitionTime = Date.now(); // Record rendering time for debounce cooldown
         
@@ -274,7 +364,7 @@
         const routeLabel = isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`;
         
         document.getElementById('resultsRouteLabel').textContent = routeLabel;
-        
+ 
         const bannerText = isOutbound 
           ? `🛫 GİDİŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})` 
           : `🛬 DÖNÜŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})`;
@@ -303,17 +393,66 @@
             stepsContainer?.classList.add('step-2-active');
           }
         }
+
+        // Show loading spinner
+        listContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">✈️</div>
+            <div class="empty-state__title">Uçuşlar Sorgulanıyor</div>
+            <div class="empty-state__text">Türk Hava Yolları veritabanına bağlanılıyor...</div>
+          </div>
+        `;
         
-        // Simulated flights
-        const flightOptions = isOutbound ? [
-          { dep: "08:25", arr: "11:45", flightNo: "TK 1862", gate: "A4" },
-          { dep: "13:10", arr: "16:30", flightNo: "TK 1864", gate: "B12" },
-          { dep: "18:55", arr: "22:15", flightNo: "TK 1866", gate: "C7" }
-        ] : [
-          { dep: "09:40", arr: "13:00", flightNo: "TK 1863", gate: "D3" },
-          { dep: "15:20", arr: "18:40", flightNo: "TK 1865", gate: "E1" },
-          { dep: "20:50", arr: "00:10", flightNo: "TK 1867", gate: "F8" }
-        ];
+        // Fetch Live flights or fallback
+        const searchDate = isOutbound ? depDate : retDate;
+        let flightOptions = null;
+        try {
+          flightOptions = await fetchThyLiveFlights(fromCode, toCode, searchDate, cabin);
+        } catch (e) {
+          console.warn('Live fetch error:', e);
+        }
+
+        listContainer.innerHTML = '';
+
+        // Calculate dynamic flight duration using Haversine coordinates distance
+        const depAp = AIRPORTS.find(a => a.code === fromCode);
+        const destAp = AIRPORTS.find(a => a.code === toCode);
+        let flightDurationMinutes = 200; // default 3h 20m
+        if (depAp && destAp) {
+          const dist = getDistance(depAp.lat, depAp.lng, destAp.lat, destAp.lng);
+          // speed 800 km/h: distance * 0.075 + 30 mins overhead
+          flightDurationMinutes = Math.max(45, Math.round(dist * 0.075 + 30));
+        }
+        const durationHoursStr = `${Math.floor(flightDurationMinutes / 60)}sa ${flightDurationMinutes % 60}dk`;
+
+        if (!flightOptions) {
+          // Dynamic Simulator Engine (Generates different hours/nos based on Date seed & City Pair distance)
+          const dateSeed = new Date(searchDate).getDate() || today.getDate();
+          const baseHours = isOutbound ? [8, 13, 18] : [9, 15, 20];
+          
+          flightOptions = baseHours.map((hour, idx) => {
+            const offsetMinutes = ((dateSeed * 7 + idx * 13) % 45); // offset between 0 and 45 minutes
+            const depMin = (idx * 5 + offsetMinutes) % 60;
+            const depHour = hour;
+            
+            const depTimeStr = `${String(depHour).padStart(2, '0')}:${String(depMin).padStart(2, '0')}`;
+            
+            let arrMin = depMin + flightDurationMinutes;
+            let arrHour = (depHour + Math.floor(arrMin / 60)) % 24;
+            arrMin = arrMin % 60;
+            const arrTimeStr = `${String(arrHour).padStart(2, '0')}:${String(arrMin).padStart(2, '0')}`;
+            
+            const flightNumVal = 1000 + (dateSeed * 17 + idx * 4) % 900;
+            const flightNo = `TK ${flightNumVal + (isOutbound ? 0 : 1)}`;
+            
+            const gates = ['A', 'B', 'C', 'D', 'E', 'F'];
+            const gateChar = gates[(dateSeed + idx) % gates.length];
+            const gateNum = ((dateSeed * 3 + idx * 7) % 19) + 1;
+            const gate = `${gateChar}${gateNum}`;
+            
+            return { dep: depTimeStr, arr: arrTimeStr, flightNo, gate };
+          });
+        }
         
         flightOptions.forEach((fo, idx) => {
           const baseVal = cabin === 'business' ? 14900 : 3400;
@@ -337,7 +476,7 @@
                 <span class="schedule-code">${fromCode}</span>
               </div>
               <div class="flight-duration-path">
-                <span class="duration-text">3sa 20dk</span>
+                <span class="duration-text">${durationHoursStr}</span>
                 <div class="duration-line">
                   <span class="duration-plane">✈️</span>
                 </div>
@@ -542,7 +681,7 @@
   if (panelToggle) panelToggle.addEventListener('click', openPanel);
   if (btnTogglePanel) btnTogglePanel.addEventListener('click', closePanel);
 
-  // ---- SETTINGS (EmailJS) ----
+  // ---- SETTINGS (EmailJS & THY API) ----
   function loadSettings() {
     const settings = JSON.parse(localStorage.getItem('thy_emailjs_settings') || '{}');
     const sid = document.getElementById('settingServiceId');
@@ -551,7 +690,13 @@
     if (sid) sid.value = settings.serviceId || '';
     if (tid) tid.value = settings.templateId || '';
     if (pk) pk.value = settings.publicKey || '';
-    return settings;
+
+    const thySettings = JSON.parse(localStorage.getItem('thy_api_settings') || '{}');
+    const tcid = document.getElementById('settingThyClientId');
+    const tcsec = document.getElementById('settingThyClientSecret');
+    if (tcid) tcid.value = thySettings.clientId || '';
+    if (tcsec) tcsec.value = thySettings.clientSecret || '';
+    return { emailjs: settings, thy: thySettings };
   }
 
   function saveSettings() {
@@ -561,8 +706,14 @@
       publicKey: document.getElementById('settingPublicKey')?.value?.trim() || ''
     };
     localStorage.setItem('thy_emailjs_settings', JSON.stringify(settings));
+
+    const thySettings = {
+      clientId: document.getElementById('settingThyClientId')?.value?.trim() || '',
+      clientSecret: document.getElementById('settingThyClientSecret')?.value?.trim() || ''
+    };
+    localStorage.setItem('thy_api_settings', JSON.stringify(thySettings));
+
     THY.toast('Ayarlar kaydedildi!', 'success');
-    return settings;
   }
 
   document.getElementById('btnSaveSettings')?.addEventListener('click', saveSettings);
