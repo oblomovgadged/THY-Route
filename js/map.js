@@ -64,13 +64,19 @@ function initMap() {
   function createPlaceIcon(emoji) {
     return {
       url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-          <circle cx="16" cy="16" r="15" fill="#1A2235" stroke="#C8A951" stroke-width="2"/>
-          <text x="16" y="22" text-anchor="middle" font-size="15">${emoji}</text>
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="46" viewBox="0 0 36 46">
+          <defs>
+            <filter id="s" x="-20%" y="-10%" width="140%" height="130%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
+            </filter>
+          </defs>
+          <path d="M18 0 C8 0 0 8 0 18 C0 30 18 46 18 46 C18 46 36 30 36 18 C36 8 28 0 18 0Z" fill="#1A2235" stroke="#C8A951" stroke-width="2" filter="url(#s)"/>
+          <circle cx="18" cy="17" r="11" fill="white"/>
+          <text x="18" y="22" text-anchor="middle" font-size="15">${emoji}</text>
         </svg>
       `),
-      scaledSize: new google.maps.Size(32, 32),
-      anchor: new google.maps.Point(16, 16)
+      scaledSize: new google.maps.Size(36, 46),
+      anchor: new google.maps.Point(18, 46)
     };
   }
 

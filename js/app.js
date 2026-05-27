@@ -65,6 +65,9 @@
     const gate = document.getElementById('flightGate')?.textContent || 'A7';
     const tripId = THY.currentTripId;
     
+    const statusTextEl = document.getElementById('statusText');
+    const statusText = statusTextEl ? statusTextEl.textContent : 'KALKIŞ HAZIR';
+    
     // Compact coordinates to 5 decimal places (~1.1m precision) and strip keys to shorten URL length
     const waypoints = THY.waypoints.map(wp => [
       parseFloat(wp.lat.toFixed(5)),
@@ -73,8 +76,8 @@
       wp.note || ''
     ]);
 
-    // Compact format: [version_tag, tripId, flightCode, dep, arr, gate, waypoints]
-    const compactData = ['v2', tripId, flightCode, dep, arr, gate, waypoints];
+    // Compact format: [version_tag, tripId, flightCode, dep, arr, gate, waypoints, statusText]
+    const compactData = ['v3', tripId, flightCode, dep, arr, gate, waypoints, statusText];
 
     try {
       const jsonStr = JSON.stringify(compactData);
@@ -123,14 +126,15 @@
 
       if (Array.isArray(decodedData)) {
         // Hydrate from compact array format
-        const [version, tripId, flightCode, dep, arr, gate, wps] = decodedData;
-        if (version === 'v2') {
+        const [version, tripId, flightCode, dep, arr, gate, wps, statusTextVal] = decodedData;
+        if (version === 'v2' || version === 'v3') {
           data = {
             tripId,
             flightCode,
             dep,
             arr,
             gate,
+            statusText: statusTextVal || 'KALKIŞ HAZIR',
             waypoints: wps.map(w => ({
               lat: w[0],
               lng: w[1],
@@ -160,6 +164,39 @@
           if (boardArr) boardArr.textContent = data.arr || 'NRT';
           if (boardGate) boardGate.textContent = data.gate || 'A7';
           if (tripBadge) tripBadge.textContent = THY.currentTripId;
+
+          // Clear status rotation interval to preserve shared flight status
+          if (statusIntervalId) {
+            clearInterval(statusIntervalId);
+            statusIntervalId = null;
+          }
+
+          const statusText = document.getElementById('statusText');
+          const statusBadge = document.getElementById('statusBadge');
+          if (statusText && statusBadge && data.statusText) {
+            statusText.textContent = data.statusText;
+            const colors = {
+              'BİNİŞ BAŞLADI': '#FF2D4D',
+              'KAPI KAPANIYOR': '#FF8C00',
+              'KALKIŞ HAZIR': '#22C55E',
+              'UÇUŞTA': '#3B82F6',
+              'İNİŞ YAPILIYOR': '#A855F7',
+              'VARIS YAPILDI': '#22C55E',
+              'İPTAL EDİLDİ': '#E31837'
+            };
+            let color = '#22C55E';
+            for (const key in colors) {
+              if (data.statusText.includes(key)) {
+                color = colors[key];
+                break;
+              }
+            }
+            if (data.statusText.includes('GECİKMELİ') || data.statusText.includes('RÖTAR')) {
+              color = '#FF8C00';
+            }
+            statusText.style.color = color;
+            statusBadge.style.borderColor = color;
+          }
 
           // Skip landing page and go straight to map
           document.getElementById('landingScreen')?.classList.add('hidden');
@@ -323,11 +360,50 @@
     if (!input || !suggestions) return;
 
     input.addEventListener('input', (e) => {
-      const val = normalizeText(e.target.value.trim());
+      const rawVal = e.target.value.trim();
+      const val = normalizeText(rawVal);
       suggestions.innerHTML = '';
       if (!val) {
         suggestions.classList.remove('active');
         return;
+      }
+
+      // Check if it looks like a flight code pattern in the departure input
+      if (inputId === 'flightDepartureInput') {
+        const flightCodeRegex = /^(TK|THY)?\s*\d{1,4}[A-Z]?$/i;
+        if (flightCodeRegex.test(rawVal)) {
+          let codeDisplay = rawVal.toUpperCase();
+          if (!codeDisplay.startsWith('TK') && !codeDisplay.startsWith('THY')) {
+            codeDisplay = 'TK ' + codeDisplay;
+          }
+          const div = document.createElement('div');
+          div.className = 'suggestion-item flight-code-suggestion';
+          div.style.background = 'rgba(230, 26, 59, 0.1)';
+          div.style.borderLeft = '3px solid var(--thy-red)';
+          div.innerHTML = `
+            <span>🔍 <strong>Uçuş Kodu Ara:</strong> ${codeDisplay}</span>
+            <span class="suggestion-code" style="color: var(--thy-red);">CANLI</span>
+          `;
+          div.addEventListener('click', () => {
+            input.value = codeDisplay;
+            input.dataset.isFlightCode = 'true';
+            input.dataset.code = '';
+            suggestions.innerHTML = '';
+            suggestions.classList.remove('active');
+            
+            // Automatically click search
+            setTimeout(() => {
+              document.getElementById('btnSearchFlights')?.click();
+            }, 100);
+          });
+          suggestions.appendChild(div);
+          suggestions.classList.add('active');
+        }
+      }
+
+      // Clear flight code flag if they type something else
+      if (inputId === 'flightDepartureInput' && !/^(TK|THY)?\s*\d{1,4}[A-Z]?$/i.test(rawVal)) {
+        input.removeAttribute('data-is-flight-code');
       }
 
       const filtered = AIRPORTS.filter(ap => 
@@ -337,7 +413,7 @@
         normalizeText(ap.country).includes(val)
       );
 
-      if (filtered.length === 0) {
+      if (filtered.length === 0 && suggestions.children.length === 0) {
         suggestions.classList.remove('active');
         return;
       }
@@ -552,13 +628,14 @@
   async function fetchAviationstackFlights(fromCode, toCode, date) {
     const accessKey = '7b44b2dfa6bc8aae041fc12c67e7cee8';
     
-    // Attempt HTTPS first (to check if HTTPS is supported/allowed by protocol)
-    const url = `https://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&dep_iata=${fromCode}&arr_iata=${toCode}`;
+    // Use CORS proxy to bypass HTTP-only restriction on Aviationstack free tier
+    const targetUrl = encodeURIComponent(`http://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&dep_iata=${fromCode}&arr_iata=${toCode}`);
+    const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
     
     try {
-      const res = await fetch(url);
+      const res = await fetch(proxyUrl);
       if (!res.ok) {
-        throw new Error('Aviationstack HTTPS call failed: ' + res.statusText);
+        throw new Error('Aviationstack proxy call failed: ' + res.statusText);
       }
       
       const data = await res.json();
@@ -570,35 +647,47 @@
       const flights = [];
       if (data.data && data.data.length > 0) {
         data.data.forEach(item => {
-          const depTimeRaw = item.departure?.scheduled;
-          const arrTimeRaw = item.arrival?.scheduled;
+          // Verify carrier is Turkish Airlines (THY/TK) strictly
+          const carrier = item.airline?.iata || item.airline?.icao;
+          const matchesCarrier = carrier === 'TK' || carrier === 'THY' || item.flight?.iata?.startsWith('TK');
           
-          if (depTimeRaw && arrTimeRaw) {
-            // Format to HH:MM Local
-            const depTime = new Date(depTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-            const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-            const flightNo = item.flight?.iata || `TK ${item.flight?.number || '1862'}`;
-            const gate = item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
-            flights.push({ dep: depTime, arr: arrTime, flightNo, gate });
+          if (matchesCarrier) {
+            const depTimeRaw = item.departure?.scheduled;
+            const arrTimeRaw = item.arrival?.scheduled;
+            
+            if (depTimeRaw && arrTimeRaw) {
+              // Format to HH:MM Local
+              const depTime = new Date(depTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+              const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+              const flightNo = item.flight?.iata || `TK ${item.flight?.number || '1862'}`;
+              const gate = item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
+              const delay = item.departure?.delay || 0;
+              const status = item.flight_status || 'scheduled';
+              flights.push({ dep: depTime, arr: arrTime, flightNo, gate, delay, status });
+            }
           }
         });
       }
       
-      return flights.length > 0 ? flights : null;
+      if (flights.length > 0) {
+        THY.toast('Aviationstack Canlı Uçuşları Yüklendi! ✈️', 'success');
+        return flights;
+      }
+      return null;
       
     } catch (err) {
-      console.warn('Aviationstack HTTPS request bypassed/restricted. Checking HTTP fallback on localhost...', err);
-      
-      // If client is running locally on HTTP protocol, fallback to HTTP endpoint
-      if (location.protocol === 'http:') {
-        try {
-          const httpUrl = `http://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&dep_iata=${fromCode}&arr_iata=${toCode}`;
-          const httpRes = await fetch(httpUrl);
-          if (httpRes.ok) {
-            const httpData = await httpRes.json();
-            if (httpData.data && httpData.data.length > 0) {
-              const flights = [];
-              httpData.data.forEach(item => {
+      console.warn('Aviationstack proxy call failed, checking direct HTTPS as fallback...', err);
+      try {
+        const directUrl = `https://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&dep_iata=${fromCode}&arr_iata=${toCode}`;
+        const res = await fetch(directUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.data) {
+            const flights = [];
+            data.data.forEach(item => {
+              const carrier = item.airline?.iata || item.airline?.icao;
+              const matchesCarrier = carrier === 'TK' || carrier === 'THY' || item.flight?.iata?.startsWith('TK');
+              if (matchesCarrier) {
                 const depTimeRaw = item.departure?.scheduled;
                 const arrTimeRaw = item.arrival?.scheduled;
                 if (depTimeRaw && arrTimeRaw) {
@@ -606,18 +695,17 @@
                   const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
                   const flightNo = item.flight?.iata || `TK ${item.flight?.number || '1862'}`;
                   const gate = item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
-                  flights.push({ dep: depTime, arr: arrTime, flightNo, gate });
+                  const delay = item.departure?.delay || 0;
+                  const status = item.flight_status || 'scheduled';
+                  flights.push({ dep: depTime, arr: arrTime, flightNo, gate, delay, status });
                 }
-              });
-              if (flights.length > 0) {
-                THY.toast('Aviationstack Live Uçuşları Başarıyla Yüklendi! ✈️', 'success');
-                return flights;
               }
-            }
+            });
+            if (flights.length > 0) return flights;
           }
-        } catch (httpErr) {
-          console.warn('Aviationstack HTTP fallback also failed:', httpErr);
         }
+      } catch (directErr) {
+        console.warn('Aviationstack direct HTTPS fallback failed:', directErr);
       }
       
       // Notify fallback to simulator
@@ -626,23 +714,109 @@
     }
   }
 
+  // ---- AVIATIONSTACK FLIGHT BY CODE LOOKUP ----
+  async function fetchFlightByCode(flightCode) {
+    const accessKey = '7b44b2dfa6bc8aae041fc12c67e7cee8';
+    let cleanCode = flightCode.replace(/\s+/g, '').toUpperCase();
+    if (!cleanCode.startsWith('TK') && !cleanCode.startsWith('THY')) {
+      cleanCode = 'TK' + cleanCode;
+    }
+    
+    const targetUrl = encodeURIComponent(`http://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&flight_iata=${cleanCode}`);
+    const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
+
+    try {
+      const res = await fetch(proxyUrl);
+      if (!res.ok) throw new Error('Aviationstack call failed: ' + res.statusText);
+      const data = await res.json();
+
+      if (data && data.data && data.data.length > 0) {
+        const flights = [];
+        data.data.forEach(item => {
+          const carrier = item.airline?.iata || item.airline?.icao;
+          const matchesCarrier = carrier === 'TK' || carrier === 'THY' || item.flight?.iata?.startsWith('TK');
+          if (matchesCarrier) {
+            const depTimeRaw = item.departure?.scheduled;
+            const arrTimeRaw = item.arrival?.scheduled;
+            if (depTimeRaw && arrTimeRaw) {
+              const depTime = new Date(depTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+              const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+              const fNo = item.flight?.iata || cleanCode;
+              const gate = item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
+              const delay = item.departure?.delay || 0;
+              const status = item.flight_status || 'scheduled';
+              const depIata = item.departure?.iata;
+              const arrIata = item.arrival?.iata;
+              
+              flights.push({ dep: depTime, arr: arrTime, flightNo: fNo, gate, delay, status, depIata, arrIata });
+            }
+          }
+        });
+        return flights.length > 0 ? flights : null;
+      }
+      return null;
+    } catch (err) {
+      console.warn('fetchFlightByCode error:', err);
+      return null;
+    }
+  }
+
+  // ---- GENERATE SIMULATED FLIGHT BY CODE (FALLBACK) ----
+  function generateSimulatedFlightByCode(flightCode) {
+    let cleanCode = flightCode.replace(/\s+/g, '').toUpperCase();
+    if (!cleanCode.startsWith('TK') && !cleanCode.startsWith('THY')) {
+      cleanCode = 'TK ' + cleanCode;
+    } else if (cleanCode.startsWith('TK') && !cleanCode.startsWith('TK ')) {
+      cleanCode = 'TK ' + cleanCode.substring(2);
+    }
+    
+    // Pick departure and destination randomly from AIRPORTS (e.g. IST to standard destinations)
+    const departure = AIRPORTS[0]; // IST
+    const destination = AIRPORTS.find(a => a.code === 'NRT') || AIRPORTS[1]; 
+    
+    const depTime = '13:45';
+    const arrTime = '19:20';
+    const gate = 'A' + Math.floor(Math.random() * 10 + 1);
+    
+    // 15% chance of delay
+    const delay = Math.random() < 0.15 ? Math.floor(Math.random() * 60 + 15) : 0;
+    const status = delay > 0 ? 'incident' : 'scheduled';
+    
+    return [{
+      dep: depTime,
+      arr: arrTime,
+      flightNo: cleanCode,
+      gate: gate,
+      delay: delay,
+      status: status,
+      depIata: departure.code,
+      arrIata: destination.code
+    }];
+  }
+
   // ---- FLIGHT SEARCH & SELECTION ----
   document.getElementById('btnSearchFlights')?.addEventListener('click', () => {
     const depInput = document.getElementById('flightDepartureInput');
     const destInput = document.getElementById('flightDestinationInput');
+    const depVal = depInput?.value?.trim() || '';
+    const destVal = destInput?.value?.trim() || '';
     
-    if (!depInput?.value || !destInput?.value) {
-      THY.toast('Lütfen kalkış ve varış noktalarını seçin.', 'error');
+    // Check if it's a flight code search (either flagged by autocomplete, or matches regex directly)
+    const flightCodeRegex = /^(TK|THY)?\s*\d{1,4}[A-Z]?$/i;
+    const isFlightCodeSearch = flightCodeRegex.test(depVal) || depInput?.dataset?.isFlightCode === 'true';
+
+    if (!isFlightCodeSearch && (!depVal || !destVal)) {
+      THY.toast('Lütfen kalkış ve varış noktalarını seçin veya geçerli bir uçuş kodu girin.', 'error');
       return;
     }
     
-    const depCode = depInput.dataset.code;
-    const destCode = destInput.dataset.code;
+    let depCode = depInput.dataset.code;
+    let destCode = destInput.dataset.code;
     const depDate = document.getElementById('flightDepartureDate')?.value;
     const retDate = document.getElementById('flightReturnDate')?.value;
     const cabin = document.getElementById('flightCabinClass')?.value;
     
-    if (depCode === destCode) {
+    if (!isFlightCodeSearch && depCode === destCode) {
       THY.toast('Kalkış ve varış noktaları aynı olamaz.', 'error');
       return;
     }
@@ -652,7 +826,7 @@
       return;
     }
 
-    if (currentTripType === 'round-trip') {
+    if (!isFlightCodeSearch && currentTripType === 'round-trip') {
       if (!retDate) {
         THY.toast('Lütfen dönüş tarihini seçin.', 'error');
         return;
@@ -679,24 +853,13 @@
         listContainer.innerHTML = '';
         
         const isOutbound = direction === 'outbound';
-        const fromCode = isOutbound ? depCode : destCode;
-        const toCode = isOutbound ? destCode : depCode;
-        const routeLabel = isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`;
         
-        document.getElementById('resultsRouteLabel').textContent = routeLabel;
- 
-        const bannerText = isOutbound 
-          ? `🛫 GİDİŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})` 
-          : `🛬 DÖNÜŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})`;
-        const bannerEl = document.getElementById('resultsRouteBanner');
-        if (bannerEl) bannerEl.textContent = bannerText;
- 
         // Update Step Progress Indicators
         const stepsContainer = document.getElementById('bookingSteps');
         const stepOutbound = document.getElementById('stepOutbound');
         const stepInbound = document.getElementById('stepInbound');
  
-        if (currentTripType === 'one-way') {
+        if (currentTripType === 'one-way' || isFlightCodeSearch) {
           if (stepsContainer) stepsContainer.style.display = 'none';
         } else {
           if (stepsContainer) stepsContainer.style.display = 'flex';
@@ -726,14 +889,61 @@
         // Fetch Live flights or fallback
         const searchDate = isOutbound ? depDate : retDate;
         let flightOptions = null;
-        try {
-          flightOptions = await fetchThyLiveFlights(fromCode, toCode, searchDate, cabin);
-          if (!flightOptions) {
-            flightOptions = await fetchAviationstackFlights(fromCode, toCode, searchDate);
+
+        if (isFlightCodeSearch && isOutbound) {
+          try {
+            flightOptions = await fetchFlightByCode(depVal);
+          } catch (e) {
+            console.warn('Flight code fetch error:', e);
           }
-        } catch (e) {
-          console.warn('Live fetch error:', e);
+
+          if (!flightOptions) {
+            flightOptions = generateSimulatedFlightByCode(depVal);
+            THY.toast('Aviationstack Canlı Uçuş Veritabanı Sorunu. Simülasyon Çalıştırıldı.', 'info', 4500);
+          }
+
+          if (flightOptions && flightOptions.length > 0) {
+            const firstFlight = flightOptions[0];
+            depCode = firstFlight.depIata || 'IST';
+            destCode = firstFlight.arrIata || 'NRT';
+
+            // Hydrate input values and coordinates from AIRPORTS
+            const depAp = AIRPORTS.find(a => a.code === depCode) || { city: 'İstanbul', name: 'İstanbul Havalimanı', code: depCode, lat: 41.275, lng: 28.751 };
+            const destAp = AIRPORTS.find(a => a.code === destCode) || { city: 'Tokyo Narita', name: 'Narita Havalimanı', code: destCode, lat: 35.772, lng: 140.392 };
+            
+            depInput.value = `${depAp.city} (${depAp.code})`;
+            depInput.dataset.code = depAp.code;
+            depInput.dataset.lat = depAp.lat;
+            depInput.dataset.lng = depAp.lng;
+            
+            destInput.value = `${destAp.city} (${destAp.code})`;
+            destInput.dataset.code = destAp.code;
+            destInput.dataset.lat = destAp.lat;
+            destInput.dataset.lng = destAp.lng;
+          }
+        } else {
+          const fromCode = isOutbound ? depCode : destCode;
+          const toCode = isOutbound ? destCode : depCode;
+          try {
+            flightOptions = await fetchThyLiveFlights(fromCode, toCode, searchDate, cabin);
+            if (!flightOptions) {
+              flightOptions = await fetchAviationstackFlights(fromCode, toCode, searchDate);
+            }
+          } catch (e) {
+            console.warn('Live fetch error:', e);
+          }
         }
+
+        const fromCode = isOutbound ? depCode : destCode;
+        const toCode = isOutbound ? destCode : depCode;
+        const routeLabel = isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`;
+        document.getElementById('resultsRouteLabel').textContent = routeLabel;
+ 
+        const bannerText = isOutbound 
+          ? `🛫 GİDİŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})` 
+          : `🛬 DÖNÜŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})`;
+        const bannerEl = document.getElementById('resultsRouteBanner');
+        if (bannerEl) bannerEl.textContent = bannerText;
 
         listContainer.innerHTML = '';
 
@@ -772,8 +982,12 @@
             const gateChar = gates[(dateSeed + idx) % gates.length];
             const gateNum = ((dateSeed * 3 + idx * 7) % 19) + 1;
             const gate = `${gateChar}${gateNum}`;
+
+            const isDelayed = (dateSeed + idx) % 7 === 0;
+            const delay = isDelayed ? ((dateSeed * 5 + idx * 10) % 80 + 10) : 0;
+            const status = delay > 0 ? 'incident' : 'scheduled';
             
-            return { dep: depTimeStr, arr: arrTimeStr, flightNo, gate };
+            return { dep: depTimeStr, arr: arrTimeStr, flightNo, gate, delay, status };
           });
         }
         
@@ -781,6 +995,12 @@
           const baseVal = cabin === 'business' ? 14900 : 3400;
           const price = baseVal + idx * 800 + Math.floor(Math.random() * 300);
           
+          // Generate delay and gate HTML
+          const delayHtml = fo.delay > 0 
+            ? `<span style="color: #FF8C00; font-size: 11px; font-weight: 600; margin-left: 8px;">⚠️ Rötar: ${fo.delay} dk</span>` 
+            : `<span style="color: #22C55E; font-size: 11px; font-weight: 600; margin-left: 8px;">🟢 Zamanında</span>`;
+          const gateHtml = `<span style="color: var(--text-muted); font-size: 11px; margin-left: 8px;">🚪 Kapı: ${fo.gate}</span>`;
+
           const item = document.createElement('div');
           item.className = 'flight-item';
           item.innerHTML = `
@@ -795,6 +1015,8 @@
                 </svg>
               </div>
               <span class="flight-no">${fo.flightNo}</span>
+              ${delayHtml}
+              ${gateHtml}
             </div>
             <div class="flight-schedule">
               <div class="schedule-block">
@@ -822,7 +1044,9 @@
                 data-no="${fo.flightNo}" 
                 data-dep="${fromCode}" 
                 data-arr="${toCode}"
-                data-gate="${fo.gate}">Seç</button>
+                data-gate="${fo.gate}"
+                data-delay="${fo.delay || 0}"
+                data-status="${fo.status || 'scheduled'}">Seç</button>
             </div>
           `;
           listContainer.appendChild(item);
@@ -855,19 +1079,21 @@
             const dep = btn.dataset.dep;
             const arr = btn.dataset.arr;
             const gate = btn.dataset.gate;
+            const delay = parseInt(btn.dataset.delay) || 0;
+            const status = btn.dataset.status || 'scheduled';
             
             // Introduce a 600ms visual delay so user sees selected state before loading
             setTimeout(() => {
               if (isOutbound) {
-                selectedOutbound = { no, dep, arr, gate };
-                if (currentTripType === 'one-way') {
+                selectedOutbound = { no, dep, arr, gate, delay, status };
+                if (currentTripType === 'one-way' || isFlightCodeSearch) {
                   completeBooking();
                 } else {
                   THY.toast('Gidiş uçuşu seçildi! Şimdi dönüş uçuşunuzu seçin. ✈️', 'success');
                   renderFlights('inbound');
                 }
               } else {
-                selectedInbound = { no, dep, arr, gate };
+                selectedInbound = { no, dep, arr, gate, delay, status };
                 completeBooking();
               }
             }, 600);
@@ -887,6 +1113,42 @@
           if (boardDep) boardDep.textContent = selectedOutbound.dep;
           if (boardArr) boardArr.textContent = selectedOutbound.arr;
           if (boardGate) boardGate.textContent = selectedOutbound.gate;
+
+          // Clear status rotation interval to preserve real flight status on the board
+          if (statusIntervalId) {
+            clearInterval(statusIntervalId);
+            statusIntervalId = null;
+          }
+
+          const statusText = document.getElementById('statusText');
+          const statusBadge = document.getElementById('statusBadge');
+          if (statusText && statusBadge) {
+            let statusStr = 'KALKIŞ HAZIR';
+            let color = '#22C55E';
+
+            if (selectedOutbound.delay > 0) {
+              statusStr = `GECİKMELİ (${selectedOutbound.delay} DK)`;
+              color = '#FF8C00';
+            } else {
+              const statusMap = {
+                active: { text: 'UÇUŞTA', color: '#3B82F6' },
+                landed: { text: 'VARIS YAPILDI', color: '#22C55E' },
+                scheduled: { text: 'KALKIŞ HAZIR', color: '#22C55E' },
+                cancelled: { text: 'İPTAL EDİLDİ', color: '#E31837' },
+                incident: { text: 'RÖTARLI / ACİL', color: '#FF2D4D' },
+                diverted: { text: 'ROTADAN SAPTI', color: '#A855F7' }
+              };
+              const mapped = statusMap[selectedOutbound.status];
+              if (mapped) {
+                statusStr = mapped.text;
+                color = mapped.color;
+              }
+            }
+
+            statusText.textContent = statusStr;
+            statusText.style.color = color;
+            statusBadge.style.borderColor = color;
+          }
           
           const destAp = AIRPORTS.find(a => a.code === selectedOutbound.arr);
           
@@ -962,6 +1224,7 @@
   setInterval(updateClock, 1000);
 
   // ---- FLIGHT STATUS ROTATION ----
+  let statusIntervalId = null;
   const statuses = [
     { text: 'BİNİŞ BAŞLADI', color: '#FF2D4D' },
     { text: 'KAPI KAPANIYOR', color: '#FF8C00' },
@@ -982,7 +1245,7 @@
       statusBadge.style.borderColor = statuses[statusIndex].color;
     }
   }
-  setInterval(rotateStatus, 6000);
+  statusIntervalId = setInterval(rotateStatus, 6000);
 
   // ---- TAB NAVIGATION ----
   const tabs = document.querySelectorAll('.panel-tab');
