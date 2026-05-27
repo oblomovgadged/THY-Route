@@ -21,100 +21,87 @@ function initMap() {
 
   THY.waypoints = [];
 
-  // ---- Custom Map Style (Dark) ----
-  const darkMapStyle = [
-    { elementType: 'geometry', stylers: [{ color: '#0A0E1A' }] },
-    { elementType: 'labels.text.stroke', stylers: [{ color: '#0A0E1A' }] },
-    { elementType: 'labels.text.fill', stylers: [{ color: '#64748B' }] },
+  // ---- Custom Map Style ("Sky-High" above the clouds) ----
+  const skyHighMapStyle = [
     {
-      featureType: 'administrative.locality',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#94A3B8' }]
-    },
-    {
-      featureType: 'poi',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#64748B' }]
-    },
-    {
-      featureType: 'poi.park',
+      featureType: 'landscape',
       elementType: 'geometry',
-      stylers: [{ color: '#111827' }]
-    },
-    {
-      featureType: 'poi.park',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#3B5249' }]
-    },
-    {
-      featureType: 'road',
-      elementType: 'geometry',
-      stylers: [{ color: '#1A2235' }]
-    },
-    {
-      featureType: 'road',
-      elementType: 'geometry.stroke',
-      stylers: [{ color: '#212D45' }]
-    },
-    {
-      featureType: 'road',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#64748B' }]
-    },
-    {
-      featureType: 'road.highway',
-      elementType: 'geometry',
-      stylers: [{ color: '#212D45' }]
-    },
-    {
-      featureType: 'road.highway',
-      elementType: 'geometry.stroke',
-      stylers: [{ color: '#132D5E' }]
-    },
-    {
-      featureType: 'road.highway',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#94A3B8' }]
-    },
-    {
-      featureType: 'transit',
-      elementType: 'geometry',
-      stylers: [{ color: '#111827' }]
-    },
-    {
-      featureType: 'transit.station',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#94A3B8' }]
+      stylers: [{ color: '#FAF9F5' }]
     },
     {
       featureType: 'water',
       elementType: 'geometry',
-      stylers: [{ color: '#0B1D3A' }]
+      stylers: [{ color: '#CFD8E3' }]
     },
     {
       featureType: 'water',
       elementType: 'labels.text.fill',
-      stylers: [{ color: '#3B5249' }]
+      stylers: [{ color: '#6B7A8C' }]
     },
     {
       featureType: 'water',
       elementType: 'labels.text.stroke',
-      stylers: [{ color: '#0B1D3A' }]
+      stylers: [{ color: '#CFD8E3' }]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'all',
+      stylers: [{ visibility: 'off' }]
+    },
+    {
+      featureType: 'road',
+      elementType: 'all',
+      stylers: [{ visibility: 'off' }]
+    },
+    {
+      featureType: 'transit',
+      elementType: 'all',
+      stylers: [{ visibility: 'off' }]
+    },
+    {
+      featureType: 'administrative.locality',
+      elementType: 'labels.text.fill',
+      stylers: [{ color: '#2C3E50' }]
+    },
+    {
+      featureType: 'administrative.locality',
+      elementType: 'labels.text.stroke',
+      stylers: [{ color: '#FAF9F5' }, { weight: 3 }]
+    },
+    {
+      featureType: 'administrative.country',
+      elementType: 'geometry.stroke',
+      stylers: [{ color: '#A0B2C6' }, { weight: 1.2 }]
+    },
+    {
+      featureType: 'administrative.country',
+      elementType: 'labels.text.fill',
+      stylers: [{ color: '#4A5568' }]
+    },
+    {
+      featureType: 'administrative.country',
+      elementType: 'labels.text.stroke',
+      stylers: [{ color: '#FAF9F5' }]
+    },
+    {
+      featureType: 'administrative.province',
+      elementType: 'geometry.stroke',
+      stylers: [{ color: '#E2E8F0' }]
     }
   ];
 
   // ---- Initialize Map ----
   map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: 35.6762, lng: 139.6503 }, // Tokyo
-    zoom: 13,
-    styles: darkMapStyle,
+    zoom: 11,
+    styles: skyHighMapStyle,
     disableDefaultUI: true,
     zoomControl: false,
     mapTypeControl: false,
     streetViewControl: false,
     fullscreenControl: false,
     gestureHandling: 'greedy',
-    backgroundColor: '#0A0E1A'
+    backgroundColor: '#FAF9F5'
   });
 
   // Initialize services
