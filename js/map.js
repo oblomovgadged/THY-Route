@@ -80,74 +80,85 @@ function initMap() {
     };
   }
 
-  // ---- Waypoint Management ----
+  // ---- Waypoint Management (Firestore Operations) ----
   THY.addWaypoint = (lat, lng, name, note = '') => {
     if (typeof THY.playSplitFlapSound === 'function') {
       THY.playSplitFlapSound(4);
     }
     const wp = { lat, lng, name: name || `Nokta ${THY.waypoints.length + 1}`, note: note || '' };
-    THY.waypoints.push(wp);
-
-    // Add marker
-    const marker = new google.maps.Marker({
-      position: { lat, lng },
-      map: map,
-      icon: createWaypointIcon(THY.waypoints.length),
-      title: wp.name,
-      animation: google.maps.Animation.DROP,
-      zIndex: 100
-    });
-
-    marker.addListener('click', () => {
-      const currentWp = THY.waypoints.find(w => w.lat === lat && w.lng === lng) || wp;
-      const noteHtml = currentWp.note ? `<div style="font-size:11px;color:#C8A951;margin-bottom:6px;font-style:italic;">📝 ${currentWp.note}</div>` : '';
-      infoWindow.setContent(`
-        <div style="background:#1A2235;color:#F1F5F9;padding:10px 14px;border-radius:8px;font-family:Inter,sans-serif;min-width:140px;">
-          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${currentWp.name}</div>
-          ${noteHtml}
-          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#94A3B8;">${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
-        </div>
-      `);
-      infoWindow.open(map, marker);
-    });
-
-    waypointMarkers.push(marker);
-    updatePolyline();
-    updateWaypointUI();
-    THY.updateEmailPreview();
+    const updated = [...THY.waypoints, wp];
+    THY.updateTripInFirestore({ waypoints: updated });
   };
 
   THY.removeWaypoint = (index) => {
     if (typeof THY.playSplitFlapSound === 'function') {
       THY.playSplitFlapSound(6);
     }
-    THY.waypoints.splice(index, 1);
-    waypointMarkers[index].setMap(null);
-    waypointMarkers.splice(index, 1);
-
-    // Re-index marker icons
-    waypointMarkers.forEach((m, i) => {
-      m.setIcon(createWaypointIcon(i + 1));
-    });
-
-    updatePolyline();
-    updateWaypointUI();
-    THY.updateEmailPreview();
+    const updated = [...THY.waypoints];
+    updated.splice(index, 1);
+    THY.updateTripInFirestore({ waypoints: updated });
   };
 
   THY.clearRoute = () => {
     if (typeof THY.playSplitFlapSound === 'function') {
       THY.playSplitFlapSound(8);
     }
-    THY.waypoints = [];
+    THY.updateTripInFirestore({ waypoints: [] });
+  };
+
+  // ---- Centralized Collaborative State Renderer ----
+  let firstRenderDone = false;
+
+  THY.renderTripState = (data) => {
+    // 1. Clear old markers
     waypointMarkers.forEach(m => m.setMap(null));
     waypointMarkers = [];
-    if (routePolyline) {
-      routePolyline.setMap(null);
-      routePolyline = null;
+
+    // 2. Hydrate local waypoints
+    THY.waypoints = data.waypoints || [];
+
+    // 3. Pan map on first load if waypoints exist
+    if (!firstRenderDone && THY.waypoints.length > 0) {
+      const firstWp = THY.waypoints[0];
+      map.setCenter(new google.maps.LatLng(firstWp.lat, firstWp.lng));
+      map.setZoom(13);
+      firstRenderDone = true;
     }
+
+    // 4. Create new markers
+    THY.waypoints.forEach((wp, idx) => {
+      const lat = wp.lat;
+      const lng = wp.lng;
+      const marker = new google.maps.Marker({
+        position: { lat, lng },
+        map: map,
+        icon: createWaypointIcon(idx + 1),
+        title: wp.name,
+        zIndex: 100
+      });
+
+      marker.addListener('click', () => {
+        const currentWp = THY.waypoints[idx] || wp;
+        const noteHtml = currentWp.note ? `<div style="font-size:11px;color:#C8A951;margin-bottom:6px;font-style:italic;">📝 ${currentWp.note}</div>` : '';
+        infoWindow.setContent(`
+          <div style="background:#1A2235;color:#F1F5F9;padding:10px 14px;border-radius:8px;font-family:Inter,sans-serif;min-width:140px;">
+            <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${currentWp.name}</div>
+            ${noteHtml}
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#94A3B8;">${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
+          </div>
+        `);
+        infoWindow.open(map, marker);
+      });
+
+      waypointMarkers.push(marker);
+    });
+
+    // 5. Update local polyline and UI lists
+    updatePolyline();
     updateWaypointUI();
-    THY.updateEmailPreview();
+    if (typeof THY.updateEmailPreview === 'function') {
+      THY.updateEmailPreview();
+    }
   };
 
   // ---- Polyline ----
@@ -627,9 +638,6 @@ function initMap() {
 
     const sights = sightsDatabase[destAp.code] || [];
     
-    // Clear old route first
-    THY.clearRoute();
-
     if (sights.length > 0) {
       // 1. Pan map to city center (first sight in sightsDatabase, e.g. Colosseum for Rome) instead of far-away airport
       const destinationCenter = { lat: sights[0].lat, lng: sights[0].lng };
@@ -639,11 +647,15 @@ function initMap() {
       const takeCount = Math.min(sights.length, days * 2);
       THY.toast(`${destAp.city} için ${days} günlük seyahat planı hazırlanıyor...`, 'info');
       
-      sights.slice(0, takeCount).forEach((s, idx) => {
-        setTimeout(() => {
-          THY.addWaypoint(s.lat, s.lng, s.name);
-        }, idx * 300);
-      });
+      const newWaypoints = sights.slice(0, takeCount).map(s => ({
+        lat: s.lat,
+        lng: s.lng,
+        name: s.name,
+        note: ''
+      }));
+
+      // Batch write auto-itinerary to Firestore
+      THY.updateTripInFirestore({ waypoints: newWaypoints });
 
       // 2. Automatically update Places tab to search for local places (restaurants) around city center
       setTimeout(() => {
@@ -670,12 +682,18 @@ function initMap() {
           map.setZoom(13);
 
           const takeCount = Math.min(results.length, days * 2);
-          results.slice(0, takeCount).forEach((place, idx) => {
+          const newWaypoints = results.slice(0, takeCount).map(place => {
             const loc = place.geometry.location;
-            setTimeout(() => {
-              THY.addWaypoint(loc.lat(), loc.lng(), place.name);
-            }, idx * 300);
+            return {
+              lat: loc.lat(),
+              lng: loc.lng(),
+              name: place.name,
+              note: ''
+            };
           });
+
+          // Batch write auto-itinerary waypoints to Firestore
+          THY.updateTripInFirestore({ waypoints: newWaypoints });
 
           // Automatically update Places tab to search around the new dynamic center
           setTimeout(() => {
@@ -688,7 +706,15 @@ function initMap() {
           // Fallback to airport coordinates
           map.panTo({ lat: destAp.lat, lng: destAp.lng });
           map.setZoom(13);
-          THY.addWaypoint(destAp.lat, destAp.lng, `${destAp.city} Havalimanı`);
+          
+          THY.updateTripInFirestore({
+            waypoints: [{
+              lat: destAp.lat,
+              lng: destAp.lng,
+              name: `${destAp.city} Havalimanı`,
+              note: ''
+            }]
+          });
 
           // Update Places tab around the airport
           setTimeout(() => {
@@ -701,33 +727,10 @@ function initMap() {
     }
   };
 
-  // ---- Hydrate Shared Route (If Loaded via URL) ----
-  if (THY.sharedRouteData && THY.sharedRouteData.waypoints && THY.sharedRouteData.waypoints.length > 0) {
-    THY.clearRoute();
-    
-    const firstWp = THY.sharedRouteData.waypoints[0];
-    const initialCenter = new google.maps.LatLng(firstWp.lat, firstWp.lng);
-    map.setCenter(initialCenter);
-    map.setZoom(13);
-
-    // Stagger waypoints loading so dropping animation and sound flap ticks play beautifully
-    THY.sharedRouteData.waypoints.forEach((wp, idx) => {
-      setTimeout(() => {
-        THY.addWaypoint(wp.lat, wp.lng, wp.name, wp.note || '');
-      }, idx * 250);
-    });
-
-    // Automatically load places around the new center
-    setTimeout(() => {
-      const activeChip = document.querySelector('.filter-chip.active');
-      const type = activeChip?.dataset?.type || 'restaurant';
-      THY.searchNearbyPlaces(type, initialCenter);
-    }, THY.sharedRouteData.waypoints.length * 250 + 500);
-
-    THY.toast('Paylaşılan seyahat rotası başarıyla yüklendi! ✈️', 'success', 5000);
-  } else {
-    // ---- Initial Places Load ----
-    // Load restaurants around Tokyo on start
+  // ---- Initial Places Load & Firebase Hydration Trigger ----
+  // If we are not joining a shared trip, load default places around current map center (Tokyo)
+  const urlParams = new URLSearchParams(window.location.search);
+  if (!urlParams.get('tripId')) {
     setTimeout(() => {
       THY.searchNearbyPlaces('restaurant');
     }, 1500);
@@ -750,21 +753,29 @@ function initMap() {
 
   document.getElementById('btnSaveNote')?.addEventListener('click', () => {
     if (activeNoteIndex !== null && activeNoteIndex >= 0 && activeNoteIndex < THY.waypoints.length) {
-      THY.waypoints[activeNoteIndex].note = noteTxt.value.trim();
-      updateWaypointUI();
-      THY.updateEmailPreview();
+      const updated = [...THY.waypoints];
+      updated[activeNoteIndex].note = noteTxt.value.trim();
+      THY.updateTripInFirestore({ waypoints: updated });
     }
     closeNoteModal();
   });
 
   document.getElementById('btnDeleteNote')?.addEventListener('click', () => {
     if (activeNoteIndex !== null && activeNoteIndex >= 0 && activeNoteIndex < THY.waypoints.length) {
-      THY.waypoints[activeNoteIndex].note = '';
-      updateWaypointUI();
-      THY.updateEmailPreview();
+      const updated = [...THY.waypoints];
+      updated[activeNoteIndex].note = '';
+      THY.updateTripInFirestore({ waypoints: updated });
     }
     closeNoteModal();
   });
 
-  console.log('🗺️ THY Route Map Engine initialized — Tokyo loaded');
+  // ---- Flag Map Engine as Ready & Hydrate buffered sync data ----
+  THY.mapReady = true;
+  if (THY.pendingSyncData) {
+    console.log("⚙️ Map ready! Hydrating buffered Firestore updates.");
+    THY.renderTripState(THY.pendingSyncData);
+    delete THY.pendingSyncData;
+  }
+
+  console.log('🗺️ THY Route Map Engine initialized — Real-time Firestore sync active');
 }

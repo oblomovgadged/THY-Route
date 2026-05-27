@@ -55,42 +55,12 @@
     }
   };
 
-  // ---- SHAREABLE ROUTE SERIALIZATION & DECODING (Base64url) ----
-  THY.sharedRouteData = null;
-  
+  // ---- SHAREABLE ROUTE SERIALIZATION & DECODING (Firebase Firestore) ----
+  THY.firebaseDb = null;
+  let activeUnsubscribe = null;
+
   THY.generateShareUrl = () => {
-    const flightCode = document.getElementById('flightCode')?.textContent || 'TK 1982';
-    const dep = document.getElementById('flightDep')?.textContent || 'IST';
-    const arr = document.getElementById('flightArr')?.textContent || 'NRT';
-    const gate = document.getElementById('flightGate')?.textContent || 'A7';
-    const tripId = THY.currentTripId;
-    
-    const statusTextEl = document.getElementById('statusText');
-    const statusText = statusTextEl ? statusTextEl.textContent : 'KALKIŞ HAZIR';
-    
-    // Compact coordinates to 5 decimal places (~1.1m precision) and strip keys to shorten URL length
-    const waypoints = THY.waypoints.map(wp => [
-      parseFloat(wp.lat.toFixed(5)),
-      parseFloat(wp.lng.toFixed(5)),
-      wp.name,
-      wp.note || ''
-    ]);
-
-    // Compact format: [version_tag, tripId, flightCode, dep, arr, gate, waypoints, statusText]
-    const compactData = ['v3', tripId, flightCode, dep, arr, gate, waypoints, statusText];
-
-    try {
-      const jsonStr = JSON.stringify(compactData);
-      // UTF-8 safe base64 encoding
-      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
-      // URL-safe base64 characters
-      const safeBase64 = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-      
-      return `${window.location.origin}${window.location.pathname}?importRoute=${safeBase64}`;
-    } catch (err) {
-      console.error('Failed to generate sharing URL:', err);
-      return window.location.href;
-    }
+    return `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`;
   };
 
   // ---- DYNAMIC URL SHORTENER (is.gd CORS API) ----
@@ -109,71 +79,78 @@
     }
   };
 
-  const parseSharedRoute = () => {
-    const params = new URLSearchParams(window.location.search);
-    const importRoute = params.get('importRoute');
-    if (!importRoute) return;
+  THY.initFirebaseAndSync = () => {
+    if (activeUnsubscribe) {
+      activeUnsubscribe();
+      activeUnsubscribe = null;
+    }
 
     try {
-      let base64 = importRoute.replace(/-/g, '+').replace(/_/g, '/');
-      while (base64.length % 4) {
-        base64 += '=';
+      let fbSettings = JSON.parse(localStorage.getItem('thy_firebase_settings') || '{}');
+      
+      // Default credentials if not configured (placeholder for public demo)
+      if (!fbSettings.projectId || fbSettings.projectId === '' || fbSettings.projectId.includes('xxxxx')) {
+        fbSettings = {
+          apiKey: "AIzaSyAsbJjGZ-K3Xm6N2q2rNn5UoD2W1t0p1Ew",
+          authDomain: "thy-route-f0ab8.firebaseapp.com",
+          projectId: "thy-route-f0ab8",
+          storageBucket: "thy-route-f0ab8.appspot.com",
+          messagingSenderId: "148785890886",
+          appId: "1:148785890886:web:656f4d38c11e749826a7cb"
+        };
       }
-      const jsonStr = decodeURIComponent(escape(atob(base64)));
-      const decodedData = JSON.parse(jsonStr);
 
-      let data = {};
-
-      if (Array.isArray(decodedData)) {
-        // Hydrate from compact array format
-        const [version, tripId, flightCode, dep, arr, gate, wps, statusTextVal] = decodedData;
-        if (version === 'v2' || version === 'v3') {
-          data = {
-            tripId,
-            flightCode,
-            dep,
-            arr,
-            gate,
-            statusText: statusTextVal || 'KALKIŞ HAZIR',
-            waypoints: wps.map(w => ({
-              lat: w[0],
-              lng: w[1],
-              name: w[2],
-              note: w[3] || ''
-            }))
-          };
+      if (window.firebase && window.firebase.initializeApp) {
+        if (window.firebase.apps.length > 0) {
+          window.firebase.app().delete().then(() => {
+            initializeAndListen(fbSettings);
+          }).catch(err => {
+            console.error("Error deleting old firebase app instance:", err);
+            initializeAndListen(fbSettings);
+          });
+        } else {
+          initializeAndListen(fbSettings);
         }
       } else {
-        // Hydrate from legacy verbose object format (v1 backward compatibility)
-        data = decodedData;
+        console.warn("⚠️ Firebase SDK not loaded on the window object.");
+        THY.toast("Firebase SDK yüklenemedi. Çevrimdışı moda geçildi.", "error");
       }
+    } catch (e) {
+      console.error("❌ Firebase setup failed:", e);
+      THY.toast("Firebase kurulumu başarısız oldu.", "error");
+    }
+  };
 
-      if (data && data.waypoints && Array.isArray(data.waypoints)) {
-        THY.sharedRouteData = data;
-        THY.currentTripId = data.tripId || THY.generateTripId();
-        
-        document.addEventListener('DOMContentLoaded', () => {
+  function initializeAndListen(fbSettings) {
+    try {
+      window.firebase.initializeApp(fbSettings);
+      THY.firebaseDb = window.firebase.firestore();
+      console.log("🔥 Firebase initialized with Project ID:", fbSettings.projectId);
+
+      const tripId = THY.currentTripId;
+      if (!tripId) return;
+
+      console.log(`📡 Listening to Firestore document: trips/${tripId}`);
+      activeUnsubscribe = THY.firebaseDb.collection("trips").doc(tripId).onSnapshot(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          console.log("📥 Firestore Sync Update Received:", data);
+          
+          THY.waypoints = data.waypoints || [];
+          
           const boardNo = document.getElementById('flightCode');
           const boardDep = document.getElementById('flightDep');
           const boardArr = document.getElementById('flightArr');
           const boardGate = document.getElementById('flightGate');
-          const tripBadge = document.getElementById('tripIdBadge');
-
-          if (boardNo) boardNo.textContent = data.flightCode || 'TK 1982';
-          if (boardDep) boardDep.textContent = data.dep || 'IST';
-          if (boardArr) boardArr.textContent = data.arr || 'NRT';
-          if (boardGate) boardGate.textContent = data.gate || 'A7';
-          if (tripBadge) tripBadge.textContent = THY.currentTripId;
-
-          // Clear status rotation interval to preserve shared flight status
-          if (statusIntervalId) {
-            clearInterval(statusIntervalId);
-            statusIntervalId = null;
-          }
-
           const statusText = document.getElementById('statusText');
           const statusBadge = document.getElementById('statusBadge');
-          if (statusText && statusBadge && data.statusText) {
+
+          if (boardNo && data.flightCode) boardNo.textContent = data.flightCode;
+          if (boardDep && data.dep) boardDep.textContent = data.dep;
+          if (boardArr && data.arr) boardArr.textContent = data.arr;
+          if (boardGate && data.gate) boardGate.textContent = data.gate;
+          
+          if (statusText && data.statusText) {
             statusText.textContent = data.statusText;
             const colors = {
               'BİNİŞ BAŞLADI': '#FF2D4D',
@@ -195,16 +172,118 @@
               color = '#FF8C00';
             }
             statusText.style.color = color;
-            statusBadge.style.borderColor = color;
+            if (statusBadge) statusBadge.style.borderColor = color;
           }
 
-          // Skip landing page and go straight to map
-          document.getElementById('landingScreen')?.classList.add('hidden');
-          document.getElementById('mapScreen')?.classList.remove('hidden');
+          if (statusIntervalId) {
+            clearInterval(statusIntervalId);
+            statusIntervalId = null;
+          }
+
+          if (THY.mapReady && typeof THY.renderTripState === 'function') {
+            THY.renderTripState(data);
+          } else {
+            THY.pendingSyncData = data;
+          }
+
+          const landingScreen = document.getElementById('landingScreen');
+          const mapScreen = document.getElementById('mapScreen');
+          if (landingScreen && mapScreen && !landingScreen.classList.contains('hidden') && (data.waypoints?.length > 0 || data.flightCode)) {
+            landingScreen.classList.add('hidden');
+            mapScreen.classList.remove('hidden');
+            THY.toast('Canlı seyahat veritabanından yüklendi! ✈️', 'success');
+          }
+        } else {
+          const mapScreen = document.getElementById('mapScreen');
+          if (mapScreen && !mapScreen.classList.contains('hidden')) {
+            console.log("📤 Initializing new trip document in Firestore...");
+            THY.updateTripInFirestore({
+              flightCode: document.getElementById('flightCode')?.textContent || 'TK 1982',
+              dep: document.getElementById('flightDep')?.textContent || 'IST',
+              arr: document.getElementById('flightArr')?.textContent || 'NRT',
+              gate: document.getElementById('flightGate')?.textContent || 'A7',
+              statusText: document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+              waypoints: THY.waypoints || []
+            });
+          }
+        }
+      }, error => {
+        console.error("Firestore onSnapshot error:", error);
+        THY.toast("Firestore bağlantısı başarısız. Lütfen Ayarlar sekmesinden geçerli Firebase bilgilerinizi girin.", "error", 6000);
+      });
+    } catch (err) {
+      console.error("Error initializing Firebase:", err);
+      THY.toast("Firebase başlatılamadı. Ayarları kontrol edin.", "error");
+    }
+  }
+
+  THY.updateTripInFirestore = (fields) => {
+    if (!THY.firebaseDb) {
+      console.warn("⚠️ Cannot update Firestore: Firebase database is not initialized. Using offline fallback.");
+      if (fields.waypoints !== undefined) {
+        THY.waypoints = fields.waypoints;
+      }
+      if (typeof THY.renderTripState === 'function') {
+        THY.renderTripState({
+          flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || 'TK 1982',
+          dep: fields.dep || document.getElementById('flightDep')?.textContent || 'IST',
+          arr: fields.arr || document.getElementById('flightArr')?.textContent || 'NRT',
+          gate: fields.gate || document.getElementById('flightGate')?.textContent || 'A7',
+          statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+          waypoints: THY.waypoints
         });
       }
-    } catch (err) {
-      console.error('Failed to decode shared route details:', err);
+      return;
+    }
+    const tripId = THY.currentTripId;
+    if (!tripId) return;
+
+    const cleanedFields = {};
+    for (const key in fields) {
+      if (fields[key] !== undefined) {
+        cleanedFields[key] = fields[key];
+      }
+    }
+    cleanedFields.updatedAt = new Date().toISOString();
+
+    THY.firebaseDb.collection("trips").doc(tripId).set(cleanedFields, { merge: true })
+      .then(() => {
+        console.log("📤 Firestore document updated successfully for:", tripId);
+      })
+      .catch(error => {
+        console.error("❌ Firestore update failed:", error);
+        THY.toast("Değişiklikler Firestore'a kaydedilemedi. Yerel önbelleğe yazıldı.", "error");
+        if (fields.waypoints !== undefined) {
+          THY.waypoints = fields.waypoints;
+        }
+        if (typeof THY.renderTripState === 'function') {
+          THY.renderTripState({
+            flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || 'TK 1982',
+            dep: fields.dep || document.getElementById('flightDep')?.textContent || 'IST',
+            arr: fields.arr || document.getElementById('flightArr')?.textContent || 'NRT',
+            gate: fields.gate || document.getElementById('flightGate')?.textContent || 'A7',
+            statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+            waypoints: THY.waypoints
+          });
+        }
+      });
+  };
+
+  const parseSharedRoute = () => {
+    const params = new URLSearchParams(window.location.search);
+    const urlTripId = params.get('tripId');
+    if (urlTripId) {
+      THY.currentTripId = urlTripId;
+      localStorage.setItem('thy_current_trip_id', urlTripId);
+      console.log("🔗 Shared tripId loaded from URL:", urlTripId);
+    } else {
+      const cachedTripId = localStorage.getItem('thy_current_trip_id');
+      if (cachedTripId) {
+        THY.currentTripId = cachedTripId;
+      } else {
+        THY.currentTripId = THY.generateTripId();
+        localStorage.setItem('thy_current_trip_id', THY.currentTripId);
+      }
     }
   };
   parseSharedRoute();
@@ -1324,7 +1403,7 @@
   if (panelToggle) panelToggle.addEventListener('click', openPanel);
   if (btnTogglePanel) btnTogglePanel.addEventListener('click', closePanel);
 
-  // ---- SETTINGS (EmailJS & THY API) ----
+  // ---- SETTINGS (EmailJS & THY API & Firebase) ----
   function loadSettings() {
     let settings = JSON.parse(localStorage.getItem('thy_emailjs_settings') || '{}');
     
@@ -1350,7 +1429,19 @@
     const tcsec = document.getElementById('settingThyClientSecret');
     if (tcid) tcid.value = thySettings.clientId || '';
     if (tcsec) tcsec.value = thySettings.clientSecret || '';
-    return { emailjs: settings, thy: thySettings };
+
+    // Load Firebase Settings
+    const fbSettings = JSON.parse(localStorage.getItem('thy_firebase_settings') || '{}');
+    const fbApiKey = document.getElementById('settingFbApiKey');
+    const fbProjectId = document.getElementById('settingFbProjectId');
+    const fbAuthDomain = document.getElementById('settingFbAuthDomain');
+    const fbAppId = document.getElementById('settingFbAppId');
+    if (fbApiKey) fbApiKey.value = fbSettings.apiKey || '';
+    if (fbProjectId) fbProjectId.value = fbSettings.projectId || '';
+    if (fbAuthDomain) fbAuthDomain.value = fbSettings.authDomain || '';
+    if (fbAppId) fbAppId.value = fbSettings.appId || '';
+
+    return { emailjs: settings, thy: thySettings, firebase: fbSettings };
   }
 
   function saveSettings() {
@@ -1367,7 +1458,19 @@
     };
     localStorage.setItem('thy_api_settings', JSON.stringify(thySettings));
 
+    // Save Firebase Settings
+    const fbSettings = {
+      apiKey: document.getElementById('settingFbApiKey')?.value?.trim() || '',
+      projectId: document.getElementById('settingFbProjectId')?.value?.trim() || '',
+      authDomain: document.getElementById('settingFbAuthDomain')?.value?.trim() || '',
+      appId: document.getElementById('settingFbAppId')?.value?.trim() || ''
+    };
+    localStorage.setItem('thy_firebase_settings', JSON.stringify(fbSettings));
+
     THY.toast('Ayarlar kaydedildi!', 'success');
+
+    // Re-initialize Firebase live sync
+    THY.initFirebaseAndSync();
   }
 
   document.getElementById('btnSaveSettings')?.addEventListener('click', saveSettings);
@@ -1450,17 +1553,35 @@
       if (!data.waypoints || !Array.isArray(data.waypoints) || data.waypoints.length === 0) {
         throw new Error('Geçersiz waypoints');
       }
-      // Set trip ID
+      
+      // Set trip ID and update URL & storage
       THY.currentTripId = data.tripId || THY.generateTripId();
       if (tripBadge) tripBadge.textContent = THY.currentTripId;
+      localStorage.setItem('thy_current_trip_id', THY.currentTripId);
+      window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
 
-      // Clear existing and import
+      // Clear existing local waypoints
       if (typeof THY.clearRoute === 'function') THY.clearRoute();
-      data.waypoints.forEach(wp => {
-        if (typeof THY.addWaypoint === 'function') {
-          THY.addWaypoint(wp.lat, wp.lng, wp.name, wp.note || '');
-        }
-      });
+      
+      // Re-initialize Firebase listener to point to the new imported trip ID
+      THY.initFirebaseAndSync();
+
+      // Write imported trip data to Firestore
+      setTimeout(() => {
+        THY.updateTripInFirestore({
+          flightCode: data.flightCode || document.getElementById('flightCode')?.textContent || 'TK 1982',
+          dep: data.dep || document.getElementById('flightDep')?.textContent || 'IST',
+          arr: data.arr || document.getElementById('flightArr')?.textContent || 'NRT',
+          gate: data.gate || document.getElementById('flightGate')?.textContent || 'A7',
+          statusText: data.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+          waypoints: data.waypoints.map(wp => ({
+            name: wp.name,
+            lat: parseFloat(wp.lat),
+            lng: parseFloat(wp.lng),
+            note: wp.note || ''
+          }))
+        });
+      }, 500);
 
       importModal.classList.remove('active');
       THY.toast(`Trip "${THY.currentTripId}" içe aktarıldı!`, 'success');
@@ -1474,16 +1595,36 @@
   document.getElementById('btnNewTrip')?.addEventListener('click', () => {
     THY.currentTripId = THY.generateTripId();
     if (tripBadge) tripBadge.textContent = THY.currentTripId;
+    localStorage.setItem('thy_current_trip_id', THY.currentTripId);
+    window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
+
+    // Clear local route first
     if (typeof THY.clearRoute === 'function') THY.clearRoute();
+
+    // Re-initialize Firebase live sync
+    THY.initFirebaseAndSync();
+
     THY.toast('Yeni seyahat oluşturuldu!', 'info');
   });
 
-  // Save Trip (localStorage)
+  // Save Trip (Firestore update & localStorage backup)
   document.getElementById('btnSaveTrip')?.addEventListener('click', () => {
     if (!THY.waypoints || THY.waypoints.length === 0) {
       THY.toast('Kaydedilecek rota yok!', 'error');
       return;
     }
+
+    // Save to Firestore
+    THY.updateTripInFirestore({
+      flightCode: document.getElementById('flightCode')?.textContent || 'TK 1982',
+      dep: document.getElementById('flightDep')?.textContent || 'IST',
+      arr: document.getElementById('flightArr')?.textContent || 'NRT',
+      gate: document.getElementById('flightGate')?.textContent || 'A7',
+      statusText: document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+      waypoints: THY.waypoints || []
+    });
+
+    // LocalStorage Backup
     const trips = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
     trips[THY.currentTripId] = {
       tripId: THY.currentTripId,
@@ -1496,7 +1637,7 @@
       }))
     };
     localStorage.setItem('thy_saved_trips', JSON.stringify(trips));
-    THY.toast(`Trip "${THY.currentTripId}" kaydedildi!`, 'success');
+    THY.toast(`Trip "${THY.currentTripId}" veritabanına ve yerel belleğe kaydedildi!`, 'success');
   });
 
   // ---- EMAIL SENDING ----
@@ -1832,6 +1973,9 @@ ${inviteLink}
 
   // Run board load on startup
   THY.loadLiveFlightBoard();
+
+  // Initialize Firebase and start real-time Firestore sync
+  THY.initFirebaseAndSync();
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
