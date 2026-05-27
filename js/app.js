@@ -257,14 +257,16 @@
     
     let selectedOutbound = null;
     let selectedInbound = null;
-
+    let lastTransitionTime = 0;
+ 
     function renderFlights(direction) {
       // 1. Fade out current content
       listContainer.classList.add('fade-out');
       listContainer.style.pointerEvents = 'none'; // Disable clicks during transition
-
+ 
       setTimeout(() => {
         listContainer.innerHTML = '';
+        lastTransitionTime = Date.now(); // Record rendering time for debounce cooldown
         
         const isOutbound = direction === 'outbound';
         const fromCode = isOutbound ? depCode : destCode;
@@ -272,12 +274,12 @@
         const routeLabel = isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`;
         
         document.getElementById('resultsRouteLabel').textContent = routeLabel;
-
+ 
         // Update Step Progress Indicators
         const stepsContainer = document.getElementById('bookingSteps');
         const stepOutbound = document.getElementById('stepOutbound');
         const stepInbound = document.getElementById('stepInbound');
-
+ 
         if (currentTripType === 'one-way') {
           if (stepsContainer) stepsContainer.style.display = 'none';
         } else {
@@ -358,6 +360,26 @@
         // Attach event listeners to new buttons
         listContainer.querySelectorAll('.btn-select-flight').forEach(btn => {
           btn.addEventListener('click', () => {
+            // Cooldown check (ignore click within 800ms of render)
+            if (Date.now() - lastTransitionTime < 800) {
+              console.log('[Debounce] Click ignored due to cooldown.');
+              return;
+            }
+
+            // Immediately lock and fade all buttons
+            listContainer.querySelectorAll('.btn-select-flight').forEach(b => {
+              b.disabled = true;
+              b.style.pointerEvents = 'none';
+              b.style.opacity = '0.4';
+            });
+
+            // Make the clicked button green and set to selected
+            btn.textContent = 'Seçildi ✓';
+            btn.style.opacity = '1';
+            btn.style.background = '#22C55E';
+            btn.style.borderColor = '#22C55E';
+            btn.style.color = 'white';
+
             const no = btn.dataset.no;
             const dep = btn.dataset.dep;
             const arr = btn.dataset.arr;
@@ -377,7 +399,7 @@
             }
           });
         });
-
+ 
         function completeBooking() {
           // Populate Boarding cockpit header with outbound flight (main flight)
           const boardNo = document.getElementById('flightCode');
@@ -415,7 +437,7 @@
             }
           }, 1500);
         }
-
+ 
         // 2. Animate list back in
         listContainer.classList.remove('fade-out');
         listContainer.classList.add('fade-in');
