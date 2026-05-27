@@ -126,12 +126,12 @@
       // Default credentials if not configured (placeholder for public demo)
       if (!fbSettings.projectId || fbSettings.projectId === '' || fbSettings.projectId.includes('xxxxx')) {
         fbSettings = {
-          apiKey: "AIzaSyAsbJjGZ-K3Xm6N2q2rNn5UoD2W1t0p1Ew",
-          authDomain: "thy-route-f0ab8.firebaseapp.com",
-          projectId: "thy-route-f0ab8",
-          storageBucket: "thy-route-f0ab8.appspot.com",
-          messagingSenderId: "148785890886",
-          appId: "1:148785890886:web:656f4d38c11e749826a7cb"
+          apiKey: "AIzaSyD8kCL4NC8UdtoQLaDYKCWeF1o16dek7CE",
+          authDomain: "thyb-211cb.firebaseapp.com",
+          projectId: "thyb-211cb",
+          storageBucket: "thyb-211cb.firebasestorage.app",
+          messagingSenderId: "1024892899293",
+          appId: "1:1024892899293:web:92cad604ba9eefd517b034"
         };
       }
 
