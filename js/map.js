@@ -374,17 +374,22 @@ function initMap() {
     });
   }
 
-  THY.searchNearbyPlaces = (type) => {
+  THY.searchNearbyPlaces = (type, customCenter = null) => {
     if (!placesService) {
       THY.toast('Yer arama servisi henüz hazır değil.', 'error');
       return;
     }
-    const center = map.getCenter();
-    if (!center) {
-      THY.toast('Harita merkezi alınamadı.', 'error');
-      return;
+    let latLng;
+    if (customCenter) {
+      latLng = customCenter;
+    } else {
+      const center = map.getCenter();
+      if (!center) {
+        THY.toast('Harita merkezi alınamadı.', 'error');
+        return;
+      }
+      latLng = { lat: center.lat(), lng: center.lng() };
     }
-    const latLng = { lat: center.lat(), lng: center.lng() };
     const request = {
       location: latLng,
       radius: 2000,
@@ -449,14 +454,7 @@ function initMap() {
 
   // ---- AUTO ITINERARY RECOMMENDER ----
   THY.planAutoItinerary = (destAp, days) => {
-    // 1. Pan map to destination
-    map.panTo({ lat: destAp.lat, lng: destAp.lng });
-    map.setZoom(13);
-    
-    // 2. Clear old route
-    THY.clearRoute();
-    
-    // 3. Recommended sights database for major cities
+    // Recommended sights database for major cities
     const sightsDatabase = {
       FCO: [ // Rome
         { name: "Kolezyum (Colosseum)", lat: 41.8902, lng: 12.4922 },
@@ -512,7 +510,16 @@ function initMap() {
     };
 
     const sights = sightsDatabase[destAp.code] || [];
+    
+    // Clear old route first
+    THY.clearRoute();
+
     if (sights.length > 0) {
+      // 1. Pan map to city center (first sight in sightsDatabase, e.g. Colosseum for Rome) instead of far-away airport
+      const destinationCenter = { lat: sights[0].lat, lng: sights[0].lng };
+      map.panTo(destinationCenter);
+      map.setZoom(13);
+
       const takeCount = Math.min(sights.length, days * 2);
       THY.toast(`${destAp.city} için ${days} günlük seyahat planı hazırlanıyor...`, 'info');
       
@@ -521,8 +528,16 @@ function initMap() {
           THY.addWaypoint(s.lat, s.lng, s.name);
         }, idx * 300);
       });
+
+      // 2. Automatically update Places tab to search for local places (restaurants) around city center
+      setTimeout(() => {
+        const activeChip = document.querySelector('.filter-chip.active');
+        const type = activeChip?.dataset?.type || 'restaurant';
+        THY.searchNearbyPlaces(type, destinationCenter);
+      }, 500);
+
     } else {
-      // Dynamic fallback via Google Places Nearby Search
+      // Dynamic fallback via Google Places Nearby Search around the airport
       THY.toast(`${destAp.city} civarı keşfediliyor...`, 'info');
       const request = {
         location: { lat: destAp.lat, lng: destAp.lng },
@@ -532,6 +547,12 @@ function initMap() {
 
       placesService.nearbySearch(request, (results, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          // Pan to first tourist attraction found
+          const firstLoc = results[0].geometry.location;
+          const dynamicCenter = { lat: firstLoc.lat(), lng: firstLoc.lng() };
+          map.panTo(dynamicCenter);
+          map.setZoom(13);
+
           const takeCount = Math.min(results.length, days * 2);
           results.slice(0, takeCount).forEach((place, idx) => {
             const loc = place.geometry.location;
@@ -539,8 +560,26 @@ function initMap() {
               THY.addWaypoint(loc.lat(), loc.lng(), place.name);
             }, idx * 300);
           });
+
+          // Automatically update Places tab to search around the new dynamic center
+          setTimeout(() => {
+            const activeChip = document.querySelector('.filter-chip.active');
+            const type = activeChip?.dataset?.type || 'restaurant';
+            THY.searchNearbyPlaces(type, dynamicCenter);
+          }, 500);
+
         } else {
+          // Fallback to airport coordinates
+          map.panTo({ lat: destAp.lat, lng: destAp.lng });
+          map.setZoom(13);
           THY.addWaypoint(destAp.lat, destAp.lng, `${destAp.city} Havalimanı`);
+
+          // Update Places tab around the airport
+          setTimeout(() => {
+            const activeChip = document.querySelector('.filter-chip.active');
+            const type = activeChip?.dataset?.type || 'restaurant';
+            THY.searchNearbyPlaces(type, { lat: destAp.lat, lng: destAp.lng });
+          }, 500);
         }
       });
     }
