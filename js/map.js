@@ -21,87 +21,16 @@ function initMap() {
 
   THY.waypoints = [];
 
-  // ---- Custom Map Style ("Sky-High" above the clouds) ----
-  const skyHighMapStyle = [
-    {
-      featureType: 'landscape',
-      elementType: 'geometry',
-      stylers: [{ color: '#FAF9F5' }]
-    },
-    {
-      featureType: 'water',
-      elementType: 'geometry',
-      stylers: [{ color: '#CFD8E3' }]
-    },
-    {
-      featureType: 'water',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#6B7A8C' }]
-    },
-    {
-      featureType: 'water',
-      elementType: 'labels.text.stroke',
-      stylers: [{ color: '#CFD8E3' }]
-    },
-    {
-      featureType: 'poi',
-      elementType: 'all',
-      stylers: [{ visibility: 'off' }]
-    },
-    {
-      featureType: 'road',
-      elementType: 'all',
-      stylers: [{ visibility: 'off' }]
-    },
-    {
-      featureType: 'transit',
-      elementType: 'all',
-      stylers: [{ visibility: 'off' }]
-    },
-    {
-      featureType: 'administrative.locality',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#2C3E50' }]
-    },
-    {
-      featureType: 'administrative.locality',
-      elementType: 'labels.text.stroke',
-      stylers: [{ color: '#FAF9F5' }, { weight: 3 }]
-    },
-    {
-      featureType: 'administrative.country',
-      elementType: 'geometry.stroke',
-      stylers: [{ color: '#A0B2C6' }, { weight: 1.2 }]
-    },
-    {
-      featureType: 'administrative.country',
-      elementType: 'labels.text.fill',
-      stylers: [{ color: '#4A5568' }]
-    },
-    {
-      featureType: 'administrative.country',
-      elementType: 'labels.text.stroke',
-      stylers: [{ color: '#FAF9F5' }]
-    },
-    {
-      featureType: 'administrative.province',
-      elementType: 'geometry.stroke',
-      stylers: [{ color: '#E2E8F0' }]
-    }
-  ];
-
   // ---- Initialize Map ----
   map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: 35.6762, lng: 139.6503 }, // Tokyo
-    zoom: 11,
-    styles: skyHighMapStyle,
+    zoom: 13,
     disableDefaultUI: true,
     zoomControl: false,
     mapTypeControl: false,
     streetViewControl: false,
     fullscreenControl: false,
-    gestureHandling: 'greedy',
-    backgroundColor: '#FAF9F5'
+    gestureHandling: 'greedy'
   });
 
   // Initialize services
