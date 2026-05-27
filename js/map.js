@@ -375,10 +375,17 @@ function initMap() {
   }
 
   THY.searchNearbyPlaces = (type) => {
-    if (!placesService) return;
+    if (!placesService) {
+      THY.toast('Yer arama servisi henüz hazır değil.', 'error');
+      return;
+    }
     const center = map.getCenter();
+    if (!center) {
+      THY.toast('Harita merkezi alınamadı.', 'error');
+      return;
+    }
     const request = {
-      location: center,
+      location: { lat: center.lat(), lng: center.lng() },
       radius: 2000,
       type: type
     };
@@ -386,34 +393,54 @@ function initMap() {
     THY.toast(`${type} aranıyor...`, 'info');
 
     placesService.nearbySearch(request, (results, status) => {
+      console.log('Nearby Search Status:', status, 'Results:', results);
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         displayPlaces(results);
         THY.toast(`${results.length} yer bulundu!`, 'success');
+      } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+        displayPlaces([]);
+        THY.toast('Bu bölgede eşleşen yer bulunamadı.', 'info');
+      } else if (status === google.maps.places.PlacesServiceStatus.REQUEST_DENIED) {
+        displayPlaces([]);
+        THY.toast('Hata: API Anahtarında Places API izni veya faturalandırma etkin değil. (REQUEST_DENIED)', 'error');
+      } else if (status === google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+        displayPlaces([]);
+        THY.toast('Hata: Günlük arama limiti aşıldı. (OVER_QUERY_LIMIT)', 'error');
       } else {
         displayPlaces([]);
-        THY.toast('Yer bulunamadı.', 'info');
+        THY.toast(`Arama başarısız oldu. Hata Kodu: ${status}`, 'error');
       }
     });
   };
 
   THY.textSearchPlaces = (query) => {
-    if (!placesService) return;
+    if (!placesService) {
+      THY.toast('Yer arama servisi hazır değil.', 'error');
+      return;
+    }
     const center = map.getCenter();
     const request = {
       query: query,
-      location: center,
+      location: center ? { lat: center.lat(), lng: center.lng() } : null,
       radius: 3000
     };
 
     THY.toast(`"${query}" aranıyor...`, 'info');
 
     placesService.textSearch(request, (results, status) => {
+      console.log('Text Search Status:', status, 'Results:', results);
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         displayPlaces(results);
         THY.toast(`${results.length} sonuç bulundu!`, 'success');
+      } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+        displayPlaces([]);
+        THY.toast('Eşleşen sonuç bulunamadı.', 'info');
+      } else if (status === google.maps.places.PlacesServiceStatus.REQUEST_DENIED) {
+        displayPlaces([]);
+        THY.toast('Hata: API Anahtarında Places API izni yok. (REQUEST_DENIED)', 'error');
       } else {
         displayPlaces([]);
-        THY.toast('Sonuç bulunamadı.', 'info');
+        THY.toast(`Arama başarısız oldu. Hata Kodu: ${status}`, 'error');
       }
     });
   };
