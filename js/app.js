@@ -492,9 +492,7 @@
 
   // ---- INITIALIZE BOOKING DATES & TRIP TYPE ----
   const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const returnDate = new Date(tomorrow);
+  const returnDate = new Date(today);
   returnDate.setDate(returnDate.getDate() + 4);
 
   const formatDateLocal = (date) => {
@@ -505,22 +503,22 @@
 
   const depInput = document.getElementById('flightDepartureInput');
   const destInput = document.getElementById('flightDestinationInput');
-  if (depInput && !depInput.value) {
-    depInput.value = 'İstanbul (IST)';
-    depInput.dataset.code = 'IST';
-    depInput.dataset.lat = '41.275';
-    depInput.dataset.lng = '28.751';
+  if (depInput) {
+    depInput.value = '';
+    depInput.removeAttribute('data-code');
+    depInput.removeAttribute('data-lat');
+    depInput.removeAttribute('data-lng');
   }
-  if (destInput && !destInput.value) {
-    destInput.value = 'Roma (FCO)';
-    destInput.dataset.code = 'FCO';
-    destInput.dataset.lat = '41.800';
-    destInput.dataset.lng = '12.238';
+  if (destInput) {
+    destInput.value = '';
+    destInput.removeAttribute('data-code');
+    destInput.removeAttribute('data-lat');
+    destInput.removeAttribute('data-lng');
   }
 
   const depDateInput = document.getElementById('flightDepartureDate');
   const retDateInput = document.getElementById('flightReturnDate');
-  if (depDateInput) depDateInput.value = formatDateLocal(tomorrow);
+  if (depDateInput) depDateInput.value = formatDateLocal(today);
   if (retDateInput) retDateInput.value = formatDateLocal(returnDate);
 
   let currentTripType = 'round-trip';
@@ -537,7 +535,12 @@
       if (retDateInput) {
         retDateInput.removeAttribute('disabled');
         const defaultRet = new Date();
-        defaultRet.setDate(defaultRet.getDate() + 5);
+        if (depDateInput && depDateInput.value) {
+          const parts = depDateInput.value.split('-');
+          const depD = new Date(parts[0], parts[1] - 1, parts[2]);
+          defaultRet.setTime(depD.getTime());
+        }
+        defaultRet.setDate(defaultRet.getDate() + 4);
         retDateInput.value = formatDateLocal(defaultRet);
       }
     });
@@ -550,6 +553,19 @@
       if (retDateInput) {
         retDateInput.setAttribute('disabled', 'true');
         retDateInput.value = '';
+      }
+    });
+  }
+
+  // Gidiş tarihi değiştiğinde dönüş tarihini otomatik olarak 4 gün sonrasına güncelle
+  if (depDateInput && retDateInput) {
+    depDateInput.addEventListener('change', () => {
+      if (depDateInput.value && currentTripType === 'round-trip') {
+        const parts = depDateInput.value.split('-');
+        const depD = new Date(parts[0], parts[1] - 1, parts[2]);
+        const retD = new Date(depD);
+        retD.setDate(retD.getDate() + 4);
+        retDateInput.value = formatDateLocal(retD);
       }
     });
   }
