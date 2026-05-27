@@ -1626,6 +1626,7 @@ input, textarea, select {
 }
 
 .flight-item {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1634,6 +1635,36 @@ input, textarea, select {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   transition: var(--transition-base);
+}
+
+.flight-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  z-index: 10;
+}
+
+.flight-type-badge.outbound-badge {
+  color: #3b82f6;
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.flight-type-badge.inbound-badge {
+  color: var(--thy-gold);
+  border-color: rgba(200, 169, 81, 0.3);
+  background: rgba(200, 169, 81, 0.08);
 }
 
 .flight-item:hover {

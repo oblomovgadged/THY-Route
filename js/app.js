@@ -295,13 +295,88 @@
         });
       }
       
-      return flights.length > 0 ? flights : null;
-
     } catch (err) {
       console.warn('THY API Client connection bypassed/CORS block. Details:', err);
-      // Warning toast for presentation setup
       THY.toast('THY Live API: CORS veya yetkilendirme engeli. Canlı dinamik simülasyona dönüldü.', 'info', 4500);
-      return null; // Fallback to simulated dynamic data
+      return null;
+    }
+  }
+
+  // ---- AVIATIONSTACK LIVE FLIGHT API INTEGRATION ----
+  async function fetchAviationstackFlights(fromCode, toCode, date) {
+    const accessKey = '7b44b2dfa6bc8aae041fc12c67e7cee8';
+    
+    // Attempt HTTPS first (to check if HTTPS is supported/allowed by protocol)
+    const url = `https://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&dep_iata=${fromCode}&arr_iata=${toCode}`;
+    
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error('Aviationstack HTTPS call failed: ' + res.statusText);
+      }
+      
+      const data = await res.json();
+      
+      if (data.error) {
+        throw new Error('Aviationstack API response error: ' + data.error.message);
+      }
+      
+      const flights = [];
+      if (data.data && data.data.length > 0) {
+        data.data.forEach(item => {
+          const depTimeRaw = item.departure?.scheduled;
+          const arrTimeRaw = item.arrival?.scheduled;
+          
+          if (depTimeRaw && arrTimeRaw) {
+            // Format to HH:MM Local
+            const depTime = new Date(depTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            const flightNo = item.flight?.iata || `TK ${item.flight?.number || '1862'}`;
+            const gate = item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
+            flights.push({ dep: depTime, arr: arrTime, flightNo, gate });
+          }
+        });
+      }
+      
+      return flights.length > 0 ? flights : null;
+      
+    } catch (err) {
+      console.warn('Aviationstack HTTPS request bypassed/restricted. Checking HTTP fallback on localhost...', err);
+      
+      // If client is running locally on HTTP protocol, fallback to HTTP endpoint
+      if (location.protocol === 'http:') {
+        try {
+          const httpUrl = `http://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&dep_iata=${fromCode}&arr_iata=${toCode}`;
+          const httpRes = await fetch(httpUrl);
+          if (httpRes.ok) {
+            const httpData = await httpRes.json();
+            if (httpData.data && httpData.data.length > 0) {
+              const flights = [];
+              httpData.data.forEach(item => {
+                const depTimeRaw = item.departure?.scheduled;
+                const arrTimeRaw = item.arrival?.scheduled;
+                if (depTimeRaw && arrTimeRaw) {
+                  const depTime = new Date(depTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                  const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                  const flightNo = item.flight?.iata || `TK ${item.flight?.number || '1862'}`;
+                  const gate = item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
+                  flights.push({ dep: depTime, arr: arrTime, flightNo, gate });
+                }
+              });
+              if (flights.length > 0) {
+                THY.toast('Aviationstack Live Uçuşları Başarıyla Yüklendi! ✈️', 'success');
+                return flights;
+              }
+            }
+          }
+        } catch (httpErr) {
+          console.warn('Aviationstack HTTP fallback also failed:', httpErr);
+        }
+      }
+      
+      // Notify fallback to simulator
+      THY.toast('Aviationstack Canlı Bağlantı Kısıtlaması. Dinamik Simülasyon Devreye Alındı.', 'info', 4500);
+      return null;
     }
   }
 
@@ -356,7 +431,6 @@
  
       setTimeout(async () => {
         listContainer.innerHTML = '';
-        lastTransitionTime = Date.now(); // Record rendering time for debounce cooldown
         
         const isOutbound = direction === 'outbound';
         const fromCode = isOutbound ? depCode : destCode;
@@ -399,7 +473,7 @@
           <div class="empty-state">
             <div class="empty-state__icon">✈️</div>
             <div class="empty-state__title">Uçuşlar Sorgulanıyor</div>
-            <div class="empty-state__text">Türk Hava Yolları veritabanına bağlanılıyor...</div>
+            <div class="empty-state__text">Aviationstack canlı uçuş veritabanına bağlanılıyor...</div>
           </div>
         `;
         
@@ -408,6 +482,9 @@
         let flightOptions = null;
         try {
           flightOptions = await fetchThyLiveFlights(fromCode, toCode, searchDate, cabin);
+          if (!flightOptions) {
+            flightOptions = await fetchAviationstackFlights(fromCode, toCode, searchDate);
+          }
         } catch (e) {
           console.warn('Live fetch error:', e);
         }
@@ -461,6 +538,9 @@
           const item = document.createElement('div');
           item.className = 'flight-item';
           item.innerHTML = `
+            <span class="flight-type-badge ${isOutbound ? 'outbound-badge' : 'inbound-badge'}">
+              ${isOutbound ? '🛫 GİDİŞ UÇUŞU' : '🛬 DÖNÜŞ UÇUŞU'}
+            </span>
             <div class="flight-carrier">
               <div class="flight-logo-small">
                 <svg viewBox="0 0 100 100">
@@ -530,18 +610,21 @@
             const arr = btn.dataset.arr;
             const gate = btn.dataset.gate;
             
-            if (isOutbound) {
-              selectedOutbound = { no, dep, arr, gate };
-              if (currentTripType === 'one-way') {
-                completeBooking();
+            // Introduce a 600ms visual delay so user sees selected state before loading
+            setTimeout(() => {
+              if (isOutbound) {
+                selectedOutbound = { no, dep, arr, gate };
+                if (currentTripType === 'one-way') {
+                  completeBooking();
+                } else {
+                  THY.toast('Gidiş uçuşu seçildi! Şimdi dönüş uçuşunuzu seçin. ✈️', 'success');
+                  renderFlights('inbound');
+                }
               } else {
-                THY.toast('Gidiş uçuşu seçildi! Şimdi dönüş uçuşunuzu seçin. ✈️', 'success');
-                renderFlights('inbound');
+                selectedInbound = { no, dep, arr, gate };
+                completeBooking();
               }
-            } else {
-              selectedInbound = { no, dep, arr, gate };
-              completeBooking();
-            }
+            }, 600);
           });
         });
  
@@ -592,6 +675,7 @@
         
         listContainer.classList.remove('fade-in');
         listContainer.style.pointerEvents = 'auto'; // Enable clicks
+        lastTransitionTime = Date.now(); // Record rendering time for debounce cooldown when clickable
       }, 250);
     }
   
