@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#E31837"/>
+  <path d="M256 80 C256 80, 420 170, 420 290 C420 380, 350 460, 256 460 C162 460, 92 380, 92 290 C92 170, 256 80, 256 80Z" fill="white" opacity="0.15"/>
+  <path d="M256 120 L280 240 L395 240 L302 310 L335 425 L256 355 L177 425 L210 310 L117 240 L232 240 Z" fill="white" opacity="0.95"/>
+  <text x="256" y="490" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="54" fill="white" opacity="0.9">THY</text>
+</svg>

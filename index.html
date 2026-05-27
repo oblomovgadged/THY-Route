@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="THY Route - Interactive travel journal with route planning, Google Maps, and flight-inspired design.">
+  <meta name="theme-color" content="#E31837">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="THY Route">
+
+  <title>THY Route — Seyahat Journal</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <!-- Google Maps API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg&libraries=places&callback=initMap" async defer></script>
+</head>
+<body>
+  <!-- ============================================
+       SPLASH SCREEN
+       ============================================ -->
+  <div class="splash-screen" id="splashScreen">
+    <div class="splash-logo">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 5 C50 5, 85 25, 85 55 C85 75, 70 95, 50 95 C30 95, 15 75, 15 55 C15 25, 50 5, 50 5Z" fill="#E31837" opacity="0.9"/>
+        <path d="M50 20 L55 45 L78 45 L59 58 L66 82 L50 67 L34 82 L41 58 L22 45 L45 45 Z" fill="white" opacity="0.95"/>
+      </svg>
+    </div>
+    <div class="splash-text">THY Route Yükleniyor...</div>
+  </div>
+
+  <!-- ============================================
+       APP ROOT
+       ============================================ -->
+  <div id="app">
+    <!-- FLIGHT INFORMATION BOARD -->
+    <header class="flight-board" id="flightBoard">
+      <div class="flight-board__logo">
+        <div class="flight-board__logo-icon">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 5 C50 5, 85 25, 85 55 C85 75, 70 95, 50 95 C30 95, 15 75, 15 55 C15 25, 50 5, 50 5Z" fill="white" opacity="0.9"/>
+            <path d="M50 20 L55 45 L78 45 L59 58 L66 82 L50 67 L34 82 L41 58 L22 45 L45 45 Z" fill="#E31837" opacity="0.95"/>
+          </svg>
+        </div>
+        <div class="flight-board__logo-text">
+          <span class="flight-board__logo-title">THY Route</span>
+          <span class="flight-board__logo-subtitle">Seyahat Journal</span>
+        </div>
+      </div>
+
+      <div class="flight-board__info">
+        <div class="flight-info-item">
+          <span class="flight-info-label">Uçuş</span>
+          <span class="flight-info-value highlight" id="flightCode">TK 1982</span>
+        </div>
+        <div class="flight-info-item">
+          <span class="flight-info-label">Kalkış</span>
+          <span class="flight-info-value" id="flightDep">IST</span>
+        </div>
+        <div class="flight-info-item">
+          <span class="flight-info-label">Varış</span>
+          <span class="flight-info-value" id="flightArr">NRT</span>
+        </div>
+        <div class="flight-info-item">
+          <span class="flight-info-label">Kapı</span>
+          <span class="flight-info-value" id="flightGate">A7</span>
+        </div>
+      </div>
+
+      <div class="flight-board__status">
+        <div class="status-badge" id="statusBadge">
+          <span class="status-dot"></span>
+          <span class="status-text" id="statusText">BİNİŞ BAŞLADI</span>
+        </div>
+      </div>
+
+      <div class="flight-board__time">
+        <span class="board-time" id="boardTime">--:--</span>
+        <span class="board-date" id="boardDate">--</span>
+      </div>
+    </header>
+
+    <!-- MAP -->
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+
+    <!-- MAP CONTROLS (Left side) -->
+    <div class="map-controls">
+      <button class="map-control-btn" id="btnDrawRoute" title="Rota Çiz">
+        ✏️
+        <span class="tooltip">Rota Çiz</span>
+      </button>
+      <button class="map-control-btn" id="btnClearRoute" title="Rotayı Temizle">
+        🗑️
+        <span class="tooltip">Rotayı Temizle</span>
+      </button>
+      <button class="map-control-btn" id="btnMyLocation" title="Konumum">
+        📍
+        <span class="tooltip">Konumum</span>
+      </button>
+      <button class="map-control-btn" id="btnSearchPlaces" title="Yakındaki Yerler">
+        🔍
+        <span class="tooltip">Yakındaki Yerler</span>
+      </button>
+    </div>
+
+    <!-- PANEL TOGGLE (when panel is closed) -->
+    <button class="panel-toggle hidden" id="panelToggle">☰</button>
+
+    <!-- SIDE PANEL -->
+    <aside class="side-panel" id="sidePanel">
+      <!-- Tabs -->
+      <div class="panel-tabs">
+        <button class="panel-tab active" data-tab="route">
+          <span class="panel-tab__icon">🗺️</span>
+          Rota
+        </button>
+        <button class="panel-tab" data-tab="places">
+          <span class="panel-tab__icon">📌</span>
+          Yerler
+        </button>
+        <button class="panel-tab" data-tab="email">
+          <span class="panel-tab__icon">✉️</span>
+          Rapor
+        </button>
+        <button class="panel-tab" data-tab="settings" id="tabSettings">
+          <span class="panel-tab__icon">⚙️</span>
+          Ayar
+        </button>
+      </div>
+
+      <!-- Panel Content -->
+      <div class="panel-content">
+        <!-- ROUTE TAB -->
+        <div class="tab-pane active" id="tabRoute">
+          <div class="route-header">
+            <div class="route-title">
+              <span class="icon">✈️</span>
+              Seyahat Rotası
+            </div>
+            <div class="trip-id-badge" id="tripIdBadge">TRIP-0001</div>
+          </div>
+
+          <div class="waypoint-list" id="waypointList">
+            <div class="empty-state" id="emptyRouteState">
+              <div class="empty-state__icon">🌍</div>
+              <div class="empty-state__title">Rota Boş</div>
+              <div class="empty-state__text">Haritaya tıklayarak veya "Rota Çiz" modunu açarak nokta ekleyin.</div>
+            </div>
+          </div>
+
+          <div class="route-actions">
+            <div class="route-actions-row">
+              <button class="btn btn-primary btn-full" id="btnSaveTrip">
+                <span class="icon">💾</span>
+                Kaydet
+              </button>
+              <button class="btn btn-secondary btn-full" id="btnNewTrip">
+                <span class="icon">➕</span>
+                Yeni Trip
+              </button>
+            </div>
+            <div class="route-actions-row">
+              <button class="btn btn-secondary btn-full" id="btnExportTrip">
+                <span class="icon">📤</span>
+                Dışa Aktar
+              </button>
+              <button class="btn btn-secondary btn-full" id="btnImportTrip">
+                <span class="icon">📥</span>
+                İçe Aktar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PLACES TAB -->
+        <div class="tab-pane" id="tabPlaces">
+          <div class="places-search">
+            <input type="text" class="search-input" id="placesSearchInput" placeholder="Yer ara... (ör. Ramen, Hotel)">
+            <button class="btn btn-primary" id="btnPlacesSearch">🔍</button>
+          </div>
+          <div class="places-filters">
+            <button class="filter-chip active" data-type="restaurant">🍜 Restoranlar</button>
+            <button class="filter-chip" data-type="lodging">🏨 Oteller</button>
+            <button class="filter-chip" data-type="tourist_attraction">🏯 Turistik</button>
+            <button class="filter-chip" data-type="cafe">☕ Kafeler</button>
+            <button class="filter-chip" data-type="shopping_mall">🛍️ Alışveriş</button>
+          </div>
+          <div id="placesList">
+            <div class="empty-state">
+              <div class="empty-state__icon">📌</div>
+              <div class="empty-state__title">Yer Keşfet</div>
+              <div class="empty-state__text">Filtrelere tıklayarak veya arama yaparak etraftaki yerleri keşfedin.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMAIL TAB -->
+        <div class="tab-pane" id="tabEmail">
+          <div class="email-form">
+            <div class="form-group">
+              <label class="form-label">Alıcı E-posta</label>
+              <input type="email" class="form-input" id="emailTo" placeholder="ornek@email.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gönderen Adı</label>
+              <input type="text" class="form-input" id="emailFrom" placeholder="Gezgin Adı">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ek Not</label>
+              <textarea class="form-input form-textarea" id="emailNote" placeholder="Seyahat hakkında notlarınız..."></textarea>
+            </div>
+
+            <div class="email-preview" id="emailPreview">
+              <div class="email-preview-header">
+                <h3>✈️ THY Route — Seyahat Raporu</h3>
+              </div>
+              <div class="email-preview-body" id="emailPreviewBody">
+                <p>Rota oluşturulduktan sonra rapor önizlemesi burada görünecek.</p>
+              </div>
+            </div>
+
+            <button class="btn btn-gold btn-full" id="btnSendEmail">
+              <span class="icon">📧</span>
+              Seyahat Raporunu Gönder
+            </button>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB -->
+        <div class="tab-pane" id="tabSettingsPane">
+          <div class="form-group" style="margin-bottom: var(--space-md);">
+            <label class="form-label">EmailJS Service ID</label>
+            <input type="text" class="form-input" id="settingServiceId" placeholder="service_xxxxx">
+          </div>
+          <div class="form-group" style="margin-bottom: var(--space-md);">
+            <label class="form-label">EmailJS Template ID</label>
+            <input type="text" class="form-input" id="settingTemplateId" placeholder="template_xxxxx">
+          </div>
+          <div class="form-group" style="margin-bottom: var(--space-md);">
+            <label class="form-label">EmailJS Public Key</label>
+            <input type="text" class="form-input" id="settingPublicKey" placeholder="public_key">
+          </div>
+          <button class="btn btn-primary btn-full" id="btnSaveSettings" style="margin-bottom: var(--space-md);">
+            <span class="icon">💾</span>
+            Ayarları Kaydet
+          </button>
+          <hr style="border-color: var(--border-subtle); margin-bottom: var(--space-md);">
+          <button class="btn btn-secondary btn-full" id="btnTogglePanel">
+            <span class="icon">📐</span>
+            Paneli Kapat
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- PWA INSTALL BANNER -->
+    <div class="pwa-install-banner" id="pwaInstallBanner">
+      <span class="pwa-install-text">📲 THY Route'u cihazına yükle!</span>
+      <button class="btn btn-gold btn-sm" id="btnInstallPwa">Yükle</button>
+      <button class="pwa-install-dismiss" id="btnDismissPwa">✕</button>
+    </div>
+  </div>
+
+  <!-- IMPORT MODAL -->
+  <div class="modal-overlay" id="importModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">📥 Trip İçe Aktar</h3>
+        <button class="modal-close" id="btnCloseImportModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea class="json-area" id="importJsonArea" placeholder='JSON verisini buraya yapıştırın...'></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelImport">İptal</button>
+        <button class="btn btn-primary" id="btnConfirmImport">İçe Aktar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT MODAL -->
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">📤 Trip Dışa Aktar</h3>
+        <button class="modal-close" id="btnCloseExportModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea class="json-area" id="exportJsonArea" readonly></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseExport">Kapat</button>
+        <button class="btn btn-gold" id="btnCopyExport">📋 Kopyala</button>
+        <button class="btn btn-primary" id="btnDownloadExport">⬇️ İndir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>

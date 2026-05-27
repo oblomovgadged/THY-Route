@@ -1,0 +1,19 @@
+{
+  "name": "THY Route - Seyahat Journal",
+  "short_name": "THY Route",
+  "description": "Turkish Airlines inspired travel journal with interactive route planning and Google Maps integration.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0A0E1A",
+  "theme_color": "#E31837",
+  "orientation": "any",
+  "categories": ["travel", "navigation", "lifestyle"],
+  "icons": [
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
