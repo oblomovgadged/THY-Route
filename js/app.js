@@ -3,6 +3,17 @@
 // Toast, Tabs, Clock, PWA, Settings, Modals
 // ============================================
 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyD8kCL4NC8UdtoQLaDYKCWeF1o16dek7CE",
+  authDomain: "thyb-211cb.firebaseapp.com",
+  projectId: "thyb-211cb",
+  storageBucket: "thyb-211cb.firebasestorage.app",
+  messagingSenderId: "1024892899293",
+  appId: "1:1024892899293:web:92cad604ba9eefd517b034",
+  measurementId: "G-DXSFM8XBMY"
+};
+
 (() => {
   'use strict';
 
@@ -121,30 +132,16 @@
     }
 
     try {
-      let fbSettings = JSON.parse(localStorage.getItem('thy_firebase_settings') || '{}');
-      
-      // Default credentials if not configured (placeholder for public demo)
-      if (!fbSettings.projectId || fbSettings.projectId === '' || fbSettings.projectId.includes('xxxxx')) {
-        fbSettings = {
-          apiKey: "AIzaSyD8kCL4NC8UdtoQLaDYKCWeF1o16dek7CE",
-          authDomain: "thyb-211cb.firebaseapp.com",
-          projectId: "thyb-211cb",
-          storageBucket: "thyb-211cb.firebasestorage.app",
-          messagingSenderId: "1024892899293",
-          appId: "1:1024892899293:web:92cad604ba9eefd517b034"
-        };
-      }
-
       if (window.firebase && window.firebase.initializeApp) {
         if (window.firebase.apps.length > 0) {
           window.firebase.app().delete().then(() => {
-            initializeAndListen(fbSettings);
+            initializeAndListen(firebaseConfig);
           }).catch(err => {
             console.error("Error deleting old firebase app instance:", err);
-            initializeAndListen(fbSettings);
+            initializeAndListen(firebaseConfig);
           });
         } else {
-          initializeAndListen(fbSettings);
+          initializeAndListen(firebaseConfig);
         }
       } else {
         console.warn("⚠️ Firebase SDK not loaded on the window object.");
@@ -1448,18 +1445,10 @@
     if (tcid) tcid.value = thySettings.clientId || '';
     if (tcsec) tcsec.value = thySettings.clientSecret || '';
 
-    // Load Firebase Settings
-    const fbSettings = JSON.parse(localStorage.getItem('thy_firebase_settings') || '{}');
-    const fbApiKey = document.getElementById('settingFbApiKey');
-    const fbProjectId = document.getElementById('settingFbProjectId');
-    const fbAuthDomain = document.getElementById('settingFbAuthDomain');
-    const fbAppId = document.getElementById('settingFbAppId');
-    if (fbApiKey) fbApiKey.value = fbSettings.apiKey || '';
-    if (fbProjectId) fbProjectId.value = fbSettings.projectId || '';
-    if (fbAuthDomain) fbAuthDomain.value = fbSettings.authDomain || '';
-    if (fbAppId) fbAppId.value = fbSettings.appId || '';
+    // Clean up any legacy Firebase settings from localStorage
+    localStorage.removeItem('thy_firebase_settings');
 
-    return { emailjs: settings, thy: thySettings, firebase: fbSettings };
+    return { emailjs: settings, thy: thySettings };
   }
 
   function saveSettings() {
@@ -1476,14 +1465,8 @@
     };
     localStorage.setItem('thy_api_settings', JSON.stringify(thySettings));
 
-    // Save Firebase Settings
-    const fbSettings = {
-      apiKey: document.getElementById('settingFbApiKey')?.value?.trim() || '',
-      projectId: document.getElementById('settingFbProjectId')?.value?.trim() || '',
-      authDomain: document.getElementById('settingFbAuthDomain')?.value?.trim() || '',
-      appId: document.getElementById('settingFbAppId')?.value?.trim() || ''
-    };
-    localStorage.setItem('thy_firebase_settings', JSON.stringify(fbSettings));
+    // Clear legacy Firebase settings
+    localStorage.removeItem('thy_firebase_settings');
 
     THY.toast('Ayarlar kaydedildi!', 'success');
 
