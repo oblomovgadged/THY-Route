@@ -22,8 +22,6 @@
     }, duration);
   };
 
-  };
-
   // ---- AIRPORT DATABASE & GLOBAL DATA ----
   const AIRPORTS = [
     { code: "IST", city: "İstanbul", name: "İstanbul Havalimanı", country: "Türkiye", lat: 41.275, lng: 28.751 },
