@@ -1037,7 +1037,7 @@
             </div>
             <div class="flight-price-action">
               <div class="price-tag">
-                <span class="price-amount">${price.toLocaleString('tr-TR')}</span>
+                <span class="price-amount">${Math.floor(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
                 <span class="price-currency">TRY</span>
               </div>
               <button class="btn btn-primary btn-select-flight" 
@@ -1489,9 +1489,17 @@
       const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
       const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-      // Generate and shorten invite link
-      const longUrl = THY.generateShareUrl();
-      const inviteLink = await THY.getShortenedUrl(longUrl);
+    // Generate and shorten invite link (defined outside waypoints check so inviteLink is always populated)
+    const longUrl = THY.generateShareUrl();
+    const inviteLink = await THY.getShortenedUrl(longUrl);
+
+    // Build route summary as a Captain's Logbook brochure
+    let routeSummary = 'Henüz rota oluşturulmadı.';
+    if (THY.waypoints && THY.waypoints.length > 0) {
+      const flightCode = document.getElementById('flightCode')?.textContent || 'TK 1982';
+      const depCode = document.getElementById('flightDep')?.textContent || 'IST';
+      const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
+      const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
       let listStr = THY.waypoints.map((wp, i) => {
         let wpStr = `[DURAK ${i + 1}] 📍 ${wp.name}\n`;
@@ -1535,7 +1543,15 @@ ${inviteLink}
       route_summary: routeSummary,
       note: note,
       waypoint_count: THY.waypoints ? THY.waypoints.length : 0,
-      date: new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })
+      date: new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' }),
+      // Injecting all common link naming conventions for robust template mapping
+      link: inviteLink,
+      invite_link: inviteLink,
+      inviteLink: inviteLink,
+      url: inviteLink,
+      share_url: inviteLink,
+      share_link: inviteLink,
+      route_link: inviteLink
     };
 
     THY.toast('Rapor ve Davet gönderiliyor...', 'info');
