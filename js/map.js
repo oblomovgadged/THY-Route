@@ -241,8 +241,57 @@ function initMap() {
     });
   }
 
-  // Map click to add waypoint
+  // Map click to add waypoint or handle POI click
   map.addListener('click', (e) => {
+    // If they clicked on a default Google Maps Point of Interest (POI)
+    if (e.placeId) {
+      e.stop(); // Prevent the default Google Maps info window popup
+
+      const request = {
+        placeId: e.placeId,
+        fields: ['name', 'geometry', 'vicinity', 'rating', 'user_ratings_total']
+      };
+
+      placesService.getDetails(request, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && place && place.geometry) {
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+
+          const ratingHtml = place.rating 
+            ? `<div style="color:#C8A951;font-size:12px;margin-bottom:6px;">${renderStars(place.rating)} ${place.rating} (${place.user_ratings_total || 0})</div>` 
+            : '';
+
+          // Custom InfoWindow container element
+          const contentDiv = document.createElement('div');
+          contentDiv.style.background = '#1A2235';
+          contentDiv.style.color = '#F1F5F9';
+          contentDiv.style.padding = '10px 14px';
+          contentDiv.style.borderRadius = '8px';
+          contentDiv.style.fontFamily = 'Inter,sans-serif';
+          contentDiv.style.minWidth = '180px';
+          contentDiv.innerHTML = `
+            <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${place.name}</div>
+            <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.vicinity || ''}</div>
+            ${ratingHtml}
+            <button id="btnPoiAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">Rotaya Ekle</button>
+          `;
+
+          // Add click listener to the button
+          contentDiv.querySelector('#btnPoiAddToRoute').addEventListener('click', () => {
+            THY.addWaypoint(lat, lng, place.name);
+            THY.toast(`"${place.name}" rotaya eklendi!`, 'success');
+            infoWindow.close();
+          });
+
+          infoWindow.setContent(contentDiv);
+          infoWindow.setPosition(place.geometry.location);
+          infoWindow.open(map);
+        }
+      });
+      return;
+    }
+
+    // Default map click to add waypoint (only in Draw Mode)
     if (!drawMode) return;
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
