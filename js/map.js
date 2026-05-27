@@ -374,95 +374,6 @@ function initMap() {
     });
   }
 
-  // ---- Mock Places Engine (Fallback for REQUEST_DENIED / Google Restrictions) ----
-  const mockNamePools = {
-    restaurant: [
-      "Sakura Ramen Express", "Tokyo Sushi Zen", "Ginza Grill House", "Shibuya Udon", 
-      "Akihabara Maid & Meal", "Bosphorus Palace Tokyo", "Mount Fuji Teppanyaki", "Imperial Kyoto Kitchen"
-    ],
-    lodging: [
-      "Grand Hyatt Tokyo", "Hotel Park Hyatt", "Imperial Hotel Tokyo", "Capsule Inn Shinjuku", 
-      "Royal Palace Ryokan", "Skyline View Suites", "Tokyo Station Hotel", "Sora Boutique Stay"
-    ],
-    tourist_attraction: [
-      "Senso-ji Ancient Temple", "Tokyo Tower Observatory", "Meiji Jingu Shrine", "Shinjuku Gyoen Garden", 
-      "Imperial Palace Gardens", "Rainbow Bridge", "Ueno Park & Zoo", "Shibuya Crossing Lookout"
-    ],
-    cafe: [
-      "Matcha Heaven Cafe", "Harajuku Coffee House", "Cyberpunk Brews Akiba", "Neko Cat Cafe", 
-      "Bonsai Tea & Coffee", "The Daily Espresso", "Shiba Inu Cafe", "Zen Garden Matcha"
-    ],
-    shopping_mall: [
-      "Shibuya 109 Mall", "Roppongi Hills Galleria", "Ginza Six Luxury", "Akihabara Electric Arcade", 
-      "Tokyu Plaza Omotesando", "Tokyo Mid-Town Shopping"
-    ]
-  };
-
-  const typeEmojis = {
-    restaurant: '🍜',
-    lodging: '🏨',
-    tourist_attraction: '🏯',
-    cafe: '☕',
-    shopping_mall: '🛍️'
-  };
-
-  THY.loadMockPlaces = (type, center) => {
-    const names = mockNamePools[type] || ["Keyifli Mekan", "Gezilecek Nokta"];
-    const emoji = typeEmojis[type] || '📍';
-    const results = [];
-    
-    // Generate 6 random places around the map center
-    for (let i = 0; i < 6; i++) {
-      const latOffset = (Math.random() - 0.5) * 0.015;
-      const lngOffset = (Math.random() - 0.5) * 0.015;
-      
-      const lat = center.lat + latOffset;
-      const lng = center.lng + lngOffset;
-      
-      results.push({
-        name: names[i % names.length],
-        vicinity: `Tokyo Bölgesi, Cadde No: ${Math.floor(Math.random() * 80) + 1}`,
-        rating: (4.0 + Math.random() * 1.0).toFixed(1),
-        user_ratings_total: Math.floor(Math.random() * 800) + 20,
-        types: [type],
-        geometry: {
-          location: {
-            lat: () => lat,
-            lng: () => lng
-          }
-        }
-      });
-    }
-    
-    displayPlaces(results);
-    THY.toast(`Simüle edilmiş ${results.length} yer başarıyla listelendi! ✈️`, 'success');
-  };
-
-  THY.loadMockTextSearch = (query, center) => {
-    const results = [];
-    for (let i = 0; i < 5; i++) {
-      const latOffset = (Math.random() - 0.5) * 0.02;
-      const lngOffset = (Math.random() - 0.5) * 0.02;
-      
-      results.push({
-        name: `Simüle: ${query} - Nokta ${i + 1}`,
-        vicinity: `Tokyo Bölgesi, Yakınlarında`,
-        rating: (4.2 + Math.random() * 0.8).toFixed(1),
-        user_ratings_total: Math.floor(Math.random() * 300) + 5,
-        types: ['establishment'],
-        geometry: {
-          location: {
-            lat: () => center.lat + latOffset,
-            lng: () => center.lng + lngOffset
-          }
-        }
-      });
-    }
-    
-    displayPlaces(results);
-    THY.toast(`"${query}" için simüle sonuçlar gösteriliyor.`, 'success');
-  };
-
   THY.searchNearbyPlaces = (type) => {
     if (!placesService) {
       THY.toast('Yer arama servisi henüz hazır değil.', 'error');
@@ -487,13 +398,12 @@ function initMap() {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         displayPlaces(results);
         THY.toast(`${results.length} yer bulundu!`, 'success');
-      } else if (status === google.maps.places.PlacesServiceStatus.REQUEST_DENIED) {
-        // Fallback directly to simulated places
-        THY.toast('Simüle edilmiş yerler yükleniyor...', 'info');
-        THY.loadMockPlaces(type, latLng);
       } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
         displayPlaces([]);
         THY.toast('Bu bölgede eşleşen yer bulunamadı.', 'info');
+      } else if (status === google.maps.places.PlacesServiceStatus.REQUEST_DENIED) {
+        displayPlaces([]);
+        THY.toast('Hata: API Anahtarında Places API izni veya faturalandırma etkin değil. (REQUEST_DENIED)', 'error');
       } else {
         displayPlaces([]);
         THY.toast(`Arama başarısız oldu. Hata Kodu: ${status}`, 'error');
@@ -507,10 +417,9 @@ function initMap() {
       return;
     }
     const center = map.getCenter();
-    const latLng = center ? { lat: center.lat(), lng: center.lng() } : { lat: 35.6762, lng: 139.6503 };
     const request = {
       query: query,
-      location: center,
+      location: center ? { lat: center.lat(), lng: center.lng() } : null,
       radius: 3000
     };
 
@@ -522,8 +431,8 @@ function initMap() {
         displayPlaces(results);
         THY.toast(`${results.length} sonuç bulundu!`, 'success');
       } else if (status === google.maps.places.PlacesServiceStatus.REQUEST_DENIED) {
-        // Fallback directly to simulated search
-        THY.loadMockTextSearch(query, latLng);
+        displayPlaces([]);
+        THY.toast('Hata: API Anahtarında Places API izni yok. (REQUEST_DENIED)', 'error');
       } else {
         displayPlaces([]);
         THY.toast(`Arama başarısız oldu. Hata Kodu: ${status}`, 'error');
