@@ -492,7 +492,9 @@
 
   // ---- INITIALIZE BOOKING DATES & TRIP TYPE ----
   const today = new Date();
-  const returnDate = new Date(today);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const returnDate = new Date(tomorrow);
   returnDate.setDate(returnDate.getDate() + 4);
 
   const formatDateLocal = (date) => {
@@ -501,9 +503,24 @@
     return localDate.toISOString().split('T')[0];
   };
 
+  const depInput = document.getElementById('flightDepartureInput');
+  const destInput = document.getElementById('flightDestinationInput');
+  if (depInput && !depInput.value) {
+    depInput.value = 'İstanbul (IST)';
+    depInput.dataset.code = 'IST';
+    depInput.dataset.lat = '41.275';
+    depInput.dataset.lng = '28.751';
+  }
+  if (destInput && !destInput.value) {
+    destInput.value = 'Roma (FCO)';
+    destInput.dataset.code = 'FCO';
+    destInput.dataset.lat = '41.800';
+    destInput.dataset.lng = '12.238';
+  }
+
   const depDateInput = document.getElementById('flightDepartureDate');
   const retDateInput = document.getElementById('flightReturnDate');
-  if (depDateInput) depDateInput.value = formatDateLocal(today);
+  if (depDateInput) depDateInput.value = formatDateLocal(tomorrow);
   if (retDateInput) retDateInput.value = formatDateLocal(returnDate);
 
   let currentTripType = 'round-trip';
@@ -520,7 +537,7 @@
       if (retDateInput) {
         retDateInput.removeAttribute('disabled');
         const defaultRet = new Date();
-        defaultRet.setDate(defaultRet.getDate() + 4);
+        defaultRet.setDate(defaultRet.getDate() + 5);
         retDateInput.value = formatDateLocal(defaultRet);
       }
     });
