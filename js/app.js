@@ -81,15 +81,18 @@
   const sidePanel = document.getElementById('sidePanel');
   const panelToggle = document.getElementById('panelToggle');
   const btnTogglePanel = document.getElementById('btnTogglePanel');
+  const appEl = document.getElementById('app');
 
   function closePanel() {
     sidePanel.classList.add('collapsed');
     panelToggle.classList.remove('hidden');
+    appEl?.classList.add('panel-collapsed');
   }
 
   function openPanel() {
     sidePanel.classList.remove('collapsed');
     panelToggle.classList.add('hidden');
+    appEl?.classList.remove('panel-collapsed');
   }
 
   if (panelToggle) panelToggle.addEventListener('click', openPanel);
