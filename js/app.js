@@ -1030,9 +1030,9 @@
           
           // Generate delay and gate HTML
           const delayHtml = fo.delay > 0 
-            ? `<span style="color: #FF8C00; font-size: 11px; font-weight: 600; margin-left: 8px;">⚠️ Rötar: ${fo.delay} dk</span>` 
-            : `<span style="color: #22C55E; font-size: 11px; font-weight: 600; margin-left: 8px;">🟢 Zamanında</span>`;
-          const gateHtml = `<span style="color: var(--text-muted); font-size: 11px; margin-left: 8px;">🚪 Kapı: ${fo.gate}</span>`;
+            ? `<span class="flight-status delay-status">⚠️ Rötar: ${fo.delay} dk</span>` 
+            : `<span class="flight-status normal-status">🟢 Zamanında</span>`;
+          const gateHtml = `<span class="flight-gate">🚪 Kapı: ${fo.gate}</span>`;
 
           const item = document.createElement('div');
           item.className = 'flight-item';
@@ -1047,9 +1047,13 @@
                   <path d="M50 20 L55 45 L78 45 L59 58 L66 82 L50 67 L34 82 L41 58 L22 45 L45 45 Z" fill="#E31837"/>
                 </svg>
               </div>
-              <span class="flight-no">${fo.flightNo}</span>
-              ${delayHtml}
-              ${gateHtml}
+              <div class="carrier-details">
+                <span class="flight-no">${fo.flightNo}</span>
+                <div class="carrier-status-gate">
+                  ${delayHtml}
+                  ${gateHtml}
+                </div>
+              </div>
             </div>
             <div class="flight-schedule">
               <div class="schedule-block">
