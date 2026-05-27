@@ -785,6 +785,16 @@
     document.getElementById('bookingCard').classList.remove('hidden');
   });
 
+  document.getElementById('btnReturnToLanding')?.addEventListener('click', () => {
+    // Show landing, hide map
+    document.getElementById('landingScreen').classList.remove('hidden');
+    document.getElementById('mapScreen').classList.add('hidden');
+    
+    // Reset booking card visibility
+    document.getElementById('bookingCard').classList.remove('hidden');
+    document.getElementById('flightResultsCard').classList.add('hidden');
+  });
+
   // ---- FLIGHT BOARD CLOCK ----
   function updateClock() {
     const now = new Date();
@@ -926,7 +936,8 @@
       waypoints: THY.waypoints.map(wp => ({
         name: wp.name,
         lat: wp.lat,
-        lng: wp.lng
+        lng: wp.lng,
+        note: wp.note || ''
       }))
     };
     document.getElementById('exportJsonArea').value = JSON.stringify(data, null, 2);
@@ -983,7 +994,7 @@
       if (typeof THY.clearRoute === 'function') THY.clearRoute();
       data.waypoints.forEach(wp => {
         if (typeof THY.addWaypoint === 'function') {
-          THY.addWaypoint(wp.lat, wp.lng, wp.name);
+          THY.addWaypoint(wp.lat, wp.lng, wp.name, wp.note || '');
         }
       });
 
@@ -1016,7 +1027,8 @@
       waypoints: THY.waypoints.map(wp => ({
         name: wp.name,
         lat: wp.lat,
-        lng: wp.lng
+        lng: wp.lng,
+        note: wp.note || ''
       }))
     };
     localStorage.setItem('thy_saved_trips', JSON.stringify(trips));
@@ -1043,7 +1055,7 @@
     // Build route summary
     let routeSummary = 'Henüz rota oluşturulmadı.';
     if (THY.waypoints && THY.waypoints.length > 0) {
-      routeSummary = THY.waypoints.map((wp, i) => `${i + 1}. ${wp.name} (${wp.lat.toFixed(4)}, ${wp.lng.toFixed(4)})`).join('\n');
+      routeSummary = THY.waypoints.map((wp, i) => `${i + 1}. ${wp.name} (${wp.lat.toFixed(4)}, ${wp.lng.toFixed(4)})${wp.note ? ` - Not: ${wp.note}` : ''}`).join('\n');
     }
 
     const templateParams = {
@@ -1086,7 +1098,7 @@
       <p><strong>Güzergah:</strong></p>
     `;
     THY.waypoints.forEach((wp, i) => {
-      html += `<p>${i + 1}. 📍 ${wp.name}</p>`;
+      html += `<p>${i + 1}. 📍 ${wp.name}${wp.note ? `<br><span style="font-size:11px; color:#C8A951; margin-left: 20px; font-style: italic;">📝 Not: ${wp.note}</span>` : ''}</p>`;
     });
 
     body.innerHTML = html;

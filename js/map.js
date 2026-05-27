@@ -71,8 +71,8 @@ function initMap() {
   }
 
   // ---- Waypoint Management ----
-  THY.addWaypoint = (lat, lng, name) => {
-    const wp = { lat, lng, name: name || `Nokta ${THY.waypoints.length + 1}` };
+  THY.addWaypoint = (lat, lng, name, note = '') => {
+    const wp = { lat, lng, name: name || `Nokta ${THY.waypoints.length + 1}`, note: note || '' };
     THY.waypoints.push(wp);
 
     // Add marker
@@ -86,9 +86,12 @@ function initMap() {
     });
 
     marker.addListener('click', () => {
+      const currentWp = THY.waypoints.find(w => w.lat === lat && w.lng === lng) || wp;
+      const noteHtml = currentWp.note ? `<div style="font-size:11px;color:#C8A951;margin-bottom:6px;font-style:italic;">📝 ${currentWp.note}</div>` : '';
       infoWindow.setContent(`
         <div style="background:#1A2235;color:#F1F5F9;padding:10px 14px;border-radius:8px;font-family:Inter,sans-serif;min-width:140px;">
-          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${wp.name}</div>
+          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${currentWp.name}</div>
+          ${noteHtml}
           <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#94A3B8;">${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
         </div>
       `);
@@ -191,9 +194,13 @@ function initMap() {
         <div class="waypoint-marker">${i + 1}</div>
         <div class="waypoint-info">
           <div class="waypoint-name">${wp.name}</div>
+          ${wp.note ? `<div class="waypoint-note" style="font-size: 10px; color: var(--thy-gold); margin-top: 2px; font-style: italic; font-weight: 500;">📝 Not: ${wp.note}</div>` : ''}
           <div class="waypoint-coords">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</div>
         </div>
-        <button class="waypoint-remove" data-index="${i}" title="Kaldır">✕</button>
+        <div class="waypoint-actions" style="display: flex; gap: 6px; align-items: center;">
+          <button class="waypoint-note-btn" data-index="${i}" title="Not Ekle/Düzenle" style="background: none; border: none; cursor: pointer; font-size: 11px; padding: 4px; opacity: 0.8; transition: opacity 0.2s;">📝</button>
+          <button class="waypoint-remove" data-index="${i}" title="Kaldır">✕</button>
+        </div>
       `;
       list.appendChild(item);
     });
@@ -203,6 +210,21 @@ function initMap() {
       btn.addEventListener('click', (e) => {
         const idx = parseInt(e.currentTarget.dataset.index);
         THY.removeWaypoint(idx);
+      });
+    });
+
+    // Note handlers
+    list.querySelectorAll('.waypoint-note-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(e.currentTarget.dataset.index);
+        const currentNote = THY.waypoints[idx].note || '';
+        const newNote = prompt(`"${THY.waypoints[idx].name}" için not girin:`, currentNote);
+        if (newNote !== null) {
+          THY.waypoints[idx].note = newNote.trim();
+          updateWaypointUI();
+          THY.updateEmailPreview();
+        }
       });
     });
   }
