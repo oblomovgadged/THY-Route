@@ -249,7 +249,7 @@ function initMap() {
 
       const request = {
         placeId: e.placeId,
-        fields: ['name', 'geometry', 'vicinity', 'rating', 'user_ratings_total']
+        fields: ['name', 'geometry', 'vicinity', 'rating', 'user_ratings_total', 'photos']
       };
 
       placesService.getDetails(request, (place, status) => {
@@ -261,6 +261,12 @@ function initMap() {
             ? `<div style="color:#C8A951;font-size:12px;margin-bottom:6px;">${renderStars(place.rating)} ${place.rating} (${place.user_ratings_total || 0})</div>` 
             : '';
 
+          let photoHtml = '';
+          if (place.photos && place.photos.length > 0) {
+            const photoUrl = place.photos[0].getUrl({ maxWidth: 240, maxHeight: 120 });
+            photoHtml = `<img src="${photoUrl}" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px;box-shadow:0 2px 4px rgba(0,0,0,0.3);" alt="${place.name}">`;
+          }
+
           // Custom InfoWindow container element
           const contentDiv = document.createElement('div');
           contentDiv.style.background = '#1A2235';
@@ -270,6 +276,7 @@ function initMap() {
           contentDiv.style.fontFamily = 'Inter,sans-serif';
           contentDiv.style.minWidth = '180px';
           contentDiv.innerHTML = `
+            ${photoHtml}
             <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${place.name}</div>
             <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.vicinity || ''}</div>
             ${ratingHtml}
@@ -432,13 +439,38 @@ function initMap() {
       });
 
       marker.addListener('click', () => {
-        infoWindow.setContent(`
-          <div style="background:#1A2235;color:#F1F5F9;padding:12px 16px;border-radius:8px;font-family:Inter,sans-serif;min-width:160px;">
-            <div style="font-weight:700;font-size:14px;margin-bottom:4px;">${emoji} ${place.name}</div>
-            <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.vicinity || ''}</div>
-            ${place.rating ? `<div style="color:#C8A951;font-size:12px;">${renderStars(place.rating)} ${place.rating}</div>` : ''}
-          </div>
-        `);
+        let photoHtml = '';
+        if (place.photos && place.photos.length > 0) {
+          const photoUrl = place.photos[0].getUrl({ maxWidth: 240, maxHeight: 120 });
+          photoHtml = `<img src="${photoUrl}" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px;box-shadow:0 2px 4px rgba(0,0,0,0.3);" alt="${place.name}">`;
+        }
+
+        const ratingHtml = place.rating 
+          ? `<div style="color:#C8A951;font-size:12px;margin-bottom:6px;">${renderStars(place.rating)} ${place.rating} (${place.user_ratings_total || 0})</div>` 
+          : '';
+
+        const contentDiv = document.createElement('div');
+        contentDiv.style.background = '#1A2235';
+        contentDiv.style.color = '#F1F5F9';
+        contentDiv.style.padding = '10px 14px';
+        contentDiv.style.borderRadius = '8px';
+        contentDiv.style.fontFamily = 'Inter,sans-serif';
+        contentDiv.style.minWidth = '180px';
+        contentDiv.innerHTML = `
+          ${photoHtml}
+          <div style="font-weight:700;font-size:13px;margin-bottom:4px;">${emoji} ${place.name}</div>
+          <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.vicinity || ''}</div>
+          ${ratingHtml}
+          <button id="btnPlaceMarkerAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">Rotaya Ekle</button>
+        `;
+
+        contentDiv.querySelector('#btnPlaceMarkerAddToRoute').addEventListener('click', () => {
+          THY.addWaypoint(lat, lng, place.name);
+          THY.toast(`"${place.name}" rotaya eklendi!`, 'success');
+          infoWindow.close();
+        });
+
+        infoWindow.setContent(contentDiv);
         infoWindow.open(map, marker);
       });
 
