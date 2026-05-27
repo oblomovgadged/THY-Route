@@ -64,16 +64,20 @@
     const arr = document.getElementById('flightArr')?.textContent || 'NRT';
     const gate = document.getElementById('flightGate')?.textContent || 'A7';
     const tripId = THY.currentTripId;
-    const waypoints = THY.waypoints.map(wp => ({
-      name: wp.name,
-      lat: wp.lat,
-      lng: wp.lng,
-      note: wp.note || ''
-    }));
+    
+    // Compact coordinates to 5 decimal places (~1.1m precision) and strip keys to shorten URL length
+    const waypoints = THY.waypoints.map(wp => [
+      parseFloat(wp.lat.toFixed(5)),
+      parseFloat(wp.lng.toFixed(5)),
+      wp.name,
+      wp.note || ''
+    ]);
 
-    const dataObj = { tripId, flightCode, dep, arr, gate, waypoints };
+    // Compact format: [version_tag, tripId, flightCode, dep, arr, gate, waypoints]
+    const compactData = ['v2', tripId, flightCode, dep, arr, gate, waypoints];
+
     try {
-      const jsonStr = JSON.stringify(dataObj);
+      const jsonStr = JSON.stringify(compactData);
       // UTF-8 safe base64 encoding
       const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
       // URL-safe base64 characters
@@ -97,7 +101,32 @@
         base64 += '=';
       }
       const jsonStr = decodeURIComponent(escape(atob(base64)));
-      const data = JSON.parse(jsonStr);
+      const decodedData = JSON.parse(jsonStr);
+
+      let data = {};
+
+      if (Array.isArray(decodedData)) {
+        // Hydrate from compact array format
+        const [version, tripId, flightCode, dep, arr, gate, wps] = decodedData;
+        if (version === 'v2') {
+          data = {
+            tripId,
+            flightCode,
+            dep,
+            arr,
+            gate,
+            waypoints: wps.map(w => ({
+              lat: w[0],
+              lng: w[1],
+              name: w[2],
+              note: w[3] || ''
+            }))
+          };
+        }
+      } else {
+        // Hydrate from legacy verbose object format (v1 backward compatibility)
+        data = decodedData;
+      }
 
       if (data && data.waypoints && Array.isArray(data.waypoints)) {
         THY.sharedRouteData = data;
