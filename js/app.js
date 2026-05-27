@@ -55,6 +55,78 @@
     }
   };
 
+  // ---- SHAREABLE ROUTE SERIALIZATION & DECODING (Base64url) ----
+  THY.sharedRouteData = null;
+  
+  THY.generateShareUrl = () => {
+    const flightCode = document.getElementById('flightCode')?.textContent || 'TK 1982';
+    const dep = document.getElementById('flightDep')?.textContent || 'IST';
+    const arr = document.getElementById('flightArr')?.textContent || 'NRT';
+    const gate = document.getElementById('flightGate')?.textContent || 'A7';
+    const tripId = THY.currentTripId;
+    const waypoints = THY.waypoints.map(wp => ({
+      name: wp.name,
+      lat: wp.lat,
+      lng: wp.lng,
+      note: wp.note || ''
+    }));
+
+    const dataObj = { tripId, flightCode, dep, arr, gate, waypoints };
+    try {
+      const jsonStr = JSON.stringify(dataObj);
+      // UTF-8 safe base64 encoding
+      const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+      // URL-safe base64 characters
+      const safeBase64 = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      
+      return `${window.location.origin}${window.location.pathname}?importRoute=${safeBase64}`;
+    } catch (err) {
+      console.error('Failed to generate sharing URL:', err);
+      return window.location.href;
+    }
+  };
+
+  const parseSharedRoute = () => {
+    const params = new URLSearchParams(window.location.search);
+    const importRoute = params.get('importRoute');
+    if (!importRoute) return;
+
+    try {
+      let base64 = importRoute.replace(/-/g, '+').replace(/_/g, '/');
+      while (base64.length % 4) {
+        base64 += '=';
+      }
+      const jsonStr = decodeURIComponent(escape(atob(base64)));
+      const data = JSON.parse(jsonStr);
+
+      if (data && data.waypoints && Array.isArray(data.waypoints)) {
+        THY.sharedRouteData = data;
+        THY.currentTripId = data.tripId || THY.generateTripId();
+        
+        document.addEventListener('DOMContentLoaded', () => {
+          const boardNo = document.getElementById('flightCode');
+          const boardDep = document.getElementById('flightDep');
+          const boardArr = document.getElementById('flightArr');
+          const boardGate = document.getElementById('flightGate');
+          const tripBadge = document.getElementById('tripIdBadge');
+
+          if (boardNo) boardNo.textContent = data.flightCode || 'TK 1982';
+          if (boardDep) boardDep.textContent = data.dep || 'IST';
+          if (boardArr) boardArr.textContent = data.arr || 'NRT';
+          if (boardGate) boardGate.textContent = data.gate || 'A7';
+          if (tripBadge) tripBadge.textContent = THY.currentTripId;
+
+          // Skip landing page and go straight to map
+          document.getElementById('landingScreen')?.classList.add('hidden');
+          document.getElementById('mapScreen')?.classList.remove('hidden');
+        });
+      }
+    } catch (err) {
+      console.error('Failed to decode shared route details:', err);
+    }
+  };
+  parseSharedRoute();
+
   // ---- AIRPORT DATABASE & GLOBAL DATA ----
   const AIRPORTS = [
     // Türkiye - Domestic
@@ -909,7 +981,18 @@
 
   // ---- SETTINGS (EmailJS & THY API) ----
   function loadSettings() {
-    const settings = JSON.parse(localStorage.getItem('thy_emailjs_settings') || '{}');
+    let settings = JSON.parse(localStorage.getItem('thy_emailjs_settings') || '{}');
+    
+    // Auto-populate custom EmailJS credentials
+    if (!settings.serviceId || settings.serviceId === 'service_xxxxx' || settings.serviceId === '') {
+      settings = {
+        serviceId: 'service_8oc4sw9',
+        templateId: 'template_y1ch11o',
+        publicKey: 'Cwjj37r4vlqMA8F83'
+      };
+      localStorage.setItem('thy_emailjs_settings', JSON.stringify(settings));
+    }
+
     const sid = document.getElementById('settingServiceId');
     const tid = document.getElementById('settingTemplateId');
     const pk = document.getElementById('settingPublicKey');
@@ -1096,6 +1179,9 @@
       const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
       const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
+      // Generate sharing link
+      const inviteLink = THY.generateShareUrl();
+
       let listStr = THY.waypoints.map((wp, i) => {
         let wpStr = `[DURAK ${i + 1}] 📍 ${wp.name}\n`;
         wpStr += `   Koordinat: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E\n`;
@@ -1122,6 +1208,10 @@ YOLCULUK GÜZERGAH DETAYLARI:
 ${listStr}
 
 ───────────────────────────────────
+DAVET VE BİRLİKTE DÜZENLEME BAĞLANTISI:
+${inviteLink}
+
+───────────────────────────────────
 "Gökyüzünde güvenle planlandı. İyi uçuşlar dileriz."
 ===================================================
 `;
@@ -1137,16 +1227,34 @@ ${listStr}
       date: new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })
     };
 
-    THY.toast('Rapor gönderiliyor...', 'info');
+    THY.toast('Rapor ve Davet gönderiliyor...', 'info');
 
     emailjs.send(settings.serviceId, settings.templateId, templateParams, settings.publicKey)
       .then(() => {
-        THY.toast('Seyahat raporu başarıyla gönderildi! ✈️', 'success');
+        THY.toast('Seyahat raporu ve davet bağlantısı başarıyla gönderildi! ✈️', 'success');
       })
       .catch((err) => {
         console.error('EmailJS Error:', err);
         THY.toast('E-posta gönderilemedi. Ayarları kontrol edin.', 'error');
       });
+  });
+
+  // ---- COPY INVITE LINK ----
+  document.getElementById('btnCopyInviteLink')?.addEventListener('click', () => {
+    if (!THY.waypoints || THY.waypoints.length === 0) {
+      THY.toast('Davet linki oluşturmak için önce rotaya nokta ekleyin!', 'error');
+      return;
+    }
+    const shareUrl = THY.generateShareUrl();
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      THY.toast('Davet linki başarıyla panoya kopyalandı! 🔗', 'success');
+      if (typeof THY.playSplitFlapSound === 'function') {
+        THY.playSplitFlapSound(5);
+      }
+    }).catch(err => {
+      console.error('Failed to copy link:', err);
+      THY.toast('Link kopyalanamadı, lütfen manuel kopyalayın.', 'error');
+    });
   });
 
   // ---- EMAIL PREVIEW UPDATE ----
@@ -1163,6 +1271,9 @@ ${listStr}
     const depCode = document.getElementById('flightDep')?.textContent || 'IST';
     const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
     const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    // Generate link for preview
+    const inviteLink = THY.generateShareUrl();
 
     let routeHtml = '';
     THY.waypoints.forEach((wp, i) => {
@@ -1228,9 +1339,15 @@ ${listStr}
         <!-- Log Entry Area -->
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
           <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;">Seyir Güzergah Raporu</div>
-          <div>
+          <div style="margin-bottom: 16px;">
             ${routeHtml}
           </div>
+        </div>
+
+        <!-- Collaboration Link Area -->
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; margin-top: 16px; word-break: break-all;">
+          <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;">🔗 Düzenleme ve Davet Bağlantısı</div>
+          <a href="${inviteLink}" target="_blank" style="font-size: 11px; color: var(--thy-red-light); text-decoration: underline; line-height: 1.4;">${inviteLink}</a>
         </div>
 
         <!-- Footer -->

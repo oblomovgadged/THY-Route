@@ -695,11 +695,37 @@ function initMap() {
     }
   };
 
-  // ---- Initial Places Load ----
-  // Load restaurants around Tokyo on start
-  setTimeout(() => {
-    THY.searchNearbyPlaces('restaurant');
-  }, 1500);
+  // ---- Hydrate Shared Route (If Loaded via URL) ----
+  if (THY.sharedRouteData && THY.sharedRouteData.waypoints && THY.sharedRouteData.waypoints.length > 0) {
+    THY.clearRoute();
+    
+    const firstWp = THY.sharedRouteData.waypoints[0];
+    const initialCenter = new google.maps.LatLng(firstWp.lat, firstWp.lng);
+    map.setCenter(initialCenter);
+    map.setZoom(13);
+
+    // Stagger waypoints loading so dropping animation and sound flap ticks play beautifully
+    THY.sharedRouteData.waypoints.forEach((wp, idx) => {
+      setTimeout(() => {
+        THY.addWaypoint(wp.lat, wp.lng, wp.name, wp.note || '');
+      }, idx * 250);
+    });
+
+    // Automatically load places around the new center
+    setTimeout(() => {
+      const activeChip = document.querySelector('.filter-chip.active');
+      const type = activeChip?.dataset?.type || 'restaurant';
+      THY.searchNearbyPlaces(type, initialCenter);
+    }, THY.sharedRouteData.waypoints.length * 250 + 500);
+
+    THY.toast('Paylaşılan seyahat rotası başarıyla yüklendi! ✈️', 'success', 5000);
+  } else {
+    // ---- Initial Places Load ----
+    // Load restaurants around Tokyo on start
+    setTimeout(() => {
+      THY.searchNearbyPlaces('restaurant');
+    }, 1500);
+  }
 
   // ---- Splash hide ----
   setTimeout(() => {
