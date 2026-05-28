@@ -727,6 +727,32 @@ const thyApiConfig = {
       .toLowerCase();
   }
 
+  THY.getAirportCoordinates = async (code, cityName) => {
+    // 1. Check in hardcoded database first
+    const ap = AIRPORTS.find(a => a.code === code);
+    if (ap) return { lat: ap.lat, lng: ap.lng, city: ap.city, name: ap.name };
+
+    // 2. Try to Geocode using the city name or IATA code
+    const query = cityName ? `${cityName} ${code}` : `Airport ${code}`;
+    const geocoder = new google.maps.Geocoder();
+    return new Promise((resolve) => {
+      geocoder.geocode({ address: query }, (results, status) => {
+        if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+          const loc = results[0].geometry.location;
+          resolve({
+            lat: loc.lat(),
+            lng: loc.lng(),
+            city: cityName || results[0].formatted_address.split(',')[0],
+            name: results[0].formatted_address
+          });
+        } else {
+          // Absolute fallback
+          resolve({ lat: 40.641, lng: -73.778, city: cityName || code || 'New York', name: 'John F. Kennedy Havalimanı' });
+        }
+      });
+    });
+  };
+
   // ---- AUTOCOMPLETE SUGGESTIONS ENGINE ----
   function setupAutocomplete(inputId, suggestionsId) {
     const input = document.getElementById(inputId);
@@ -788,7 +814,35 @@ const thyApiConfig = {
       );
 
       if (filtered.length === 0 && suggestions.children.length === 0) {
-        suggestions.classList.remove('active');
+        const div = document.createElement('div');
+        div.className = 'suggestion-item dynamic-suggestion';
+        div.style.background = 'rgba(200, 169, 81, 0.1)';
+        div.style.borderLeft = '3px solid var(--thy-gold)';
+        div.style.display = 'flex';
+        div.style.justifyContent = 'space-between';
+        div.style.alignItems = 'center';
+        div.innerHTML = `
+          <span>🔍 <strong>Haritada Keşfet:</strong> "${rawVal}"</span>
+          <span class="suggestion-code" style="color: var(--thy-gold); font-size: 10px; font-weight: 800;">BULUT</span>
+        `;
+        div.addEventListener('click', () => {
+          input.value = rawVal;
+          const tempCode = rawVal.replace(/[^A-Za-z]/g, '').substring(0, 3).toUpperCase() || 'XXX';
+          input.dataset.code = tempCode;
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ address: rawVal }, (results, status) => {
+            if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+              const loc = results[0].geometry.location;
+              input.dataset.lat = loc.lat();
+              input.dataset.lng = loc.lng();
+              console.log(`✈️ Resolved dynamic location "${rawVal}" to coordinates:`, loc.lat(), loc.lng());
+            }
+          });
+          suggestions.innerHTML = '';
+          suggestions.classList.remove('active');
+        });
+        suggestions.appendChild(div);
+        suggestions.classList.add('active');
         return;
       }
 
@@ -1202,7 +1256,7 @@ const thyApiConfig = {
   }
 
   // ---- FLIGHT SEARCH & SELECTION ----
-  document.getElementById('btnSearchFlights')?.addEventListener('click', () => {
+  document.getElementById('btnSearchFlights')?.addEventListener('click', async () => {
     const depInput = document.getElementById('flightDepartureInput');
     const destInput = document.getElementById('flightDestinationInput');
     const depVal = depInput?.value?.trim() || '';
@@ -1218,7 +1272,7 @@ const thyApiConfig = {
     }
     
     // Resolve airport code from typed text if necessary
-    function resolveAirportCode(val) {
+    async function resolveAirportCode(val) {
       if (!val) return null;
       const cleanVal = val.toUpperCase().trim();
       
@@ -1227,6 +1281,16 @@ const thyApiConfig = {
         const matchedCode = codeMatch[1];
         const ap = AIRPORTS.find(a => a.code === matchedCode);
         if (ap) return ap;
+        
+        // If code is not in AIRPORTS, geocode to get coordinates
+        const coords = await THY.getAirportCoordinates(matchedCode);
+        return {
+          code: matchedCode,
+          city: cleanVal.replace(/\([A-Z]{3}\)/, '').trim() || coords.city,
+          name: coords.name,
+          lat: coords.lat,
+          lng: coords.lng
+        };
       }
       
       const normalizedInput = normalizeText(val);
@@ -1236,22 +1300,107 @@ const thyApiConfig = {
       const matchedByName = AIRPORTS.find(a => normalizeText(a.name).includes(normalizedInput));
       if (matchedByName) return matchedByName;
 
-      return null;
+      // Geocoding fallback for typed string (e.g. "nweyork", "Miami")
+      return new Promise((resolve) => {
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: val }, (results, status) => {
+          if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+            const loc = results[0].geometry.location;
+            const tempCode = val.replace(/[^A-Za-z]/g, '').substring(0, 3).toUpperCase() || 'XXX';
+            
+            let addressCity = '';
+            const addressComponents = results[0].address_components;
+            if (addressComponents) {
+              const locality = addressComponents.find(c => c.types.includes('locality'));
+              const adminArea = addressComponents.find(c => c.types.includes('administrative_area_level_1'));
+              addressCity = locality ? locality.long_name : (adminArea ? adminArea.long_name : val);
+            } else {
+              addressCity = val;
+            }
+
+            // Check if the resolved city matches any hardcoded airport
+            const normalizedAddressCity = normalizeText(addressCity);
+            const ap = AIRPORTS.find(a => normalizeText(a.city) === normalizedAddressCity);
+            if (ap) {
+              resolve({
+                code: ap.code,
+                city: ap.city,
+                name: ap.name,
+                lat: ap.lat,
+                lng: ap.lng
+              });
+              return;
+            }
+
+            resolve({
+              code: tempCode,
+              city: addressCity,
+              name: results[0].formatted_address,
+              lat: loc.lat(),
+              lng: loc.lng()
+            });
+          } else {
+            resolve(null);
+          }
+        });
+      });
     }
 
     if (!isFlightCodeSearch) {
-      const resolvedDep = resolveAirportCode(depVal);
-      if (resolvedDep) {
-        depInput.dataset.code = resolvedDep.code;
-        depInput.dataset.lat = resolvedDep.lat;
-        depInput.dataset.lng = resolvedDep.lng;
+      const searchBtn = document.getElementById('btnSearchFlights');
+      const originalText = searchBtn ? searchBtn.innerHTML : 'Uçuş Ara';
+      if (searchBtn) {
+        searchBtn.disabled = true;
+        searchBtn.innerHTML = '🔍 Çözümleniyor...';
       }
-      
-      const resolvedDest = resolveAirportCode(destVal);
-      if (resolvedDest) {
-        destInput.dataset.code = resolvedDest.code;
-        destInput.dataset.lat = resolvedDest.lat;
-        destInput.dataset.lng = resolvedDest.lng;
+
+      try {
+        const resolvedDep = await resolveAirportCode(depVal);
+        if (resolvedDep) {
+          depInput.dataset.code = resolvedDep.code;
+          depInput.dataset.lat = resolvedDep.lat;
+          depInput.dataset.lng = resolvedDep.lng;
+          depInput.dataset.city = resolvedDep.city;
+          depInput.dataset.name = resolvedDep.name;
+          depInput.value = `${resolvedDep.city} (${resolvedDep.code})`;
+        } else {
+          THY.toast('Kalkış noktası bulunamadı.', 'error');
+          if (searchBtn) {
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = originalText;
+          }
+          return;
+        }
+
+        const resolvedDest = await resolveAirportCode(destVal);
+        if (resolvedDest) {
+          destInput.dataset.code = resolvedDest.code;
+          destInput.dataset.lat = resolvedDest.lat;
+          destInput.dataset.lng = resolvedDest.lng;
+          destInput.dataset.city = resolvedDest.city;
+          destInput.dataset.name = resolvedDest.name;
+          destInput.value = `${resolvedDest.city} (${resolvedDest.code})`;
+        } else {
+          THY.toast('Varış noktası bulunamadı.', 'error');
+          if (searchBtn) {
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = originalText;
+          }
+          return;
+        }
+      } catch (err) {
+        console.error('Error resolving locations:', err);
+        THY.toast('Konumlar çözümlenemedi.', 'error');
+        if (searchBtn) {
+          searchBtn.disabled = false;
+          searchBtn.innerHTML = originalText;
+        }
+        return;
+      } finally {
+        if (searchBtn) {
+          searchBtn.disabled = false;
+          searchBtn.innerHTML = originalText;
+        }
       }
     }
 
@@ -1393,11 +1542,13 @@ const thyApiConfig = {
         listContainer.innerHTML = '';
 
         // Calculate dynamic flight duration using Haversine coordinates distance
-        const depAp = AIRPORTS.find(a => a.code === fromCode);
-        const destAp = AIRPORTS.find(a => a.code === toCode);
+        const depLat = parseFloat(depInput.dataset.lat);
+        const depLng = parseFloat(depInput.dataset.lng);
+        const destLat = parseFloat(destInput.dataset.lat);
+        const destLng = parseFloat(destInput.dataset.lng);
         let flightDurationMinutes = 200; // default 3h 20m
-        if (depAp && destAp) {
-          const dist = getDistance(depAp.lat, depAp.lng, destAp.lat, destAp.lng);
+        if (!isNaN(depLat) && !isNaN(depLng) && !isNaN(destLat) && !isNaN(destLng)) {
+          const dist = getDistance(depLat, depLng, destLat, destLng);
           // speed 800 km/h: distance * 0.075 + 30 mins overhead
           flightDurationMinutes = Math.max(45, Math.round(dist * 0.075 + 30));
         }
@@ -1549,7 +1700,7 @@ const thyApiConfig = {
           });
         });
  
-        function completeBooking() {
+        async function completeBooking() {
           if (typeof THY.playSplitFlapSound === 'function') {
             THY.playSplitFlapSound(16);
           }
@@ -1599,7 +1750,32 @@ const thyApiConfig = {
             statusBadge.style.borderColor = color;
           }
           
-          const destAp = AIRPORTS.find(a => a.code === selectedOutbound.arr);
+          let destAp = AIRPORTS.find(a => a.code === selectedOutbound.arr);
+          if (!destAp) {
+            const destInput = document.getElementById('flightDestinationInput');
+            if (destInput && destInput.dataset.code === selectedOutbound.arr && destInput.dataset.lat) {
+              destAp = {
+                code: selectedOutbound.arr,
+                city: destInput.dataset.city || destInput.value || 'Keşfedilmemiş Şehir',
+                name: destInput.dataset.name || destInput.value || 'Keşfedilmemiş Şehir Havalimanı',
+                lat: parseFloat(destInput.dataset.lat),
+                lng: parseFloat(destInput.dataset.lng)
+              };
+            } else {
+              try {
+                const coords = await THY.getAirportCoordinates(selectedOutbound.arr, destInput?.dataset?.city);
+                destAp = {
+                  code: selectedOutbound.arr,
+                  city: coords.city,
+                  name: coords.name,
+                  lat: coords.lat,
+                  lng: coords.lng
+                };
+              } catch (e) {
+                console.error("Geocoding failed for dest airport:", e);
+              }
+            }
+          }
           
           let days = 3; // Default 3 days for one-way flight route
           if (currentTripType === 'round-trip' && depDate && retDate) {
