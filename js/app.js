@@ -134,7 +134,7 @@ const thyApiConfig = {
           THY.renderTripState({
             waypoints: THY.waypoints,
             maxDays: THY.maxDays
-          });
+          }, true);
         }
       }
     });
@@ -158,7 +158,7 @@ const thyApiConfig = {
             THY.renderTripState({
               waypoints: THY.waypoints,
               maxDays: THY.maxDays
-            });
+            }, true);
           }
         }
       });
@@ -2208,7 +2208,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=2.4')
+    navigator.serviceWorker.register('/sw.js?v=2.5')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }

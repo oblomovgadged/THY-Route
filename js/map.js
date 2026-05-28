@@ -129,7 +129,17 @@ function initMap() {
   // ---- Centralized Collaborative State Renderer ----
   let firstRenderDone = false;
 
-  THY.renderTripState = (data) => {
+  function getContrastColor(hex) {
+    if (!hex) return '#FFFFFF';
+    const color = hex.replace('#', '');
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 150) ? '#0F2C59' : '#FFFFFF';
+  }
+
+  THY.renderTripState = (data, fitBounds = false) => {
     // 1. Clear old markers
     waypointMarkers.forEach(m => m.setMap(null));
     waypointMarkers = [];
@@ -140,18 +150,10 @@ function initMap() {
       if (!wp.day) wp.day = 1;
     });
 
-    // 3. Pan map on first load if waypoints exist
-    if (!firstRenderDone && THY.waypoints.length > 0) {
-      const firstWp = THY.waypoints[0];
-      map.setCenter(new google.maps.LatLng(firstWp.lat, firstWp.lng));
-      map.setZoom(13);
-      firstRenderDone = true;
-    }
-
     // Keep track of index per day for marker labels
     const dayIndexCounters = {};
 
-    // 4. Create new markers for all days
+    // 3. Create new markers (only show the active day's markers, or all if activeDay is 0)
     THY.waypoints.forEach((wp, idx) => {
       const wpDay = wp.day || 1;
       if (!dayIndexCounters[wpDay]) {
@@ -159,6 +161,11 @@ function initMap() {
       }
       dayIndexCounters[wpDay]++;
       const dailyIdx = dayIndexCounters[wpDay];
+
+      // Filter markers by activeDay
+      if (THY.activeDay !== 0 && wpDay !== THY.activeDay) {
+        return;
+      }
 
       const lat = wp.lat;
       const lng = wp.lng;
@@ -188,6 +195,26 @@ function initMap() {
       waypointMarkers.push(marker);
     });
 
+    // 4. Fit map bounds on first load or when user explicitly switched day
+    if ((fitBounds || !firstRenderDone) && waypointMarkers.length > 0) {
+      const bounds = new google.maps.LatLngBounds();
+      waypointMarkers.forEach(m => bounds.extend(m.getPosition()));
+      map.fitBounds(bounds);
+
+      // Prevent zooming in too close
+      const listener = google.maps.event.addListener(map, 'idle', () => {
+        if (map.getZoom() > 15) map.setZoom(15);
+        google.maps.event.removeListener(listener);
+      });
+      firstRenderDone = true;
+    } else if (!firstRenderDone && THY.waypoints.length > 0) {
+      // Fallback center for first load if no markers were visible
+      const firstWp = THY.waypoints[0];
+      map.setCenter(new google.maps.LatLng(firstWp.lat, firstWp.lng));
+      map.setZoom(13);
+      firstRenderDone = true;
+    }
+
     // 5. Update local polyline and UI lists
     updatePolyline();
     updateWaypointUI();
@@ -212,26 +239,28 @@ function initMap() {
 
     if (THY.waypoints.length < 2) return;
 
-    // 1. Draw global dashed background line
-    const globalPath = THY.waypoints.map(wp => ({ lat: wp.lat, lng: wp.lng }));
-    globalRoutePolyline = new google.maps.Polyline({
-      path: globalPath,
-      geodesic: true,
-      strokeColor: '#94A3B8',
-      strokeOpacity: 0,
-      icons: [{
-        icon: {
-          path: 'M 0,-1 0,1',
-          strokeOpacity: 0.5,
-          scale: 2,
-          strokeColor: '#94A3B8',
-          strokeWeight: 2
-        },
-        offset: '0',
-        repeat: '12px'
-      }],
-      map: map
-    });
+    // 1. Draw global dashed background line (only in Tam Rota mode)
+    if (THY.activeDay === 0) {
+      const globalPath = THY.waypoints.map(wp => ({ lat: wp.lat, lng: wp.lng }));
+      globalRoutePolyline = new google.maps.Polyline({
+        path: globalPath,
+        geodesic: true,
+        strokeColor: '#94A3B8',
+        strokeOpacity: 0,
+        icons: [{
+          icon: {
+            path: 'M 0,-1 0,1',
+            strokeOpacity: 0.5,
+            scale: 2,
+            strokeColor: '#94A3B8',
+            strokeWeight: 2
+          },
+          offset: '0',
+          repeat: '12px'
+        }],
+        map: map
+      });
+    }
 
     // 2. Group waypoints by day
     const waypointsByDay = {};
@@ -246,6 +275,12 @@ function initMap() {
     // Draw a polyline for each day
     Object.keys(waypointsByDay).forEach(dStr => {
       const dayNum = parseInt(dStr);
+      
+      // Filter by activeDay
+      if (THY.activeDay !== 0 && dayNum !== THY.activeDay) {
+        return;
+      }
+
       const dayWps = waypointsByDay[dayNum];
       if (dayWps.length < 2) return;
 
@@ -331,7 +366,8 @@ function initMap() {
       
       let dayBadgeHtml = '';
       if (showAll) {
-        dayBadgeHtml = `<span style="font-size: 9px; padding: 2px 6px; background: rgba(255,255,255,0.05); border: 1px solid ${wpColor}; border-radius: 4px; color: ${wpColor}; font-weight: 700; margin-left: 6px;">${wp.day}. Gün</span>`;
+        const contrastColor = getContrastColor(wpColor);
+        dayBadgeHtml = `<span style="font-size: 10px; padding: 2px 6px; background: ${wpColor}; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: ${contrastColor}; font-weight: 700; margin-left: 6px; display: inline-block; vertical-align: middle;">${wp.day}. Gün</span>`;
       }
 
       item.innerHTML = `
