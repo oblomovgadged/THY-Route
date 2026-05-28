@@ -32,6 +32,17 @@ const thyApiConfig = {
   // ---- TOAST SYSTEM ----
   window.THY = window.THY || {};
   THY.userRole = 'Kaptan'; // Default role is Captain
+  THY.activeDay = 1;
+  THY.maxDays = 1;
+  THY.dayColors = [
+    '#0F2C59', // Day 1: THY Navy/Corporate Blue
+    '#C8A951', // Day 2: THY Gold
+    '#E31837', // Day 3: THY Red
+    '#10B981', // Day 4: Emerald Green
+    '#8B5CF6', // Day 5: Royal Purple
+    '#14B8A6', // Day 6: Teal
+    '#F59E0B'  // Day 7: Amber
+  ];
 
   // ---- TRIP ID GENERATOR ----
   THY.generateTripId = () => {
@@ -76,7 +87,62 @@ const thyApiConfig = {
   document.addEventListener('DOMContentLoaded', () => {
     const tripBadge = document.getElementById('tripIdBadge');
     if (tripBadge) tripBadge.textContent = THY.currentTripId;
+
+    // Day Add Button Click Listener
+    const btnAddingDay = document.getElementById('btnAddingDay');
+    if (btnAddingDay) {
+      btnAddingDay.addEventListener('click', () => {
+        THY.maxDays = (THY.maxDays || 1) + 1;
+        THY.activeDay = THY.maxDays;
+        if (typeof THY.playSplitFlapSound === 'function') {
+          THY.playSplitFlapSound(4);
+        }
+        
+        THY.updateTripInFirestore({ maxDays: THY.maxDays });
+        
+        THY.updateDayTabs();
+        if (typeof THY.renderTripState === 'function') {
+          THY.renderTripState({
+            waypoints: THY.waypoints,
+            maxDays: THY.maxDays
+          });
+        }
+        THY.toast(`${THY.activeDay}. Gün oluşturuldu!`, 'success');
+      });
+    }
   });
+
+  THY.updateDayTabs = () => {
+    const container = document.getElementById('dayTabs');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    for (let d = 1; d <= THY.maxDays; d++) {
+      const btn = document.createElement('button');
+      btn.className = `day-tab-btn ${d === THY.activeDay ? 'active' : ''}`;
+      
+      const color = THY.dayColors[(d - 1) % THY.dayColors.length] || '#E31837';
+      btn.style.setProperty('--day-color', color);
+      btn.innerHTML = `<span>${d}. Gün</span>`;
+      btn.addEventListener('click', () => {
+        if (THY.activeDay !== d) {
+          THY.activeDay = d;
+          if (typeof THY.playSplitFlapSound === 'function') {
+            THY.playSplitFlapSound(2);
+          }
+          THY.updateDayTabs();
+          if (typeof THY.renderTripState === 'function') {
+            THY.renderTripState({
+              waypoints: THY.waypoints,
+              maxDays: THY.maxDays
+            });
+          }
+        }
+      });
+      container.appendChild(btn);
+    }
+  };
 
   THY.toast = (message, type = 'info', duration = 3500) => {
     const container = document.getElementById('toastContainer');
@@ -269,6 +335,17 @@ const thyApiConfig = {
           }
 
           THY.waypoints = data.waypoints || [];
+          THY.waypoints.forEach(wp => {
+            if (!wp.day) wp.day = 1;
+          });
+          const maxWpDay = THY.waypoints.reduce((max, wp) => Math.max(max, wp.day), 1);
+          THY.maxDays = Math.max(maxWpDay, data.maxDays || 1);
+          if (THY.activeDay > THY.maxDays) {
+            THY.activeDay = THY.maxDays;
+          }
+          if (typeof THY.updateDayTabs === 'function') {
+            THY.updateDayTabs();
+          }
           
           const boardNo = document.getElementById('flightCode');
           const boardDep = document.getElementById('flightDep');
@@ -355,6 +432,9 @@ const thyApiConfig = {
       if (fields.waypoints !== undefined) {
         THY.waypoints = fields.waypoints;
       }
+      if (fields.maxDays !== undefined) {
+        THY.maxDays = fields.maxDays;
+      }
       if (typeof THY.renderTripState === 'function') {
         THY.renderTripState({
           flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || 'TK 1982',
@@ -362,7 +442,8 @@ const thyApiConfig = {
           arr: fields.arr || document.getElementById('flightArr')?.textContent || 'NRT',
           gate: fields.gate || document.getElementById('flightGate')?.textContent || 'A7',
           statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
-          waypoints: THY.waypoints
+          waypoints: THY.waypoints,
+          maxDays: THY.maxDays
         });
       }
       return;
@@ -378,7 +459,8 @@ const thyApiConfig = {
         const newLen = fields.waypoints.length;
         if (newLen > oldLen) {
           const addedWp = fields.waypoints[newLen - 1];
-          actionText = `yeni rota noktası ekledi: "${addedWp.name}" 📍`;
+          const wpDay = addedWp.day || 1;
+          actionText = `${wpDay}. Gün rotasına yeni rota noktası ekledi: "${addedWp.name}" 📍`;
         } else if (newLen < oldLen) {
           actionText = 'rotadan bir nokta kaldırdı 🗑️';
         } else {
@@ -399,6 +481,8 @@ const thyApiConfig = {
             actionText = 'rotayı güncelledi 🗺️';
           }
         }
+      } else if (fields.maxDays !== undefined) {
+        actionText = `seyahate yeni bir gün ekledi: Toplam ${fields.maxDays} Gün 📅`;
       } else if (fields.flightCode !== undefined || fields.dep !== undefined || fields.arr !== undefined || fields.statusText !== undefined) {
         actionText = 'uçuş panosu bilgilerini güncelledi ✈️';
       }
@@ -431,6 +515,9 @@ const thyApiConfig = {
         if (fields.waypoints !== undefined) {
           THY.waypoints = fields.waypoints;
         }
+        if (fields.maxDays !== undefined) {
+          THY.maxDays = fields.maxDays;
+        }
         if (typeof THY.renderTripState === 'function') {
           THY.renderTripState({
             flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || 'TK 1982',
@@ -438,7 +525,8 @@ const thyApiConfig = {
             arr: fields.arr || document.getElementById('flightArr')?.textContent || 'NRT',
             gate: fields.gate || document.getElementById('flightGate')?.textContent || 'A7',
             statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
-            waypoints: THY.waypoints
+            waypoints: THY.waypoints,
+            maxDays: THY.maxDays
           });
         }
       });
@@ -1585,11 +1673,13 @@ const thyApiConfig = {
     const data = {
       tripId: THY.currentTripId,
       exportedAt: new Date().toISOString(),
+      maxDays: THY.maxDays || 1,
       waypoints: THY.waypoints.map(wp => ({
         name: wp.name,
         lat: wp.lat,
         lng: wp.lng,
-        note: wp.note || ''
+        note: wp.note || '',
+        day: wp.day || 1
       }))
     };
     document.getElementById('exportJsonArea').value = JSON.stringify(data, null, 2);
@@ -1662,11 +1752,13 @@ const thyApiConfig = {
           arr: data.arr || document.getElementById('flightArr')?.textContent || 'NRT',
           gate: data.gate || document.getElementById('flightGate')?.textContent || 'A7',
           statusText: data.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+          maxDays: data.maxDays || 1,
           waypoints: data.waypoints.map(wp => ({
             name: wp.name,
             lat: parseFloat(wp.lat),
             lng: parseFloat(wp.lng),
-            note: wp.note || ''
+            note: wp.note || '',
+            day: wp.day || 1
           }))
         });
       }, 500);
@@ -1711,6 +1803,7 @@ const thyApiConfig = {
       arr: document.getElementById('flightArr')?.textContent || 'NRT',
       gate: document.getElementById('flightGate')?.textContent || 'A7',
       statusText: document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+      maxDays: THY.maxDays || 1,
       waypoints: THY.waypoints || []
     });
 
@@ -1719,11 +1812,13 @@ const thyApiConfig = {
     trips[THY.currentTripId] = {
       tripId: THY.currentTripId,
       savedAt: new Date().toISOString(),
+      maxDays: THY.maxDays || 1,
       waypoints: THY.waypoints.map(wp => ({
         name: wp.name,
         lat: wp.lat,
         lng: wp.lng,
-        note: wp.note || ''
+        note: wp.note || '',
+        day: wp.day || 1
       }))
     };
     localStorage.setItem('thy_saved_trips', JSON.stringify(trips));
@@ -1757,14 +1852,28 @@ const thyApiConfig = {
       const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
       const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
-      let listStr = THY.waypoints.map((wp, i) => {
-        let wpStr = `[DURAK ${i + 1}] 📍 ${wp.name}\n`;
-        wpStr += `   Koordinat: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E\n`;
-        if (wp.note) {
-          wpStr += `   📝 Kaptan Pilot Notu: "${wp.note}"\n`;
-        }
-        return wpStr;
-      }).join('\n───────────────────────────────────\n\n');
+      // Group waypoints by day
+      const groupedWps = {};
+      THY.waypoints.forEach(wp => {
+        const d = wp.day || 1;
+        if (!groupedWps[d]) groupedWps[d] = [];
+        groupedWps[d].push(wp);
+      });
+
+      let listStr = '';
+      Object.keys(groupedWps).sort((a, b) => a - b).forEach(dayNum => {
+        listStr += `📅 GÜN ${dayNum}\n`;
+        listStr += `===================================\n`;
+        groupedWps[dayNum].forEach((wp, idx) => {
+          listStr += `[DURAK ${idx + 1}] 📍 ${wp.name}\n`;
+          listStr += `   Koordinat: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E\n`;
+          if (wp.note) {
+            listStr += `   📝 Kaptan Pilot Notu: "${wp.note}"\n`;
+          }
+          listStr += `\n`;
+        });
+        listStr += `───────────────────────────────────\n\n`;
+      });
 
       routeSummary = `
 ===================================================
@@ -1774,14 +1883,13 @@ Defter Kayıt ID : ${THY.currentTripId}
 Kayıt Tarihi    : ${dateStr}
 Canlı Uçuş Kodu : ${flightCode}
 Uçuş Güzergahı  : ${depCode} ➔ ${arrCode}
-Kontrol Noktası : ${THY.waypoints.length} Durak
+Kontrol Noktası : ${THY.waypoints.length} Durak (Toplam ${THY.maxDays} Gün)
 ===================================================
 
 YOLCULUK GÜZERGAH DETAYLARI:
 ───────────────────────────────────
 
 ${listStr}
-
 ───────────────────────────────────
 DAVET VE BİRLİKTE DÜZENLEME BAĞLANTISI:
 ${inviteLink}
@@ -1862,35 +1970,48 @@ ${inviteLink}
     const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
     const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
+    // Group waypoints by day
+    const groupedWps = {};
+    THY.waypoints.forEach(wp => {
+      const d = wp.day || 1;
+      if (!groupedWps[d]) groupedWps[d] = [];
+      groupedWps[d].push(wp);
+    });
+
     let routeHtml = '';
-    THY.waypoints.forEach((wp, i) => {
-      const isFirst = i === 0;
-      const isLast = i === THY.waypoints.length - 1;
-      
+    Object.keys(groupedWps).sort((a, b) => a - b).forEach(dayNum => {
+      const dayColor = THY.dayColors[(dayNum - 1) % THY.dayColors.length] || '#E31837';
       routeHtml += `
-        <div style="position: relative; padding-left: 28px; margin-bottom: 12px;">
-          <!-- Vertical timeline line -->
-          ${!isLast ? `<div style="position: absolute; left: 8px; top: 16px; bottom: -16px; width: 1px; background: rgba(200, 169, 81, 0.3); border-left: 1px dashed var(--thy-gold);"></div>` : ''}
-          
-          <!-- Node Dot -->
-          <div style="position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: ${isFirst || isLast ? 'var(--thy-red)' : 'var(--bg-primary)'}; border: 2px solid var(--thy-gold); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: white;">
-            ${isFirst ? '🛫' : (isLast ? '🛬' : '')}
-          </div>
-          
-          <!-- Stop Detail -->
-          <div style="font-weight: 600; font-size: 13px; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
-            <span>Nokta ${i + 1}: ${wp.name}</span>
-          </div>
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 1px;">
-            COORD: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E
-          </div>
-          ${wp.note ? `
-            <div style="margin-top: 4px; padding: 6px 10px; background: rgba(200, 169, 81, 0.05); border-left: 2px solid var(--thy-gold); font-size: 11px; color: var(--thy-gold-light); font-style: italic; border-radius: 0 4px 4px 0;">
-              📝 Kaptan Notu: "${wp.note}"
-            </div>
-          ` : ''}
+        <div style="margin-top: 16px; margin-bottom: 8px; font-weight: 800; font-size: 12px; color: ${dayColor}; letter-spacing: 1px; text-transform: uppercase;">
+          📅 ${dayNum}. GÜN ROTASI
         </div>
+        <div style="border-left: 2px solid ${dayColor}; padding-left: 12px; margin-left: 4px; margin-bottom: 16px;">
       `;
+      
+      groupedWps[dayNum].forEach((wp, idx) => {
+        routeHtml += `
+          <div style="position: relative; padding-left: 20px; margin-bottom: 12px;">
+            <!-- Node Dot -->
+            <div style="position: absolute; left: -18px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: ${dayColor}; display: flex; align-items: center; justify-content: center;">
+            </div>
+            
+            <!-- Stop Detail -->
+            <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">
+              Nokta ${idx + 1}: ${wp.name}
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted);">
+              COORD: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E
+            </div>
+            ${wp.note ? `
+              <div style="margin-top: 4px; padding: 6px 10px; background: rgba(255, 255, 255, 0.02); border-left: 2px solid var(--thy-gold); font-size: 11px; color: var(--text-secondary); font-style: italic; border-radius: 0 4px 4px 0;">
+                📝 Not: "${wp.note}"
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      routeHtml += `</div>`;
     });
 
     let html = `
@@ -2065,7 +2186,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=2.2')
+    navigator.serviceWorker.register('/sw.js?v=2.3')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }

@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=3.1">
+  <link rel="stylesheet" href="css/style.css?v=3.2">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -294,6 +294,14 @@
               <div class="trip-id-badge" id="tripIdBadge">TRIP-0001</div>
             </div>
 
+            <!-- Day Selector -->
+            <div class="day-selector-container" id="daySelectorContainer">
+              <div class="day-tabs" id="dayTabs">
+                <!-- Dynamic tabs -->
+              </div>
+              <button class="day-add-btn" id="btnAddingDay" title="Yeni Gün Ekle">+</button>
+            </div>
+
             <div class="waypoint-list" id="waypointList">
               <div class="empty-state" id="emptyRouteState">
                 <div class="empty-state__icon">🌍</div>
@@ -461,7 +469,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=3.1"></script>
-  <script src="js/map.js?v=3.1"></script>
+  <script src="js/app.js?v=3.2"></script>
+  <script src="js/map.js?v=3.2"></script>
 </body>
 </html>

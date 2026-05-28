@@ -42,7 +42,7 @@ function initMap() {
   infoWindow = new google.maps.InfoWindow();
 
   // ---- Custom Marker SVG ----
-  function createWaypointIcon(index) {
+  function createWaypointIcon(index, color = '#E31837') {
     return {
       url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="46" viewBox="0 0 36 46">
@@ -51,9 +51,9 @@ function initMap() {
               <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
             </filter>
           </defs>
-          <path d="M18 0 C8 0 0 8 0 18 C0 30 18 46 18 46 C18 46 36 30 36 18 C36 8 28 0 18 0Z" fill="#E31837" filter="url(#s)"/>
+          <path d="M18 0 C8 0 0 8 0 18 C0 30 18 46 18 46 C18 46 36 30 36 18 C36 8 28 0 18 0Z" fill="${color}" filter="url(#s)"/>
           <circle cx="18" cy="17" r="11" fill="white"/>
-          <text x="18" y="22" text-anchor="middle" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="#E31837">${index}</text>
+          <text x="18" y="22" text-anchor="middle" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="${color}">${index}</text>
         </svg>
       `),
       scaledSize: new google.maps.Size(36, 46),
@@ -85,7 +85,18 @@ function initMap() {
     if (typeof THY.playSplitFlapSound === 'function') {
       THY.playSplitFlapSound(4);
     }
-    const wp = { lat, lng, name: name || `Nokta ${THY.waypoints.length + 1}`, note: note || '' };
+    
+    // Find how many waypoints are already in this day to make a friendly default label
+    const dayWpCount = THY.waypoints.filter(wp => (wp.day || 1) === (THY.activeDay || 1)).length;
+    const defaultName = `Nokta ${dayWpCount + 1}`;
+
+    const wp = { 
+      lat, 
+      lng, 
+      name: name || defaultName, 
+      note: note || '',
+      day: THY.activeDay || 1 
+    };
     const updated = [...THY.waypoints, wp];
     THY.updateTripInFirestore({ waypoints: updated });
   };
@@ -103,7 +114,9 @@ function initMap() {
     if (typeof THY.playSplitFlapSound === 'function') {
       THY.playSplitFlapSound(8);
     }
-    THY.updateTripInFirestore({ waypoints: [] });
+    // Delete waypoints of active day only, keeping other days intact
+    const updated = THY.waypoints.filter(wp => (wp.day || 1) !== (THY.activeDay || 1));
+    THY.updateTripInFirestore({ waypoints: updated });
   };
 
   // ---- Centralized Collaborative State Renderer ----
@@ -116,6 +129,9 @@ function initMap() {
 
     // 2. Hydrate local waypoints
     THY.waypoints = data.waypoints || [];
+    THY.waypoints.forEach(wp => {
+      if (!wp.day) wp.day = 1;
+    });
 
     // 3. Pan map on first load if waypoints exist
     if (!firstRenderDone && THY.waypoints.length > 0) {
@@ -125,14 +141,26 @@ function initMap() {
       firstRenderDone = true;
     }
 
-    // 4. Create new markers
+    // Keep track of index per day for marker labels
+    const dayIndexCounters = {};
+
+    // 4. Create new markers for all days
     THY.waypoints.forEach((wp, idx) => {
+      const wpDay = wp.day || 1;
+      if (!dayIndexCounters[wpDay]) {
+        dayIndexCounters[wpDay] = 0;
+      }
+      dayIndexCounters[wpDay]++;
+      const dailyIdx = dayIndexCounters[wpDay];
+
       const lat = wp.lat;
       const lng = wp.lng;
+      const dayColor = THY.dayColors[(wpDay - 1) % THY.dayColors.length] || '#E31837';
+
       const marker = new google.maps.Marker({
         position: { lat, lng },
         map: map,
-        icon: createWaypointIcon(idx + 1),
+        icon: createWaypointIcon(dailyIdx, dayColor),
         title: wp.name,
         zIndex: 100
       });
@@ -142,7 +170,7 @@ function initMap() {
         const noteHtml = currentWp.note ? `<div style="font-size:11px;color:#C8A951;margin-bottom:6px;font-style:italic;">📝 ${currentWp.note}</div>` : '';
         infoWindow.setContent(`
           <div style="background:#1A2235;color:#F1F5F9;padding:10px 14px;border-radius:8px;font-family:Inter,sans-serif;min-width:140px;">
-            <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${currentWp.name}</div>
+            <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${currentWp.name} (${wpDay}. Gün)</div>
             ${noteHtml}
             <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#94A3B8;">${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
           </div>
@@ -162,74 +190,101 @@ function initMap() {
   };
 
   // ---- Polyline ----
+  let routePolylines = [];
+
   function updatePolyline() {
-    if (routePolyline) {
-      routePolyline.setMap(null);
-    }
+    // Clear old polylines
+    routePolylines.forEach(p => p.setMap(null));
+    routePolylines = [];
 
-    if (THY.waypoints.length < 2) return;
+    // Group waypoints by day
+    const waypointsByDay = {};
+    THY.waypoints.forEach(wp => {
+      const d = wp.day || 1;
+      if (!waypointsByDay[d]) {
+        waypointsByDay[d] = [];
+      }
+      waypointsByDay[d].push(wp);
+    });
 
-    const path = THY.waypoints.map(wp => ({ lat: wp.lat, lng: wp.lng }));
+    // Draw a polyline for each day
+    Object.keys(waypointsByDay).forEach(dStr => {
+      const dayNum = parseInt(dStr);
+      const dayWps = waypointsByDay[dayNum];
+      if (dayWps.length < 2) return;
 
-    routePolyline = new google.maps.Polyline({
-      path: path,
-      geodesic: true,
-      strokeColor: '#E31837',
-      strokeOpacity: 0.9,
-      strokeWeight: 3,
-      icons: [{
-        icon: {
-          path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
-          scale: 3,
-          strokeColor: '#C8A951',
-          strokeWeight: 2
-        },
-        offset: '50%',
-        repeat: '120px'
-      }],
-      map: map
+      const path = dayWps.map(wp => ({ lat: wp.lat, lng: wp.lng }));
+      const color = THY.dayColors[(dayNum - 1) % THY.dayColors.length] || '#E31837';
+
+      const polyline = new google.maps.Polyline({
+        path: path,
+        geodesic: true,
+        strokeColor: color,
+        strokeOpacity: 0.9,
+        strokeWeight: 3,
+        icons: [{
+          icon: {
+            path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+            scale: 2.5,
+            strokeColor: '#FFFFFF',
+            strokeWeight: 1.5
+          },
+          offset: '50%',
+          repeat: '100px'
+        }],
+        map: map
+      });
+
+      routePolylines.push(polyline);
     });
   }
 
   // ---- Waypoint UI ----
   function updateWaypointUI() {
     const list = document.getElementById('waypointList');
-    const emptyState = document.getElementById('emptyRouteState');
     if (!list) return;
 
     list.innerHTML = '';
 
-    if (THY.waypoints.length === 0) {
+    // Filter waypoints for active selection
+    const activeWaypoints = THY.waypoints
+      .map((wp, originalIndex) => ({ ...wp, originalIndex }))
+      .filter(wp => (wp.day || 1) === (THY.activeDay || 1));
+
+    if (activeWaypoints.length === 0) {
       list.innerHTML = `
         <div class="empty-state" id="emptyRouteState">
-          <div class="empty-state__icon">🌍</div>
-          <div class="empty-state__title">Rota Boş</div>
-          <div class="empty-state__text">Haritaya tıklayarak veya "Rota Çiz" modunu açarak nokta ekleyin.</div>
+          <div class="empty-state__icon">📅</div>
+          <div class="empty-state__title">${THY.activeDay || 1}. Gün Boş</div>
+          <div class="empty-state__text">Bu güne henüz rota noktası eklenmemiş. Haritaya tıklayarak veya "Rota Çiz" modunda ekleyebilirsiniz.</div>
         </div>
       `;
       return;
     }
 
-    THY.waypoints.forEach((wp, i) => {
+    const dayColor = THY.dayColors[((THY.activeDay || 1) - 1) % THY.dayColors.length] || '#E31837';
+
+    activeWaypoints.forEach((wp, i) => {
       // Connector
       if (i > 0) {
         const connector = document.createElement('div');
         connector.className = 'waypoint-connector';
+        connector.style.backgroundColor = dayColor;
         list.appendChild(connector);
       }
 
       const item = document.createElement('div');
       item.className = 'waypoint-item';
       item.innerHTML = `
-        <div class="waypoint-marker">${i + 1}</div>
+        <div class="waypoint-marker" style="background-color: ${dayColor}">${i + 1}</div>
         <div class="waypoint-info">
           <div class="waypoint-name">${wp.name}</div>
-          ${wp.note ? `<div class="waypoint-note">📝 Not: ${wp.note}</div>` : ''}
+          ${wp.note ? `<div class="waypoint-note" style="color: var(--thy-gold-light)">📝 Not: ${wp.note}</div>` : ''}
           <div class="waypoint-coords">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</div>
         </div>
         <div class="waypoint-actions" style="display: flex; gap: 6px; align-items: center;">
-          <button class="waypoint-note-btn" data-index="${i}" title="Not Ekle/Düzenle">📝</button>
-          <button class="waypoint-remove" data-index="${i}" title="Kaldır">✕</button>
+          <button class="waypoint-note-btn" data-index="${wp.originalIndex}" title="Not Ekle/Düzenle">📝</button>
+          <button class="waypoint-remove" data-index="${wp.originalIndex}" title="Kaldır">✕</button>
         </div>
       `;
       list.appendChild(item);
@@ -581,6 +636,14 @@ function initMap() {
     if (typeof THY.playSplitFlapSound === 'function') {
       THY.playSplitFlapSound(15);
     }
+    
+    // Set local states
+    THY.maxDays = days;
+    THY.activeDay = 1;
+    if (typeof THY.updateDayTabs === 'function') {
+      THY.updateDayTabs();
+    }
+
     // Recommended sights database for major cities
     const sightsDatabase = {
       FCO: [ // Rome
@@ -647,15 +710,19 @@ function initMap() {
       const takeCount = Math.min(sights.length, days * 2);
       THY.toast(`${destAp.city} için ${days} günlük seyahat planı hazırlanıyor...`, 'info');
       
-      const newWaypoints = sights.slice(0, takeCount).map(s => ({
-        lat: s.lat,
-        lng: s.lng,
-        name: s.name,
-        note: ''
-      }));
+      const newWaypoints = sights.slice(0, takeCount).map((s, index) => {
+        const dayNumber = Math.min(days, Math.floor(index / 2) + 1);
+        return {
+          lat: s.lat,
+          lng: s.lng,
+          name: s.name,
+          note: '',
+          day: dayNumber
+        };
+      });
 
       // Batch write auto-itinerary to Firestore
-      THY.updateTripInFirestore({ waypoints: newWaypoints });
+      THY.updateTripInFirestore({ maxDays: days, waypoints: newWaypoints });
 
       // 2. Automatically update Places tab to search for local places (restaurants) around city center
       setTimeout(() => {
@@ -682,18 +749,20 @@ function initMap() {
           map.setZoom(13);
 
           const takeCount = Math.min(results.length, days * 2);
-          const newWaypoints = results.slice(0, takeCount).map(place => {
+          const newWaypoints = results.slice(0, takeCount).map((place, index) => {
             const loc = place.geometry.location;
+            const dayNumber = Math.min(days, Math.floor(index / 2) + 1);
             return {
               lat: loc.lat(),
               lng: loc.lng(),
               name: place.name,
-              note: ''
+              note: '',
+              day: dayNumber
             };
           });
 
           // Batch write auto-itinerary waypoints to Firestore
-          THY.updateTripInFirestore({ waypoints: newWaypoints });
+          THY.updateTripInFirestore({ maxDays: days, waypoints: newWaypoints });
 
           // Automatically update Places tab to search around the new dynamic center
           setTimeout(() => {
@@ -708,11 +777,13 @@ function initMap() {
           map.setZoom(13);
           
           THY.updateTripInFirestore({
+            maxDays: days,
             waypoints: [{
               lat: destAp.lat,
               lng: destAp.lng,
               name: `${destAp.city} Havalimanı`,
-              note: ''
+              note: '',
+              day: 1
             }]
           });
 
