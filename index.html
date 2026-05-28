@@ -27,6 +27,7 @@
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
@@ -409,6 +410,26 @@
                 Seyahatlerim
               </div>
             </div>
+
+            <!-- Pilot Sync Control Card -->
+            <div class="pilot-sync-card" id="pilotSyncCard" style="margin-bottom: var(--space-md); padding: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 8px;">
+              <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; letter-spacing: 0.5px;">
+                <span>Pilot Eşitleme Kodu (Pilot ID)</span>
+                <span id="syncStatus" style="color: #10B981; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                  <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10B981;"></span> Eşitlendi
+                </span>
+              </div>
+              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <input type="text" id="pilotIdInput" readonly style="flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 8px; border: 1px solid var(--border-subtle); border-radius: 4px; background: rgba(0, 0, 0, 0.2); color: #C8A951; text-align: center; font-weight: 500;" value="Bağlanıyor...">
+                <button class="btn btn-secondary btn-sm" id="btnCopyPilotId" title="Kopyala" style="padding: 0 10px; min-width: unset; height: auto;">📋</button>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn btn-gold btn-sm btn-full" id="btnShowSyncModal" style="font-size: 10px; padding: 6px 12px; width: 100%; border-radius: 4px;">
+                  🔄 Diğer Cihazla Eşitle
+                </button>
+              </div>
+            </div>
+
             <div class="trips-list" id="savedTripsList">
               <!-- Dynamically populated trips list -->
             </div>
@@ -508,6 +529,31 @@
           <button class="btn btn-secondary" id="btnCancelNote">İptal</button>
           <button class="btn btn-primary" id="btnSaveNote">Kaydet</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PILOT ID SYNC MODAL -->
+  <div class="modal-overlay" id="pilotSyncModal">
+    <div class="modal" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3 class="modal-title">🔄 Diğer Cihazla Eşitle</h3>
+        <button class="modal-close" id="btnCloseSyncModal">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 15px 0;">
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5;">
+          Diğer cihazınızdaki seyahatlerinizi bu cihaza aktarmak için o cihazın <strong>Pilot Eşitleme Kodu</strong>'nu girin. Bu işlem iki cihazdaki seyahat listelerini birleştirecektir.
+        </p>
+        <div class="form-group-booking">
+          <label style="font-weight: 600; font-size: 11px; margin-bottom: 6px; display: block; color: var(--thy-gold);">Diğer Cihazın Eşitleme Kodu</label>
+          <input type="text" id="targetPilotIdInput" placeholder="Örn: a1b2c3d4..." autocomplete="off" style="width: 100%; padding: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); color: white; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: center;">
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; gap: 8px; margin-top: 10px;">
+        <button class="btn btn-secondary btn-full" id="btnCancelSync" style="width: 50%;">İptal</button>
+        <button class="btn btn-primary btn-full" id="btnConfirmSync" style="width: 50%;">
+          Eşitlemeyi Başlat
+        </button>
       </div>
     </div>
   </div>

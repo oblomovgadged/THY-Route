@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /trips/{tripId} {
+      // Require authenticated access (anonymous auth or regular auth) for reading and writing trips
+      allow read, write: if request.auth != null;
+    }
+  }
+}

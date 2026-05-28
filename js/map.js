@@ -1159,13 +1159,36 @@ function initMap() {
     } else {
       // Dynamic fallback via Google Places Nearby Search around the airport
       THY.toast(`${destAp.city} civarı keşfediliyor...`, 'info');
-      const request = {
+      
+      // Use text search for city name to find city-center attractions (airports are often far from city)
+      const textRequest = {
+        query: `${destAp.city} tourist attractions`,
         location: { lat: destAp.lat, lng: destAp.lng },
-        radius: 6000,
-        type: 'tourist_attraction'
+        radius: 50000
       };
 
-      placesService.nearbySearch(request, (results, status) => {
+      placesService.textSearch(textRequest, (textResults, textStatus) => {
+        const results = (textStatus === google.maps.places.PlacesServiceStatus.OK && textResults && textResults.length > 0)
+          ? textResults
+          : null;
+
+        // If text search failed, fallback to nearby search with large radius
+        if (!results) {
+          const nearbyRequest = {
+            location: { lat: destAp.lat, lng: destAp.lng },
+            radius: 20000,
+            type: 'tourist_attraction'
+          };
+          placesService.nearbySearch(nearbyRequest, (nearbyResults, nearbyStatus) => {
+            handleDynamicResults(nearbyResults, nearbyStatus);
+          });
+          return;
+        }
+
+        handleDynamicResults(results, textStatus);
+      });
+
+      function handleDynamicResults(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
           // Pan to first tourist attraction found
           const firstLoc = results[0].geometry.location;
@@ -1228,7 +1251,7 @@ function initMap() {
             THY.searchNearbyPlaces(type, { lat: destAp.lat, lng: destAp.lng });
           }, 500);
         }
-      });
+      }
     }
   };
 

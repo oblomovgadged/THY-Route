@@ -412,16 +412,42 @@ const thyApiConfig = {
 
     try {
       if (window.firebase && window.firebase.initializeApp) {
+        let app;
         if (window.firebase.apps.length > 0) {
-          window.firebase.app().delete().then(() => {
-            initializeAndListen(firebaseConfig);
-          }).catch(err => {
-            console.error("Error deleting old firebase app instance:", err);
-            initializeAndListen(firebaseConfig);
-          });
+          app = window.firebase.app();
         } else {
-          initializeAndListen(firebaseConfig);
+          app = window.firebase.initializeApp(firebaseConfig);
         }
+        
+        THY.firebaseDb = app.firestore();
+        
+        if (window.firebase.analytics) {
+          try {
+            window.firebase.analytics();
+            console.log("📈 Firebase Analytics initialized.");
+          } catch (e) {
+            console.warn("Analytics blocked or failed to load:", e);
+          }
+        }
+
+        // Anonymous Auth Sign-In
+        const auth = app.auth();
+        auth.onAuthStateChanged(user => {
+          if (user) {
+            console.log("👤 Firebase Auth signed in anonymously. UID:", user.uid);
+            setupFirestoreListener();
+            if (typeof THY.syncSavedTripsWithFirestore === 'function') {
+              THY.syncSavedTripsWithFirestore(user.uid);
+            }
+          } else {
+            console.log("👤 Firebase Auth signing in...");
+            auth.signInAnonymously().catch(err => {
+              console.error("❌ Firebase Auth sign in failed:", err);
+              // Fallback to listening anyway
+              setupFirestoreListener();
+            });
+          }
+        });
       } else {
         console.warn("⚠️ Firebase SDK not loaded on the window object.");
         THY.toast("Firebase SDK yüklenemedi. Çevrimdışı moda geçildi.", "error");
@@ -432,23 +458,16 @@ const thyApiConfig = {
     }
   };
 
-  function initializeAndListen(fbSettings) {
-    try {
-      window.firebase.initializeApp(fbSettings);
-      THY.firebaseDb = window.firebase.firestore();
-      
-      if (window.firebase.analytics) {
-        window.firebase.analytics();
-        console.log("📈 Firebase Analytics initialized.");
-      }
+  function setupFirestoreListener() {
+    const tripId = THY.currentTripId;
+    if (!tripId || !THY.firebaseDb) return;
 
-      console.log("🔥 Firebase initialized with Project ID:", fbSettings.projectId);
+    if (activeUnsubscribe) {
+      activeUnsubscribe();
+    }
 
-      const tripId = THY.currentTripId;
-      if (!tripId) return;
-
-      console.log(`📡 Listening to Firestore document: trips/${tripId}`);
-      activeUnsubscribe = THY.firebaseDb.collection("trips").doc(tripId).onSnapshot(doc => {
+    console.log(`📡 Listening to Firestore document: trips/${tripId}`);
+    activeUnsubscribe = THY.firebaseDb.collection("trips").doc(tripId).onSnapshot(doc => {
         if (doc.exists) {
           const data = doc.data();
           console.log("📥 Firestore Sync Update Received:", data);
@@ -1204,30 +1223,23 @@ const thyApiConfig = {
     }
   }
 
-  // ---- AVIATIONSTACK LIVE FLIGHT API INTEGRATION ----
+  // ---- AVIATIONSTACK LIVE FLIGHT API INTEGRATION (via Server Proxy) ----
   async function fetchAviationstackFlights(fromCode, toCode, date) {
-    const accessKey = '7b44b2dfa6bc8aae041fc12c67e7cee8';
-    
-    // Use CORS proxy to bypass HTTP-only restriction on Aviationstack free tier
-    const targetUrl = encodeURIComponent(`http://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&dep_iata=${fromCode}&arr_iata=${toCode}`);
-    const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
-    
     try {
-      const res = await fetch(proxyUrl);
+      const res = await fetch(`/api/flights?type=route&from=${fromCode}&to=${toCode}`);
       if (!res.ok) {
-        throw new Error('Aviationstack proxy call failed: ' + res.statusText);
+        throw new Error('Server proxy call failed: ' + res.statusText);
       }
       
       const data = await res.json();
       
       if (data.error) {
-        throw new Error('Aviationstack API response error: ' + data.error.message);
+        throw new Error('API response error: ' + (data.details || data.error));
       }
       
       const flights = [];
       if (data.data && data.data.length > 0) {
         data.data.forEach(item => {
-          // Verify carrier is Turkish Airlines (THY/TK) strictly
           const carrier = item.airline?.iata || item.airline?.icao;
           const matchesCarrier = carrier === 'TK' || carrier === 'THY' || item.flight?.iata?.startsWith('TK');
           
@@ -1236,7 +1248,6 @@ const thyApiConfig = {
             const arrTimeRaw = item.arrival?.scheduled;
             
             if (depTimeRaw && arrTimeRaw) {
-              // Format to HH:MM Local
               const depTime = new Date(depTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
               const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
               const flightNo = item.flight?.iata || `TK ${item.flight?.number || '1862'}`;
@@ -1250,64 +1261,28 @@ const thyApiConfig = {
       }
       
       if (flights.length > 0) {
-        THY.toast('Aviationstack Canlı Uçuşları Yüklendi! ✈️', 'success');
+        THY.toast('Canlı Uçuş Verileri Yüklendi! ✈️', 'success');
         return flights;
       }
       return null;
       
     } catch (err) {
-      console.warn('Aviationstack proxy call failed, checking direct HTTPS as fallback...', err);
-      try {
-        const directUrl = `https://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&dep_iata=${fromCode}&arr_iata=${toCode}`;
-        const res = await fetch(directUrl);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.data) {
-            const flights = [];
-            data.data.forEach(item => {
-              const carrier = item.airline?.iata || item.airline?.icao;
-              const matchesCarrier = carrier === 'TK' || carrier === 'THY' || item.flight?.iata?.startsWith('TK');
-              if (matchesCarrier) {
-                const depTimeRaw = item.departure?.scheduled;
-                const arrTimeRaw = item.arrival?.scheduled;
-                if (depTimeRaw && arrTimeRaw) {
-                  const depTime = new Date(depTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                  const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                  const flightNo = item.flight?.iata || `TK ${item.flight?.number || '1862'}`;
-                  const gate = item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
-                  const delay = item.departure?.delay || 0;
-                  const status = item.flight_status || 'scheduled';
-                  flights.push({ dep: depTime, arr: arrTime, flightNo, gate, delay, status });
-                }
-              }
-            });
-            if (flights.length > 0) return flights;
-          }
-        }
-      } catch (directErr) {
-        console.warn('Aviationstack direct HTTPS fallback failed:', directErr);
-      }
-      
-      // Notify fallback to simulator
-      THY.toast('Aviationstack Canlı Bağlantı Kısıtlaması. Dinamik Simülasyon Devreye Alındı.', 'info', 4500);
+      console.warn('Aviationstack proxy call failed:', err);
+      THY.toast('Canlı Bağlantı Kısıtlaması. Dinamik Simülasyon Devreye Alındı.', 'info', 4500);
       return null;
     }
   }
 
-  // ---- AVIATIONSTACK FLIGHT BY CODE LOOKUP ----
+  // ---- AVIATIONSTACK FLIGHT BY CODE LOOKUP (via Server Proxy) ----
   async function fetchFlightByCode(flightCode) {
-    const accessKey = '7b44b2dfa6bc8aae041fc12c67e7cee8';
     let cleanCode = flightCode.replace(/\s+/g, '').toUpperCase();
     if (!cleanCode.startsWith('TK') && !cleanCode.startsWith('THY')) {
       cleanCode = 'TK' + cleanCode;
     }
-    
-    const targetUrl = encodeURIComponent(`http://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&flight_iata=${cleanCode}`);
-    const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
 
     try {
-      const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error('Aviationstack call failed: ' + res.statusText);
+      const res = await fetch(`/api/flights?type=code&code=${cleanCode}`);
+      if (!res.ok) throw new Error('Server proxy call failed: ' + res.statusText);
       const data = await res.json();
 
       if (data && data.data && data.data.length > 0) {
@@ -1350,12 +1325,28 @@ const thyApiConfig = {
       cleanCode = 'TK ' + cleanCode.substring(2);
     }
     
-    // Pick departure and destination randomly from AIRPORTS (e.g. IST to standard destinations)
-    const departure = AIRPORTS[0]; // IST
-    const destination = AIRPORTS.find(a => a.code === 'NRT') || AIRPORTS[1]; 
+    // Use user's selected departure and destination instead of hardcoded values
+    const depInputEl = document.getElementById('flightDepartureInput');
+    const destInputEl = document.getElementById('flightDestinationInput');
+    const depCode = depInputEl?.dataset?.code || 'IST';
+    const destCode = destInputEl?.dataset?.code || 'FCO';
     
-    const depTime = '13:45';
-    const arrTime = '19:20';
+    const departure = AIRPORTS.find(a => a.code === depCode) || AIRPORTS[0];
+    const destination = AIRPORTS.find(a => a.code === destCode) || AIRPORTS[1];
+    
+    // Calculate realistic flight time based on distance
+    const dist = getDistance(departure.lat, departure.lng, destination.lat, destination.lng);
+    const durationMinutes = Math.max(45, Math.round(dist * 0.075 + 30));
+    
+    const depHour = 8 + Math.floor(Math.random() * 10); // 08:00 - 17:59 arası
+    const depMin = Math.floor(Math.random() * 12) * 5; // 0,5,10,...55
+    const depTime = `${String(depHour).padStart(2, '0')}:${String(depMin).padStart(2, '0')}`;
+    
+    let arrMin = depMin + durationMinutes;
+    let arrHour = (depHour + Math.floor(arrMin / 60)) % 24;
+    arrMin = arrMin % 60;
+    const arrTime = `${String(arrHour).padStart(2, '0')}:${String(arrMin).padStart(2, '0')}`;
+    
     const gate = 'A' + Math.floor(Math.random() * 10 + 1);
     
     // 15% chance of delay
@@ -2254,6 +2245,13 @@ const thyApiConfig = {
     };
     localStorage.setItem('thy_saved_trips', JSON.stringify(trips));
     
+    // Sync list to Firestore
+    const pilotId = localStorage.getItem('thy_pilot_id');
+    if (pilotId && THY.firebaseDb) {
+      THY.firebaseDb.collection("users").doc(pilotId).set({ savedTrips: trips }, { merge: true })
+        .catch(err => console.error("Error saving trip list to cloud:", err));
+    }
+    
     // Refresh saved trips list
     if (typeof THY.renderSavedTrips === 'function') {
       THY.renderSavedTrips();
@@ -2492,8 +2490,8 @@ ${inviteLink}
         <!-- Collaboration Link Area -->
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; margin-top: 16px; word-break: break-all;">
           <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;">🔗 Düzenleme ve Davet Bağlantısı</div>
-          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
-            Bağlantı kopyalandığında veya e-posta gönderildiğinde otomatik olarak kısaltılacaktır (örn: <span style="color: var(--thy-gold-light); font-weight: 600;">https://is.gd/...</span>).
+          <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4; word-break: break-all;">
+            <span style="color: var(--thy-gold-light); font-weight: 600;">${THY.generateShareUrl()}</span>
           </div>
         </div>
 
@@ -2540,16 +2538,12 @@ ${inviteLink}
     document.getElementById('pwaInstallBanner')?.classList.remove('visible');
   });
 
-  // ---- LOAD LIVE FLIGHT TO COCKPIT BOARD ----
+  // ---- LOAD LIVE FLIGHT TO COCKPIT BOARD (via Server Proxy) ----
   THY.loadLiveFlightBoard = async () => {
-    const accessKey = '7b44b2dfa6bc8aae041fc12c67e7cee8';
-    const targetUrl = encodeURIComponent(`http://api.aviationstack.com/v1/flights?access_key=${accessKey}&airline_iata=TK&limit=10`);
-    const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
-
     try {
-      console.log('📡 Fetching live THY flight board feed via CORS proxy...');
-      const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error('Proxy call failed');
+      console.log('📡 Fetching live THY flight board feed via server proxy...');
+      const res = await fetch('/api/flights?type=board');
+      if (!res.ok) throw new Error('Server proxy call failed');
       const data = await res.json();
 
       if (data && data.data && data.data.length > 0) {
@@ -2623,7 +2617,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=2.8')
+    navigator.serviceWorker.register('./sw.js?v=2.8')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }
@@ -2691,6 +2685,14 @@ ${inviteLink}
       waypointsCount: details.waypointsCount !== undefined ? details.waypointsCount : (trips[tripId]?.waypointsCount || 0)
     };
     localStorage.setItem('thy_saved_trips', JSON.stringify(trips));
+
+    // Sync list to Firestore
+    const pilotId = localStorage.getItem('thy_pilot_id');
+    if (pilotId && THY.firebaseDb) {
+      THY.firebaseDb.collection("users").doc(pilotId).set({ savedTrips: trips }, { merge: true })
+        .catch(err => console.error("Error saving trip list to cloud:", err));
+    }
+
     THY.renderSavedTrips();
   };
 
@@ -2764,6 +2766,13 @@ ${inviteLink}
           const saved = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
           delete saved[id];
           localStorage.setItem('thy_saved_trips', JSON.stringify(saved));
+
+          // Sync deletion to cloud
+          const pilotId = localStorage.getItem('thy_pilot_id');
+          if (pilotId && THY.firebaseDb) {
+            THY.firebaseDb.collection("users").doc(pilotId).set({ savedTrips: saved })
+              .catch(err => console.error("Error updating deleted trip in cloud:", err));
+          }
           
           if (id === THY.currentTripId) {
             THY.currentTripId = THY.generateTripId();
@@ -2781,6 +2790,161 @@ ${inviteLink}
       container.appendChild(card);
     });
   };
+
+  // ---- PILOT ID SYNC SYSTEM ----
+  let activeUserUnsubscribe = null;
+
+  THY.syncSavedTripsWithFirestore = (uid) => {
+    if (!THY.firebaseDb) return;
+    
+    let pilotId = localStorage.getItem('thy_pilot_id') || uid;
+    localStorage.setItem('thy_pilot_id', pilotId);
+    
+    const pilotIdInput = document.getElementById('pilotIdInput');
+    if (pilotIdInput) pilotIdInput.value = pilotId;
+
+    if (activeUserUnsubscribe) {
+      activeUserUnsubscribe();
+    }
+
+    const userDocRef = THY.firebaseDb.collection("users").doc(pilotId);
+    console.log(`📡 Syncing user trips list from Firestore: users/${pilotId}`);
+    
+    activeUserUnsubscribe = userDocRef.onSnapshot(doc => {
+      let localTrips = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
+      let remoteTrips = {};
+      
+      if (doc.exists) {
+        remoteTrips = doc.data().savedTrips || {};
+      }
+      
+      // Merge local and remote trips
+      let mergedTrips = { ...remoteTrips };
+      let hasChanges = false;
+      
+      // Add or update local trips into merged list
+      for (const tripId in localTrips) {
+        const localTrip = localTrips[tripId];
+        const remoteTrip = remoteTrips[tripId];
+        
+        if (!remoteTrip || new Date(localTrip.savedAt) > new Date(remoteTrip.savedAt)) {
+          mergedTrips[tripId] = localTrip;
+          hasChanges = true;
+        }
+      }
+      
+      // Add remote-only trips to local
+      for (const tripId in remoteTrips) {
+        if (!localTrips[tripId]) {
+          hasChanges = true;
+        }
+      }
+      
+      // Save locally
+      localStorage.setItem('thy_saved_trips', JSON.stringify(mergedTrips));
+      
+      // If we merged new local trips to the cloud, upload them
+      if (hasChanges || !doc.exists) {
+        userDocRef.set({ savedTrips: mergedTrips }, { merge: true })
+          .then(() => console.log("📤 Cloud saved trips list synchronized."))
+          .catch(err => console.error("❌ Cloud sync failed:", err));
+      }
+      
+      THY.renderSavedTrips();
+    }, error => {
+      console.error("Firestore user sync error:", error);
+    });
+  };
+
+  // Pilot Sync UI Event Listeners
+  document.getElementById('btnCopyPilotId')?.addEventListener('click', () => {
+    const val = document.getElementById('pilotIdInput')?.value;
+    if (val) {
+      navigator.clipboard.writeText(val).then(() => {
+        THY.toast('Pilot Eşitleme Kodu kopyalandı! 📋', 'success');
+      }).catch(() => {
+        const input = document.getElementById('pilotIdInput');
+        if (input) {
+          input.select();
+          document.execCommand('copy');
+          THY.toast('Pilot Eşitleme Kodu kopyalandı! 📋', 'success');
+        }
+      });
+    }
+  });
+
+  const pilotSyncModal = document.getElementById('pilotSyncModal');
+  document.getElementById('btnShowSyncModal')?.addEventListener('click', () => {
+    const targetInput = document.getElementById('targetPilotIdInput');
+    if (targetInput) targetInput.value = '';
+    pilotSyncModal?.classList.add('active');
+  });
+
+  document.getElementById('btnCloseSyncModal')?.addEventListener('click', () => pilotSyncModal?.classList.remove('active'));
+  document.getElementById('btnCancelSync')?.addEventListener('click', () => pilotSyncModal?.classList.remove('active'));
+
+  document.getElementById('btnConfirmSync')?.addEventListener('click', async () => {
+    const targetInput = document.getElementById('targetPilotIdInput');
+    const targetPilotId = targetInput?.value?.trim();
+    
+    if (!targetPilotId) {
+      THY.toast('Lütfen geçerli bir Pilot ID girin.', 'error');
+      return;
+    }
+    
+    if (!THY.firebaseDb) {
+      THY.toast('Firebase bağlantısı etkin değil.', 'error');
+      return;
+    }
+    
+    const confirmBtn = document.getElementById('btnConfirmSync');
+    confirmBtn.disabled = true;
+    confirmBtn.innerText = 'Eşitleniyor...';
+    
+    try {
+      const doc = await THY.firebaseDb.collection("users").doc(targetPilotId).get();
+      if (!doc.exists) {
+        THY.toast('Girdiğiniz Pilot ID bulunamadı. Lütfen kodu kontrol edin.', 'error');
+        confirmBtn.disabled = false;
+        confirmBtn.innerText = 'Eşitlemeyi Başlat';
+        return;
+      }
+      
+      const remoteTrips = doc.data().savedTrips || {};
+      let localTrips = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
+      
+      // Merge
+      let mergedTrips = { ...remoteTrips };
+      for (const tripId in localTrips) {
+        const localTrip = localTrips[tripId];
+        const remoteTrip = remoteTrips[tripId];
+        if (!remoteTrip || new Date(localTrip.savedAt) > new Date(remoteTrip.savedAt)) {
+          mergedTrips[tripId] = localTrip;
+        }
+      }
+      
+      // Save locally and switch pilot ID
+      localStorage.setItem('thy_pilot_id', targetPilotId);
+      localStorage.setItem('thy_saved_trips', JSON.stringify(mergedTrips));
+      
+      // Write merged back to target document
+      await THY.firebaseDb.collection("users").doc(targetPilotId).set({ savedTrips: mergedTrips });
+      
+      // Re-trigger listener on new pilotId
+      THY.syncSavedTripsWithFirestore(window.firebase.auth().currentUser.uid);
+      
+      THY.toast('Cihazlar arası eşitleme başarıyla tamamlandı!', 'success');
+      pilotSyncModal?.classList.remove('active');
+      if (targetInput) targetInput.value = '';
+      
+    } catch (err) {
+      console.error("Sync error:", err);
+      THY.toast('Eşitleme sırasında bir hata oluştu.', 'error');
+    } finally {
+      confirmBtn.disabled = false;
+      confirmBtn.innerText = 'Eşitlemeyi Başlat';
+    }
+  });
 
   console.log('✈️ THY Route App Core initialized');
 })();
