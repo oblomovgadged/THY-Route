@@ -1665,10 +1665,39 @@ const thyApiConfig = {
         }
         const durationHoursStr = `${Math.floor(flightDurationMinutes / 60)}sa ${flightDurationMinutes % 60}dk`;
 
+        const isSearchToday = formatDateLocal(new Date(searchDate)) === formatDateLocal(today);
+
+        // Filter API flights if searching for today (only for route search, not specific flight code search)
+        if (flightOptions && isSearchToday && !isFlightCodeSearch) {
+          const currentHour = today.getHours();
+          const currentMin = today.getMinutes();
+          
+          flightOptions = flightOptions.filter(fo => {
+            const [h, m] = fo.dep.split(':').map(Number);
+            return (h > currentHour) || (h === currentHour && m > currentMin);
+          });
+          
+          if (flightOptions.length === 0) {
+            flightOptions = null; // force simulator fallback
+          }
+        }
+
         if (!flightOptions) {
           // Dynamic Simulator Engine (Generates different hours/nos based on Date seed & City Pair distance)
           const dateSeed = new Date(searchDate).getDate() || today.getDate();
-          const baseHours = isOutbound ? [8, 13, 18] : [9, 15, 20];
+          let baseHours = isOutbound ? [8, 13, 18] : [9, 15, 20];
+          
+          if (isSearchToday) {
+            const currentHour = today.getHours();
+            baseHours = baseHours.map(h => {
+              // If the hour is in the past, shift it to a future hour (at least currentHour + 1)
+              if (h <= currentHour) {
+                return (currentHour + 1 + (h % 3)) % 24;
+              }
+              return h;
+            });
+            baseHours.sort((a, b) => a - b);
+          }
           
           flightOptions = baseHours.map((hour, idx) => {
             const offsetMinutes = ((dateSeed * 7 + idx * 13) % 45); // offset between 0 and 45 minutes
