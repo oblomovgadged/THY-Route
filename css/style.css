@@ -364,8 +364,8 @@ input, textarea, select {
   width: 380px;
   z-index: var(--z-panel);
   background: var(--bg-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -373,6 +373,8 @@ input, textarea, select {
   flex-direction: column;
   overflow: hidden;
   transition: transform var(--transition-aerodynamic), opacity var(--transition-aerodynamic);
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
 }
 
 .side-panel.collapsed {
@@ -674,21 +676,30 @@ input, textarea, select {
 }
 
 .waypoint-remove {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.03);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-muted);
-  transition: var(--transition-base);
+  transition: all var(--transition-base);
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .waypoint-remove:hover {
-  background: rgba(227, 24, 55, 0.2);
+  background: rgba(227, 24, 55, 0.15);
   color: var(--thy-red-light);
+  transform: scale(1.05);
+}
+
+.waypoint-remove:active {
+  background: rgba(227, 24, 55, 0.3);
+  transform: scale(0.95);
 }
 
 .waypoint-connector {
@@ -1524,14 +1535,16 @@ input, textarea, select {
 .booking-card, .flight-results-card {
   width: 100%;
   background: var(--bg-glass);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   box-shadow: var(--shadow-lg), var(--shadow-glow);
   position: relative;
   transition: opacity var(--transition-base), transform var(--transition-base);
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
 }
 
 .booking-card.hidden, .flight-results-card.hidden {
@@ -2158,22 +2171,29 @@ input, textarea, select {
 
 .waypoint-note-btn {
   color: var(--text-secondary);
-  background: none;
+  background: rgba(255, 255, 255, 0.03);
   border: none;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 12px;
-  padding: 4px;
-  opacity: 0.6;
-  transition: opacity 0.2s, transform 0.2s;
+  font-size: 13px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all var(--transition-base);
+  flex-shrink: 0;
 }
 
 .waypoint-note-btn:hover {
-  opacity: 1;
+  background: rgba(200, 169, 81, 0.15);
   color: var(--thy-gold);
-  transform: scale(1.15);
+  transform: scale(1.05);
+}
+
+.waypoint-note-btn:active {
+  background: rgba(200, 169, 81, 0.3);
+  transform: scale(0.95);
 }
 
 /* THY Partner Toggle Button */
