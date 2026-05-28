@@ -24,6 +24,8 @@ function initMap() {
   const noteTargetName = document.getElementById('noteModalTargetName');
 
   THY.waypoints = [];
+  THY.showPartners = false;
+  let lastSearchResults = [];
 
   // ---- Initialize Map ----
   map = new google.maps.Map(document.getElementById('map'), {
@@ -41,7 +43,38 @@ function initMap() {
   placesService = new google.maps.places.PlacesService(map);
   infoWindow = new google.maps.InfoWindow();
 
-  // ---- Custom Marker SVG ----
+  // ---- THY Partners Toggle Control ----
+  const partnerBtn = document.createElement('button');
+  partnerBtn.className = 'thy-partners-toggle-btn';
+  partnerBtn.id = 'btnThyPartnersToggle';
+  partnerBtn.innerHTML = '<span class="btn-icon"></span>THY Partnerleri';
+  
+  partnerBtn.addEventListener('click', () => {
+    THY.showPartners = !THY.showPartners;
+    partnerBtn.classList.toggle('active', THY.showPartners);
+    
+    // Re-render waypoint markers on map
+    if (typeof THY.renderTripState === 'function') {
+      THY.renderTripState({
+        waypoints: THY.waypoints,
+        maxDays: THY.maxDays
+      }, false);
+    }
+    
+    // Re-render search result markers on map
+    if (typeof THY.reRenderPlaceMarkers === 'function') {
+      THY.reRenderPlaceMarkers();
+    }
+    
+    THY.toast(
+      THY.showPartners ? 'THY Partner Ayrıcalıkları Haritada Gösteriliyor!' : 'Partner Ayrıcalıkları Gizlendi',
+      'info'
+    );
+  });
+
+  map.controls[google.maps.ControlPosition.TOP_RIGHT].push(partnerBtn);
+
+  // ---- Custom Marker SVG & Partner Icons ----
   function createWaypointIcon(index, color = '#E31837') {
     return {
       url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
@@ -78,6 +111,51 @@ function initMap() {
       scaledSize: new google.maps.Size(36, 46),
       anchor: new google.maps.Point(18, 46)
     };
+  }
+
+  function createPartnerIcon() {
+    return {
+      url: 'icons/icon-512.svg',
+      scaledSize: new google.maps.Size(36, 36),
+      anchor: new google.maps.Point(18, 18)
+    };
+  }
+
+  const THY_PARTNERS = [
+    {
+      brands: ['avis'],
+      offer: 'Avis araç kiralamalarında %30 İndirim + 500 Mil Hediye!',
+      type: 'Car Rental',
+      iconEmoji: '🚗'
+    },
+    {
+      brands: ['hilton', 'rixos', 'marriott', 'sheraton'],
+      offer: 'THY İş Ortaklığı ile konaklamalarda 3 Kat Mil Kazanma Fırsatı!',
+      type: 'Hotel Partnership',
+      iconEmoji: '🏨'
+    }
+  ];
+
+  const PARTNER_PLACE_IDS = {
+    // İstanbul Avis & Bali Hotels / Avis place_ids (Known mock/sample place ids)
+    'ChIJuRzNKeG5hxQR5eM5_J3i4S0': { brands: ['avis'], offer: 'Avis araç kiralamalarında %30 İndirim + 500 Mil Hediye!', type: 'Car Rental', iconEmoji: '🚗' },
+    'ChIJ55aT6hC-zS0RjA13Lp6j9nE': { brands: ['hilton'], offer: 'THY İş Ortaklığı ile konaklamalarda 3 Kat Mil Kazanma Fırsatı!', type: 'Hotel Partnership', iconEmoji: '🏨' }
+  };
+
+  function getPartnerMatch(name, placeId) {
+    if (placeId && PARTNER_PLACE_IDS[placeId]) {
+      return PARTNER_PLACE_IDS[placeId];
+    }
+    if (!name) return null;
+    const lowerName = name.toLowerCase();
+    for (const partner of THY_PARTNERS) {
+      for (const brand of partner.brands) {
+        if (lowerName.includes(brand)) {
+          return partner;
+        }
+      }
+    }
+    return null;
   }
 
   // ---- Waypoint Management (Firestore Operations) ----
@@ -171,19 +249,35 @@ function initMap() {
       const lng = wp.lng;
       const dayColor = THY.dayColors[(wpDay - 1) % THY.dayColors.length] || '#E31837';
 
+      const isPartner = THY.showPartners && getPartnerMatch(wp.name, wp.place_id);
+      const markerIcon = isPartner ? createPartnerIcon() : createWaypointIcon(dailyIdx, dayColor);
+
       const marker = new google.maps.Marker({
         position: { lat, lng },
         map: map,
-        icon: createWaypointIcon(dailyIdx, dayColor),
+        icon: markerIcon,
         title: wp.name,
-        zIndex: 100
+        zIndex: isPartner ? 150 : 100
       });
 
       marker.addListener('click', () => {
         const currentWp = THY.waypoints[idx] || wp;
         const noteHtml = currentWp.note ? `<div style="font-size:11px;color:#C8A951;margin-bottom:6px;font-style:italic;">📝 ${currentWp.note}</div>` : '';
+        
+        let partnerHtml = '';
+        const wpPartner = getPartnerMatch(currentWp.name, currentWp.place_id);
+        if (wpPartner && THY.showPartners) {
+          partnerHtml = `
+            <div style="background: linear-gradient(135deg, #E31837 0%, #B01026 100%); color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(227,24,55,0.3); max-width: 220px; white-space: normal;">
+              <span>✈️ THY Partner Avantajı:</span>
+              <span style="font-weight: 500;">${wpPartner.offer}</span>
+            </div>
+          `;
+        }
+
         infoWindow.setContent(`
           <div style="background:#1A2235;color:#F1F5F9;padding:10px 14px;border-radius:8px;font-family:Inter,sans-serif;min-width:140px;">
+            ${partnerHtml}
             <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${currentWp.name} (${wpDay}. Gün)</div>
             ${noteHtml}
             <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#94A3B8;">${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
@@ -546,7 +640,12 @@ function initMap() {
     return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half);
   }
 
+  THY.reRenderPlaceMarkers = () => {
+    displayPlaces(lastSearchResults);
+  };
+
   function displayPlaces(places) {
+    lastSearchResults = places || [];
     const list = document.getElementById('placesList');
     if (!list) return;
 
@@ -572,13 +671,25 @@ function initMap() {
       const lat = place.geometry.location.lat();
       const lng = place.geometry.location.lng();
 
+      // Check for partner match
+      const placePartner = THY.showPartners ? getPartnerMatch(place.name, place.place_id) : null;
+      let cardStyle = '';
+      let partnerBadge = '';
+      if (placePartner) {
+        cardStyle = 'border: 1px solid rgba(227, 24, 55, 0.4); background: rgba(227, 24, 55, 0.03);';
+        partnerBadge = `<span style="font-size: 9px; padding: 2px 6px; background: #E31837; border-radius: 4px; color: white; font-weight: 700; margin-left: 6px; display: inline-block; vertical-align: middle;">✈️ Partner</span>`;
+      }
+
       // Card
       const card = document.createElement('div');
       card.className = 'place-card';
+      if (cardStyle) {
+        card.style = cardStyle;
+      }
       card.innerHTML = `
         <div class="place-icon">${emoji}</div>
         <div class="place-info">
-          <div class="place-name">${place.name}</div>
+          <div class="place-name">${place.name} ${partnerBadge}</div>
           <div class="place-address">${place.vicinity || place.formatted_address || ''}</div>
           ${place.rating ? `
             <div class="place-rating">
@@ -606,12 +717,15 @@ function initMap() {
       list.appendChild(card);
 
       // Map marker
+      const isPartner = THY.showPartners && getPartnerMatch(place.name, place.place_id);
+      const markerIcon = isPartner ? createPartnerIcon() : createPlaceIcon(emoji);
+
       const marker = new google.maps.Marker({
         position: { lat, lng },
         map: map,
-        icon: createPlaceIcon(emoji),
+        icon: markerIcon,
         title: place.name,
-        zIndex: 50
+        zIndex: isPartner ? 150 : 50
       });
 
       marker.addListener('click', () => {
@@ -625,6 +739,18 @@ function initMap() {
           ? `<div style="color:#C8A951;font-size:12px;margin-bottom:6px;">${renderStars(place.rating)} ${place.rating} (${place.user_ratings_total || 0})</div>` 
           : '';
 
+        // Partner offer html
+        let partnerHtml = '';
+        const currentPlacePartner = getPartnerMatch(place.name, place.place_id);
+        if (currentPlacePartner && THY.showPartners) {
+          partnerHtml = `
+            <div style="background: linear-gradient(135deg, #E31837 0%, #B01026 100%); color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(227,24,55,0.3); max-width: 220px; white-space: normal;">
+              <span>✈️ THY Partner Avantajı:</span>
+              <span style="font-weight: 500;">${currentPlacePartner.offer}</span>
+            </div>
+          `;
+        }
+
         const contentDiv = document.createElement('div');
         contentDiv.style.background = '#1A2235';
         contentDiv.style.color = '#F1F5F9';
@@ -634,6 +760,7 @@ function initMap() {
         contentDiv.style.minWidth = '180px';
         contentDiv.innerHTML = `
           ${photoHtml}
+          ${partnerHtml}
           <div style="font-weight:700;font-size:13px;margin-bottom:4px;">${emoji} ${place.name}</div>
           <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.vicinity || ''}</div>
           ${ratingHtml}

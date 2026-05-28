@@ -2176,3 +2176,52 @@ input, textarea, select {
   transform: scale(1.15);
 }
 
+/* THY Partner Toggle Button */
+.thy-partners-toggle-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  margin-top: 10px;
+  margin-right: 10px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-base);
+  backdrop-filter: blur(8px);
+}
+
+.thy-partners-toggle-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.thy-partners-toggle-btn.active {
+  background: var(--thy-red) !important;
+  border-color: var(--thy-red) !important;
+  color: white !important;
+  box-shadow: 0 0 12px rgba(227, 24, 55, 0.4);
+}
+
+.thy-partners-toggle-btn .btn-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 512 512'%3E%3Cpath d='M256 120 L280 240 L395 240 L302 310 L335 425 L256 355 L177 425 L210 310 L117 240 L232 240 Z' fill='white'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform var(--transition-base);
+}
+
+.thy-partners-toggle-btn.active .btn-icon {
+  transform: rotate(360deg);
+}
+
