@@ -88,6 +88,11 @@ const thyApiConfig = {
     const tripBadge = document.getElementById('tripIdBadge');
     if (tripBadge) tripBadge.textContent = THY.currentTripId;
 
+    // Render list of saved trips
+    if (typeof THY.renderSavedTrips === 'function') {
+      THY.renderSavedTrips();
+    }
+
     // Day Add Button Click Listener
     const btnAddingDay = document.getElementById('btnAddingDay');
     if (btnAddingDay) {
@@ -324,6 +329,17 @@ const thyApiConfig = {
         if (doc.exists) {
           const data = doc.data();
           console.log("📥 Firestore Sync Update Received:", data);
+          
+          // Auto-save/update metadata in the local saved trips list
+          if (typeof THY.addTripToSavedList === 'function') {
+            THY.addTripToSavedList(tripId, {
+              flightCode: data.flightCode,
+              dep: data.dep,
+              arr: data.arr,
+              maxDays: data.maxDays,
+              waypointsCount: data.waypoints ? data.waypoints.length : 0
+            });
+          }
           
           // First time loading/joining a shared trip as Co-pilot? Notify the Captain.
           if (THY.userRole === 'Yardımcı Pilot' && !sessionStorage.getItem('thy_joined_notified')) {
@@ -1636,7 +1652,8 @@ const thyApiConfig = {
   const panes = {
     route: document.getElementById('tabRoute'),
     places: document.getElementById('tabPlaces'),
-    email: document.getElementById('tabEmail')
+    email: document.getElementById('tabEmail'),
+    trips: document.getElementById('tabTrips')
   };
 
   tabs.forEach(tab => {
@@ -1808,6 +1825,11 @@ const thyApiConfig = {
     // Re-initialize Firebase live sync
     THY.initFirebaseAndSync();
 
+    // Refresh saved trips list representation
+    if (typeof THY.renderSavedTrips === 'function') {
+      THY.renderSavedTrips();
+    }
+
     THY.toast('Yeni seyahat oluşturuldu!', 'info');
   });
 
@@ -1844,6 +1866,12 @@ const thyApiConfig = {
       }))
     };
     localStorage.setItem('thy_saved_trips', JSON.stringify(trips));
+    
+    // Refresh saved trips list
+    if (typeof THY.renderSavedTrips === 'function') {
+      THY.renderSavedTrips();
+    }
+
     THY.toast(`Trip "${THY.currentTripId}" veritabanına ve yerel belleğe kaydedildi!`, 'success');
   });
 
@@ -2243,6 +2271,118 @@ ${inviteLink}
       }
     }
   });
+
+  // ---- SAVED TRIPS MANAGEMENT ----
+  THY.loadTrip = (tripId) => {
+    THY.currentTripId = tripId;
+    localStorage.setItem('thy_current_trip_id', tripId);
+    
+    const tripBadge = document.getElementById('tripIdBadge');
+    if (tripBadge) tripBadge.textContent = tripId;
+
+    window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${tripId}`);
+    
+    // Clear local route first
+    if (typeof THY.clearRoute === 'function') THY.clearRoute();
+    
+    // Re-initialize Firebase live sync
+    THY.initFirebaseAndSync();
+    
+    // Refresh list view to highlight active
+    THY.renderSavedTrips();
+  };
+
+  THY.addTripToSavedList = (tripId, details = {}) => {
+    const trips = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
+    trips[tripId] = {
+      tripId: tripId,
+      savedAt: new Date().toISOString(),
+      flightCode: details.flightCode || trips[tripId]?.flightCode || 'TK 1982',
+      dep: details.dep || trips[tripId]?.dep || 'IST',
+      arr: details.arr || trips[tripId]?.arr || 'NRT',
+      maxDays: details.maxDays || trips[tripId]?.maxDays || 1,
+      waypointsCount: details.waypointsCount !== undefined ? details.waypointsCount : (trips[tripId]?.waypointsCount || 0)
+    };
+    localStorage.setItem('thy_saved_trips', JSON.stringify(trips));
+    THY.renderSavedTrips();
+  };
+
+  THY.renderSavedTrips = () => {
+    const container = document.getElementById('savedTripsList');
+    if (!container) return;
+
+    const trips = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
+    const tripIds = Object.keys(trips).sort((a, b) => new Date(trips[b].savedAt) - new Date(trips[a].savedAt));
+
+    if (tripIds.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">💼</div>
+          <div class="empty-state__title">Kayıtlı Seyahat Yok</div>
+          <div class="empty-state__text">Henüz kaydedilmiş seyahatiniz bulunmuyor. Sol menüde bir rota çizdikten sonra "Kaydet" butonuna basarak seyahatlerinizi burada listeleyebilirsiniz.</div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = '';
+
+    tripIds.forEach(id => {
+      const trip = trips[id];
+      const isActive = (id === THY.currentTripId);
+
+      const card = document.createElement('div');
+      card.className = `trip-card ${isActive ? 'active' : ''}`;
+      
+      card.innerHTML = `
+        <div class="trip-card-header">
+          <div class="trip-card-id">${id}</div>
+          ${isActive ? '<span class="trip-card-active-badge">Aktif</span>' : ''}
+        </div>
+        <div class="trip-card-body">
+          <div class="trip-card-flight">
+            <span class="flight-route">${trip.dep || 'IST'} ➔ ${trip.arr || 'NRT'}</span>
+            <span class="flight-code">${trip.flightCode || 'TK 1982'}</span>
+          </div>
+          <div class="trip-card-meta">
+            <span>📅 ${trip.maxDays || 1} Gün</span>
+            <span>📍 ${trip.waypointsCount || 0} Durak</span>
+          </div>
+        </div>
+        <div class="trip-card-actions">
+          <button class="btn btn-primary btn-sm btn-load" data-id="${id}">Aç</button>
+          <button class="btn btn-secondary btn-sm btn-delete" data-id="${id}">Sil</button>
+        </div>
+      `;
+
+      card.querySelector('.btn-load').addEventListener('click', (e) => {
+        e.stopPropagation();
+        THY.loadTrip(id);
+      });
+
+      card.querySelector('.btn-delete').addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (confirm(`"${id}" seyahatini silmek istediğinize emin misiniz? (Bu işlem seyahati sadece bu cihazdan siler, Firebase veritabanından silmez)`)) {
+          const saved = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
+          delete saved[id];
+          localStorage.setItem('thy_saved_trips', JSON.stringify(saved));
+          
+          if (id === THY.currentTripId) {
+            THY.currentTripId = THY.generateTripId();
+            localStorage.setItem('thy_current_trip_id', THY.currentTripId);
+            window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
+            if (typeof THY.clearRoute === 'function') THY.clearRoute();
+            THY.initFirebaseAndSync();
+          }
+
+          THY.renderSavedTrips();
+          THY.toast('Seyahat listeden silindi.', 'info');
+        }
+      });
+
+      container.appendChild(card);
+    });
+  };
 
   console.log('✈️ THY Route App Core initialized');
 })();

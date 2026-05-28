@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=3.7">
+  <link rel="stylesheet" href="css/style.css?v=3.8">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -276,6 +276,10 @@
             <span class="panel-tab__icon">✉️</span>
             Rapor
           </button>
+          <button class="panel-tab" data-tab="trips">
+            <span class="panel-tab__icon">💼</span>
+            Seyahatler
+          </button>
           <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat" style="margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
             <span style="font-size: 15px;">✕</span>
             Kapat
@@ -398,6 +402,19 @@
             </div>
           </div>
 
+          <!-- SEYAHATLER TAB -->
+          <div class="tab-pane" id="tabTrips">
+            <div class="route-header" style="margin-bottom: var(--space-md);">
+              <div class="route-title">
+                <span class="icon">💼</span>
+                Seyahatlerim
+              </div>
+            </div>
+            <div class="trips-list" id="savedTripsList">
+              <!-- Dynamically populated trips list -->
+            </div>
+          </div>
+
         </div>
       </aside>
 
@@ -469,7 +486,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=3.7"></script>
-  <script src="js/map.js?v=3.7"></script>
+  <script src="js/app.js?v=3.8"></script>
+  <script src="js/map.js?v=3.8"></script>
 </body>
 </html>

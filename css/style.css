@@ -2225,3 +2225,151 @@ input, textarea, select {
   transform: rotate(360deg);
 }
 
+/* Trips Tab Styles */
+.trips-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: 2px;
+  overflow-y: auto;
+  max-height: calc(100vh - 180px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 169, 81, 0.2) rgba(255, 255, 255, 0.01);
+}
+
+.trips-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.trips-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.trips-list::-webkit-scrollbar-thumb {
+  background: rgba(200, 169, 81, 0.2);
+  border-radius: var(--radius-sm);
+}
+
+.trip-card {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  transition: all var(--transition-base);
+  position: relative;
+  backdrop-filter: blur(8px);
+}
+
+.trip-card:hover {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.trip-card.active {
+  border-color: var(--thy-red);
+  background: rgba(227, 24, 55, 0.05);
+  box-shadow: 0 0 12px rgba(227, 24, 55, 0.15);
+}
+
+.trip-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trip-card-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.trip-card-active-badge {
+  font-size: 9px;
+  background: var(--thy-red);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 6px rgba(227, 24, 55, 0.4);
+}
+
+.trip-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.trip-card-flight {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flight-route {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+
+.flight-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--thy-gold-light);
+  font-weight: 600;
+}
+
+.trip-card-meta {
+  display: flex;
+  gap: var(--space-md);
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.trip-card-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: 2px;
+}
+
+.trip-card-actions .btn {
+  flex: 1;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+}
+
+.trip-card-actions .btn-primary {
+  background: var(--thy-red);
+  border-color: var(--thy-red);
+  color: white;
+}
+
+.trip-card-actions .btn-primary:hover {
+  background: #ff2d4d;
+  border-color: #ff2d4d;
+}
+
+.trip-card-actions .btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+}
+
+.trip-card-actions .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
