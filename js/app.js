@@ -271,38 +271,9 @@ const thyApiConfig = {
     return `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`;
   };
 
-  // ---- DYNAMIC URL SHORTENER (is.gd API via CORS Proxy) ----
+  // ---- DYNAMIC URL SHORTENER (Bypassed: share URL is already short and contains the trip ID) ----
   THY.getShortenedUrl = async (longUrl) => {
-    try {
-      const targetUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`;
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-      const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error('Network error');
-      const data = await res.json();
-      if (data && data.contents) {
-        const parsed = JSON.parse(data.contents);
-        if (parsed.shorturl) {
-          return parsed.shorturl;
-        }
-      }
-      throw new Error('Response parse error');
-    } catch (err) {
-      console.warn('[Shortener] API connection failed, using local fallback:', err);
-  };
-
-  THY.cachedShortenedUrl = '';
-  THY.updateCachedShortenedUrl = async () => {
-    if (!THY.currentTripId) {
-      THY.cachedShortenedUrl = '';
-      return;
-    }
-    const longUrl = THY.generateShareUrl();
-    try {
-      THY.cachedShortenedUrl = await THY.getShortenedUrl(longUrl);
-    } catch (e) {
-      console.warn('Background link shortening failed:', e);
-      THY.cachedShortenedUrl = longUrl;
-    }
+    return longUrl;
   };
 
   THY.initFirebaseAndSync = () => {
@@ -408,9 +379,6 @@ const thyApiConfig = {
           if (typeof THY.updateDayTabs === 'function') {
             THY.updateDayTabs();
           }
-          if (typeof THY.updateCachedShortenedUrl === 'function') {
-            THY.updateCachedShortenedUrl();
-          }
           
           const boardNo = document.getElementById('flightCode');
           const boardDep = document.getElementById('flightDep');
@@ -510,9 +478,6 @@ const thyApiConfig = {
           waypoints: THY.waypoints,
           maxDays: THY.maxDays
         });
-      }
-      if (typeof THY.updateCachedShortenedUrl === 'function') {
-        THY.updateCachedShortenedUrl();
       }
       return;
     }
@@ -2177,9 +2142,8 @@ const thyApiConfig = {
 
     THY.toast('Uçuş Özeti Hazırlanıyor...', 'info');
 
-    // Generate and shorten invite link (defined outside waypoints check so inviteLink is always populated)
-    const longUrl = THY.generateShareUrl();
-    const inviteLink = await THY.getShortenedUrl(longUrl);
+    // Generate invite link (already short because it contains the trip ID)
+    const inviteLink = THY.generateShareUrl();
 
     // Build route summary as a Captain's Logbook brochure
     let routeSummary = 'Henüz rota oluşturulmadı.';
@@ -2273,15 +2237,10 @@ ${inviteLink}
       THY.toast('Davet linki oluşturmak için önce rotaya nokta ekleyin!', 'error');
       return;
     }
-    const shareUrl = THY.cachedShortenedUrl || THY.generateShareUrl();
-    const isShortened = shareUrl && shareUrl.includes('is.gd');
+    const shareUrl = THY.generateShareUrl();
     
     THY.copyToClipboard(shareUrl).then(() => {
-      if (isShortened) {
-        THY.toast('Kısa davet bağlantısı kopyalandı! 🔗', 'success');
-      } else {
-        THY.toast('Davet bağlantısı kopyalandı! (Kısaltılmış sürüm hazırlanıyor, standart link kullanıldı) 🔗', 'info');
-      }
+      THY.toast('Davet bağlantısı kopyalandı! 🔗', 'success');
       if (typeof THY.playSplitFlapSound === 'function') {
         THY.playSplitFlapSound(5);
       }
@@ -2289,10 +2248,6 @@ ${inviteLink}
       console.error('Failed to copy link:', err);
       window.prompt('Link panoya otomatik kopyalanamadı. Lütfen bu alandan seçip kopyalayın:', shareUrl);
     });
-
-    if (!THY.cachedShortenedUrl && typeof THY.updateCachedShortenedUrl === 'function') {
-      THY.updateCachedShortenedUrl();
-    }
   });
 
   // ---- EMAIL PREVIEW UPDATE ----
