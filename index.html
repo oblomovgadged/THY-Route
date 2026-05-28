@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=2.7">
+  <link rel="stylesheet" href="css/style.css?v=2.8">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -276,9 +276,9 @@
             <span class="panel-tab__icon">✉️</span>
             Rapor
           </button>
-          <button class="panel-tab" data-tab="settings" id="tabSettings">
-            <span class="panel-tab__icon">⚙️</span>
-            Ayar
+          <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat" style="margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+            <span style="font-size: 15px;">✕</span>
+            Kapat
           </button>
         </div>
 
@@ -390,39 +390,6 @@
             </div>
           </div>
 
-          <!-- SETTINGS TAB -->
-          <div class="tab-pane" id="tabSettingsPane">
-            <div class="form-group" style="margin-bottom: var(--space-md);">
-              <label class="form-label">EmailJS Service ID</label>
-              <input type="text" class="form-input" id="settingServiceId" placeholder="service_xxxxx">
-            </div>
-            <div class="form-group" style="margin-bottom: var(--space-md);">
-              <label class="form-label">EmailJS Template ID</label>
-              <input type="text" class="form-input" id="settingTemplateId" placeholder="template_xxxxx">
-            </div>
-            <div class="form-group" style="margin-bottom: var(--space-md);">
-              <label class="form-label">EmailJS Public Key</label>
-              <input type="text" class="form-input" id="settingPublicKey" placeholder="public_key">
-            </div>
-            <hr style="border-color: var(--border-subtle); margin-bottom: var(--space-md);">
-            <div class="form-group" style="margin-bottom: var(--space-md);">
-              <label class="form-label">THY API Client ID (İsteğe Bağlı)</label>
-              <input type="text" class="form-input" id="settingThyClientId" placeholder="apim-xxxxx">
-            </div>
-            <div class="form-group" style="margin-bottom: var(--space-md);">
-              <label class="form-label">THY API Client Secret (İsteğe Bağlı)</label>
-              <input type="password" class="form-input" id="settingThyClientSecret" placeholder="••••••••••••••••">
-            </div>
-            <button class="btn btn-primary btn-full" id="btnSaveSettings" style="margin-bottom: var(--space-md);">
-              <span class="icon">💾</span>
-              Ayarları Kaydet
-            </button>
-            <hr style="border-color: var(--border-subtle); margin-bottom: var(--space-md);">
-            <button class="btn btn-secondary btn-full" id="btnTogglePanel">
-              <span class="icon">📐</span>
-              Paneli Kapat
-            </button>
-          </div>
         </div>
       </aside>
 
@@ -494,7 +461,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=2.7"></script>
-  <script src="js/map.js?v=2.7"></script>
+  <script src="js/app.js?v=2.8"></script>
+  <script src="js/map.js?v=2.8"></script>
 </body>
 </html>

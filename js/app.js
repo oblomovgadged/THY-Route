@@ -14,6 +14,18 @@ const firebaseConfig = {
   measurementId: "G-DXSFM8XBMY"
 };
 
+// Hardcoded EmailJS & THY API Configuration
+const emailJsConfig = {
+  serviceId: "service_8oc4sw9",
+  templateId: "template_y1ch11o",
+  publicKey: "Cwjj37r4vlqMA8F83"
+};
+
+const thyApiConfig = {
+  clientId: "",      // Insert THY APIM Client ID here if needed
+  clientSecret: ""   // Insert THY APIM Client Secret here if needed
+};
+
 (() => {
   'use strict';
 
@@ -672,7 +684,7 @@ const firebaseConfig = {
 
   // ---- TURKISH AIRLINES LIVE API INTEGRATION ----
   async function fetchThyLiveFlights(fromCode, toCode, date, cabin) {
-    const thySettings = JSON.parse(localStorage.getItem('thy_api_settings') || '{}');
+    const thySettings = thyApiConfig;
     if (!thySettings.clientId || !thySettings.clientSecret) {
       return null; // Fallback to simulated dynamic data
     }
@@ -1389,8 +1401,7 @@ const firebaseConfig = {
   const panes = {
     route: document.getElementById('tabRoute'),
     places: document.getElementById('tabPlaces'),
-    email: document.getElementById('tabEmail'),
-    settings: document.getElementById('tabSettingsPane')
+    email: document.getElementById('tabEmail')
   };
 
   tabs.forEach(tab => {
@@ -1424,63 +1435,14 @@ const firebaseConfig = {
   if (panelToggle) panelToggle.addEventListener('click', openPanel);
   if (btnTogglePanel) btnTogglePanel.addEventListener('click', closePanel);
 
-  // ---- SETTINGS (EmailJS & THY API & Firebase) ----
+  // ---- SETTINGS (Hardcoded Configuration Cleanup) ----
   function loadSettings() {
-    let settings = JSON.parse(localStorage.getItem('thy_emailjs_settings') || '{}');
-    
-    // Auto-populate custom EmailJS credentials
-    if (!settings.serviceId || settings.serviceId === 'service_xxxxx' || settings.serviceId === '') {
-      settings = {
-        serviceId: 'service_8oc4sw9',
-        templateId: 'template_y1ch11o',
-        publicKey: 'Cwjj37r4vlqMA8F83'
-      };
-      localStorage.setItem('thy_emailjs_settings', JSON.stringify(settings));
-    }
-
-    const sid = document.getElementById('settingServiceId');
-    const tid = document.getElementById('settingTemplateId');
-    const pk = document.getElementById('settingPublicKey');
-    if (sid) sid.value = settings.serviceId || '';
-    if (tid) tid.value = settings.templateId || '';
-    if (pk) pk.value = settings.publicKey || '';
-
-    const thySettings = JSON.parse(localStorage.getItem('thy_api_settings') || '{}');
-    const tcid = document.getElementById('settingThyClientId');
-    const tcsec = document.getElementById('settingThyClientSecret');
-    if (tcid) tcid.value = thySettings.clientId || '';
-    if (tcsec) tcsec.value = thySettings.clientSecret || '';
-
-    // Clean up any legacy Firebase settings from localStorage
+    // Clear legacy local storage keys to ensure clean state
     localStorage.removeItem('thy_firebase_settings');
-
-    return { emailjs: settings, thy: thySettings };
+    localStorage.removeItem('thy_emailjs_settings');
+    localStorage.removeItem('thy_api_settings');
+    return { emailjs: emailJsConfig, thy: thyApiConfig };
   }
-
-  function saveSettings() {
-    const settings = {
-      serviceId: document.getElementById('settingServiceId')?.value?.trim() || '',
-      templateId: document.getElementById('settingTemplateId')?.value?.trim() || '',
-      publicKey: document.getElementById('settingPublicKey')?.value?.trim() || ''
-    };
-    localStorage.setItem('thy_emailjs_settings', JSON.stringify(settings));
-
-    const thySettings = {
-      clientId: document.getElementById('settingThyClientId')?.value?.trim() || '',
-      clientSecret: document.getElementById('settingThyClientSecret')?.value?.trim() || ''
-    };
-    localStorage.setItem('thy_api_settings', JSON.stringify(thySettings));
-
-    // Clear legacy Firebase settings
-    localStorage.removeItem('thy_firebase_settings');
-
-    THY.toast('Ayarlar kaydedildi!', 'success');
-
-    // Re-initialize Firebase live sync
-    THY.initFirebaseAndSync();
-  }
-
-  document.getElementById('btnSaveSettings')?.addEventListener('click', saveSettings);
   loadSettings();
 
 
@@ -1640,11 +1602,7 @@ const firebaseConfig = {
 
   // ---- EMAIL SENDING ----
   document.getElementById('btnSendEmail')?.addEventListener('click', async () => {
-    const settings = JSON.parse(localStorage.getItem('thy_emailjs_settings') || '{}');
-    if (!settings.serviceId || !settings.templateId || !settings.publicKey) {
-      THY.toast('Önce Ayarlar sekmesinden EmailJS bilgilerini girin!', 'error');
-      return;
-    }
+    const settings = emailJsConfig;
 
     const toEmail = document.getElementById('emailTo')?.value?.trim();
     const fromName = document.getElementById('emailFrom')?.value?.trim() || 'THY Route Gezgini';
