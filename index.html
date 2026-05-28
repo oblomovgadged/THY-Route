@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=4.4">
+  <link rel="stylesheet" href="css/style.css?v=4.5">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -428,6 +428,34 @@
       </div>
     </div>
 
+  <!-- JOIN MODAL -->
+  <div class="modal-overlay" id="joinModal">
+    <div class="modal" style="max-width: 420px; border: 1px solid var(--thy-red);">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--thy-red); font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+          🛫 Rotaya Katıl
+        </h3>
+      </div>
+      <div class="modal-body" style="padding: 10px 0;">
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+          Bir seyahat planına davet edildiniz! Rota üzerinde ortak çalışmak, durakları ve notları düzenlemek için lütfen isminizi girin.
+        </p>
+        <div class="form-group-booking">
+          <label style="font-weight: 600; font-size: 12px; margin-bottom: 8px; display: block; color: var(--thy-gold);">İsminiz</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" id="joinUserNameInput" placeholder="Adınızı yazın..." autocomplete="off" style="width: 100%; padding: 12px 12px 12px 40px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); color: white; border-radius: 6px;">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end;">
+        <button class="btn btn-gold btn-full" id="btnConfirmJoin" disabled style="width: 100%; opacity: 0.5;">
+          <span class="icon">✈️</span> Rotaya Dahil Ol
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- IMPORT MODAL -->
   <div class="modal-overlay" id="importModal">
     <div class="modal">
@@ -485,7 +513,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=4.4"></script>
-  <script src="js/map.js?v=4.4"></script>
+  <script src="js/app.js?v=4.5"></script>
+  <script src="js/map.js?v=4.5"></script>
 </body>
 </html>

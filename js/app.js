@@ -99,6 +99,134 @@ const thyApiConfig = {
     const tripBadge = document.getElementById('tripIdBadge');
     if (tripBadge) tripBadge.textContent = THY.currentTripId;
 
+    // Handle shared trip join popup and redirect
+    const params = new URLSearchParams(window.location.search);
+    const urlTripId = params.get('tripId');
+    if (urlTripId) {
+      // Hide landing screen and show map screen immediately
+      const landing = document.getElementById('landingScreen');
+      const mapScr = document.getElementById('mapScreen');
+      if (landing) landing.classList.add('hidden');
+      if (mapScr) mapScr.classList.remove('hidden');
+
+      // Pre-fill user name if cached
+      const cachedName = localStorage.getItem('thy_user_name');
+      if (cachedName) {
+        const emailFrom = document.getElementById('emailFrom');
+        if (emailFrom) emailFrom.value = cachedName;
+      }
+
+      // Check if user has already joined this trip
+      const joinedTrips = JSON.parse(localStorage.getItem('thy_joined_trips') || '[]');
+      const isCaptain = (THY.userRole === 'Kaptan');
+      const hasJoined = isCaptain || (joinedTrips.includes(urlTripId) && cachedName);
+
+      if (!hasJoined) {
+        const joinModal = document.getElementById('joinModal');
+        const joinInput = document.getElementById('joinUserNameInput');
+        const joinBtn = document.getElementById('btnConfirmJoin');
+
+        if (joinModal) {
+          joinModal.classList.add('active');
+          
+          if (joinInput && joinBtn) {
+            joinInput.addEventListener('input', () => {
+              const nameVal = joinInput.value.trim();
+              if (nameVal.length >= 2) {
+                joinBtn.removeAttribute('disabled');
+                joinBtn.style.opacity = '1';
+              } else {
+                joinBtn.setAttribute('disabled', 'true');
+                joinBtn.style.opacity = '0.5';
+              }
+            });
+
+            joinBtn.addEventListener('click', () => {
+              const nameVal = joinInput.value.trim();
+              if (nameVal.length < 2) return;
+
+              // Store user name
+              localStorage.setItem('thy_user_name', nameVal);
+              localStorage.setItem('thy_user_name_old', nameVal);
+              
+              const currentJoined = JSON.parse(localStorage.getItem('thy_joined_trips') || '[]');
+              if (!currentJoined.includes(urlTripId)) {
+                currentJoined.push(urlTripId);
+              }
+              localStorage.setItem('thy_joined_trips', JSON.stringify(currentJoined));
+
+              // Pre-fill the Rapor tab sender name
+              const emailFrom = document.getElementById('emailFrom');
+              if (emailFrom) emailFrom.value = nameVal;
+
+              // Set local role to actual name for action log
+              THY.userRole = nameVal;
+              localStorage.setItem('thy_user_role', nameVal);
+
+              // Join via Firestore transaction
+              if (THY.firebaseDb) {
+                const docRef = THY.firebaseDb.collection("trips").doc(urlTripId);
+                THY.firebaseDb.runTransaction(async (transaction) => {
+                  const sfDoc = await transaction.get(docRef);
+                  if (sfDoc.exists) {
+                    const data = sfDoc.data();
+                    const participants = data.participants || [];
+                    if (!participants.includes(nameVal)) {
+                      participants.push(nameVal);
+                      transaction.update(docRef, {
+                        participants: participants,
+                        lastAction: {
+                          user: nameVal,
+                          type: 'join',
+                          timestamp: Date.now(),
+                          text: 'uçuş planına katıldı! ✈️'
+                        }
+                      });
+                    }
+                  }
+                }).catch(err => console.error("Join transaction failed:", err));
+              }
+
+              joinModal.classList.remove('active');
+              THY.toast('Rotaya başarıyla katıldınız!', 'success');
+            });
+          }
+        }
+      }
+    }
+
+    // Sender Name input listener in Report Tab to update Firestore participants
+    document.getElementById('emailFrom')?.addEventListener('change', (e) => {
+      const val = e.target.value.trim();
+      if (val) {
+        const oldVal = localStorage.getItem('thy_user_name') || (THY.userRole === 'Kaptan' ? 'Kaptan' : 'Yardımcı Pilot');
+        localStorage.setItem('thy_user_name', val);
+        
+        if (THY.userRole === 'Kaptan' || THY.userRole === oldVal) {
+          THY.userRole = val;
+          localStorage.setItem('thy_user_role', val);
+        }
+
+        if (THY.firebaseDb && THY.currentTripId) {
+          const docRef = THY.firebaseDb.collection("trips").doc(THY.currentTripId);
+          THY.firebaseDb.runTransaction(async (transaction) => {
+            const sfDoc = await transaction.get(docRef);
+            if (sfDoc.exists) {
+              const data = sfDoc.data();
+              let participants = data.participants || [];
+              const oldIdx = participants.indexOf(oldVal);
+              if (oldIdx !== -1) {
+                participants[oldIdx] = val;
+              } else if (!participants.includes(val)) {
+                participants.push(val);
+              }
+              transaction.update(docRef, { participants: participants });
+            }
+          }).catch(err => console.error("Update participant name transaction failed:", err));
+        }
+      }
+    });
+
     // Render list of saved trips
     if (typeof THY.renderSavedTrips === 'function') {
       THY.renderSavedTrips();
@@ -337,11 +465,12 @@ const thyApiConfig = {
           }
           
           // First time loading/joining a shared trip as Co-pilot? Notify the Captain.
-          if (THY.userRole === 'Yardımcı Pilot' && !sessionStorage.getItem('thy_joined_notified')) {
+          const currentName = localStorage.getItem('thy_user_name') || 'Yardımcı Pilot';
+          if (THY.userRole !== 'Kaptan' && !sessionStorage.getItem('thy_joined_notified')) {
             sessionStorage.setItem('thy_joined_notified', 'true');
             THY.updateTripInFirestore({
               lastAction: {
-                user: 'Yardımcı Pilot',
+                user: currentName,
                 type: 'join',
                 timestamp: Date.now(),
                 text: 'uçuş planına katıldı! ✈️'
@@ -350,7 +479,8 @@ const thyApiConfig = {
           }
 
           // Check for notifications from the other participant
-          if (data.lastAction && data.lastAction.user !== THY.userRole) {
+          const myRepresentedName = localStorage.getItem('thy_user_name') || THY.userRole;
+          if (data.lastAction && data.lastAction.user !== myRepresentedName) {
             const actionId = `${data.lastAction.type}_${data.lastAction.timestamp}`;
             const acknowledgedActions = JSON.parse(sessionStorage.getItem('thy_acknowledged_actions') || '[]');
             if (!acknowledgedActions.includes(actionId)) {
@@ -361,10 +491,15 @@ const thyApiConfig = {
               if (typeof THY.playSplitFlapSound === 'function') {
                 THY.playSplitFlapSound(8);
               }
-              // Toast notification
-              const prefix = data.lastAction.user === 'Kaptan' ? '👨‍✈️ [Kaptan]' : '👨‍✈️ [Yardımcı Pilot]';
+              // Toast notification using actual name in prefix
+              const prefix = `👨‍✈️ [${data.lastAction.user}]`;
               THY.toast(`${prefix} ${data.lastAction.text}`, 'info', 5000);
             }
+          }
+
+          THY.participants = data.participants || [];
+          if (typeof THY.updateEmailPreview === 'function') {
+            THY.updateEmailPreview();
           }
 
           THY.waypoints = data.waypoints || [];
@@ -2309,6 +2444,9 @@ ${inviteLink}
       routeHtml += `</div>`;
     });
 
+    const participants = THY.participants || [];
+    const participantsStr = participants.length > 0 ? participants.join(', ') : 'Kaptan';
+
     let html = `
       <div style="font-family: 'Inter', sans-serif; color: var(--text-primary); background: #0E131F; border: 1px solid rgba(200, 169, 81, 0.2); border-radius: 8px; padding: 16px; box-shadow: var(--shadow-md);">
         
@@ -2328,6 +2466,10 @@ ${inviteLink}
           <tr>
             <td style="padding: 4px 0; color: var(--text-secondary);"><strong>GÜZERGAH:</strong></td>
             <td style="padding: 4px 0; text-align: right; color: var(--text-primary);"><strong>${depCode} ➔ ${arrCode}</strong></td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>UÇUŞ KADROSU:</strong></td>
+            <td style="padding: 4px 0; text-align: right; color: var(--thy-gold-light);"><strong>${participantsStr}</strong></td>
           </tr>
           <tr>
             <td style="padding: 4px 0; color: var(--text-secondary);"><strong>SEYİR TARİHİ:</strong></td>
