@@ -132,16 +132,21 @@ const thyApiConfig = {
     return `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`;
   };
 
-  // ---- DYNAMIC URL SHORTENER (is.gd CORS API) ----
+  // ---- DYNAMIC URL SHORTENER (is.gd API via CORS Proxy) ----
   THY.getShortenedUrl = async (longUrl) => {
     try {
-      const res = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`);
+      const targetUrl = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`;
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+      const res = await fetch(proxyUrl);
       if (!res.ok) throw new Error('Network error');
       const data = await res.json();
-      if (data && data.shorturl) {
-        return data.shorturl;
+      if (data && data.contents) {
+        const parsed = JSON.parse(data.contents);
+        if (parsed.shorturl) {
+          return parsed.shorturl;
+        }
       }
-      throw new Error(data.errormessage || 'Response error');
+      throw new Error('Response parse error');
     } catch (err) {
       console.warn('[Shortener] API connection failed, using local fallback:', err);
       return longUrl;
