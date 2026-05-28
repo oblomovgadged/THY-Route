@@ -31,6 +31,7 @@ const thyApiConfig = {
 
   // ---- TOAST SYSTEM ----
   window.THY = window.THY || {};
+  THY.userRole = 'Kaptan'; // Default role is Captain
 
   // ---- TRIP ID GENERATOR ----
   THY.generateTripId = () => {
@@ -47,15 +48,25 @@ const thyApiConfig = {
     const urlTripId = params.get('tripId');
     if (urlTripId) {
       THY.currentTripId = urlTripId;
+      const cachedTripId = localStorage.getItem('thy_current_trip_id');
+      if (cachedTripId !== urlTripId) {
+        THY.userRole = 'Yardımcı Pilot';
+      } else {
+        THY.userRole = localStorage.getItem('thy_user_role') || 'Kaptan';
+      }
       localStorage.setItem('thy_current_trip_id', urlTripId);
-      console.log("🔗 Shared tripId loaded from URL:", urlTripId);
+      localStorage.setItem('thy_user_role', THY.userRole);
+      console.log("🔗 Shared tripId loaded from URL:", urlTripId, "Role:", THY.userRole);
     } else {
       const cachedTripId = localStorage.getItem('thy_current_trip_id');
       if (cachedTripId) {
         THY.currentTripId = cachedTripId;
+        THY.userRole = localStorage.getItem('thy_user_role') || 'Kaptan';
       } else {
         THY.currentTripId = THY.generateTripId();
+        THY.userRole = 'Kaptan';
         localStorage.setItem('thy_current_trip_id', THY.currentTripId);
+        localStorage.setItem('thy_user_role', THY.userRole);
       }
     }
   };
@@ -186,6 +197,37 @@ const thyApiConfig = {
           const data = doc.data();
           console.log("📥 Firestore Sync Update Received:", data);
           
+          // First time loading/joining a shared trip as Co-pilot? Notify the Captain.
+          if (THY.userRole === 'Yardımcı Pilot' && !sessionStorage.getItem('thy_joined_notified')) {
+            sessionStorage.setItem('thy_joined_notified', 'true');
+            THY.updateTripInFirestore({
+              lastAction: {
+                user: 'Yardımcı Pilot',
+                type: 'join',
+                timestamp: Date.now(),
+                text: 'uçuş planına katıldı! ✈️'
+              }
+            });
+          }
+
+          // Check for notifications from the other participant
+          if (data.lastAction && data.lastAction.user !== THY.userRole) {
+            const actionId = `${data.lastAction.type}_${data.lastAction.timestamp}`;
+            const acknowledgedActions = JSON.parse(sessionStorage.getItem('thy_acknowledged_actions') || '[]');
+            if (!acknowledgedActions.includes(actionId)) {
+              acknowledgedActions.push(actionId);
+              sessionStorage.setItem('thy_acknowledged_actions', JSON.stringify(acknowledgedActions));
+              
+              // Play split-flap ticking sound
+              if (typeof THY.playSplitFlapSound === 'function') {
+                THY.playSplitFlapSound(8);
+              }
+              // Toast notification
+              const prefix = data.lastAction.user === 'Kaptan' ? '👨‍✈️ [Kaptan]' : '👨‍✈️ [Yardımcı Pilot]';
+              THY.toast(`${prefix} ${data.lastAction.text}`, 'info', 5000);
+            }
+          }
+
           THY.waypoints = data.waypoints || [];
           
           const boardNo = document.getElementById('flightCode');
@@ -287,6 +329,49 @@ const thyApiConfig = {
     }
     const tripId = THY.currentTripId;
     if (!tripId) return;
+
+    // Automatically generate lastAction description if not explicitly provided
+    if (!fields.lastAction) {
+      let actionText = '';
+      if (fields.waypoints !== undefined) {
+        const oldLen = THY.waypoints ? THY.waypoints.length : 0;
+        const newLen = fields.waypoints.length;
+        if (newLen > oldLen) {
+          const addedWp = fields.waypoints[newLen - 1];
+          actionText = `yeni rota noktası ekledi: "${addedWp.name}" 📍`;
+        } else if (newLen < oldLen) {
+          actionText = 'rotadan bir nokta kaldırdı 🗑️';
+        } else {
+          // Check if a note was edited
+          let noteEdited = false;
+          for (let i = 0; i < newLen; i++) {
+            if (THY.waypoints[i] && fields.waypoints[i] && THY.waypoints[i].note !== fields.waypoints[i].note) {
+              if (fields.waypoints[i].note === '') {
+                actionText = `"${fields.waypoints[i].name}" durağının notunu sildi 📝`;
+              } else {
+                actionText = `"${fields.waypoints[i].name}" durağına not ekledi: "${fields.waypoints[i].note}" 📝`;
+              }
+              noteEdited = true;
+              break;
+            }
+          }
+          if (!noteEdited) {
+            actionText = 'rotayı güncelledi 🗺️';
+          }
+        }
+      } else if (fields.flightCode !== undefined || fields.dep !== undefined || fields.arr !== undefined || fields.statusText !== undefined) {
+        actionText = 'uçuş panosu bilgilerini güncelledi ✈️';
+      }
+      
+      if (actionText) {
+        fields.lastAction = {
+          user: THY.userRole || 'Kaptan',
+          type: 'change',
+          timestamp: Date.now(),
+          text: actionText
+        };
+      }
+    }
 
     const cleanedFields = {};
     for (const key in fields) {
@@ -1554,6 +1639,8 @@ const thyApiConfig = {
   // New Trip
   document.getElementById('btnNewTrip')?.addEventListener('click', () => {
     THY.currentTripId = THY.generateTripId();
+    THY.userRole = 'Kaptan';
+    localStorage.setItem('thy_user_role', 'Kaptan');
     if (tripBadge) tripBadge.textContent = THY.currentTripId;
     localStorage.setItem('thy_current_trip_id', THY.currentTripId);
     window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
