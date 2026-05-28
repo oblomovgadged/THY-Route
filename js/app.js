@@ -459,15 +459,16 @@ const thyApiConfig = {
   };
 
   function setupFirestoreListener() {
-    const tripId = THY.currentTripId;
-    if (!tripId || !THY.firebaseDb) return;
+    try {
+      const tripId = THY.currentTripId;
+      if (!tripId || !THY.firebaseDb) return;
 
-    if (activeUnsubscribe) {
-      activeUnsubscribe();
-    }
+      if (activeUnsubscribe) {
+        activeUnsubscribe();
+      }
 
-    console.log(`📡 Listening to Firestore document: trips/${tripId}`);
-    activeUnsubscribe = THY.firebaseDb.collection("trips").doc(tripId).onSnapshot(doc => {
+      console.log(`📡 Listening to Firestore document: trips/${tripId}`);
+      activeUnsubscribe = THY.firebaseDb.collection("trips").doc(tripId).onSnapshot(doc => {
         if (doc.exists) {
           const data = doc.data();
           console.log("📥 Firestore Sync Update Received:", data);
