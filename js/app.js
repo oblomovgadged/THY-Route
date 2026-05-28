@@ -2271,7 +2271,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=2.6')
+    navigator.serviceWorker.register('/sw.js?v=2.7')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }
@@ -2397,7 +2397,18 @@ ${inviteLink}
 
       card.querySelector('.btn-delete').addEventListener('click', (e) => {
         e.stopPropagation();
-        if (confirm(`"${id}" seyahatini silmek istediğinize emin misiniz? (Bu işlem seyahati sadece bu cihazdan siler, Firebase veritabanından silmez)`)) {
+        if (confirm(`"${id}" seyahatini hem bu cihazdan hem de bulut veritabanından kalıcı olarak silmek istediğinize emin misiniz?`)) {
+          // Delete from Firestore
+          if (THY.firebaseDb) {
+            THY.firebaseDb.collection("trips").doc(id).delete()
+              .then(() => {
+                console.log(`🔥 Deleted trip "${id}" from Firestore.`);
+              })
+              .catch(err => {
+                console.error("Firestore delete error:", err);
+              });
+          }
+
           const saved = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
           delete saved[id];
           localStorage.setItem('thy_saved_trips', JSON.stringify(saved));
@@ -2411,7 +2422,7 @@ ${inviteLink}
           }
 
           THY.renderSavedTrips();
-          THY.toast('Seyahat listeden silindi.', 'info');
+          THY.toast('Seyahat bulut veritabanından ve listeden silindi.', 'success');
         }
       });
 
