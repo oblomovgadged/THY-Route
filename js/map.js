@@ -65,6 +65,13 @@ function initMap() {
     if (typeof THY.reRenderPlaceMarkers === 'function') {
       THY.reRenderPlaceMarkers();
     }
+
+    // Toggle promotional pins based on showPartners state
+    if (THY.showPartners) {
+      showNearbyPartnerPromo();
+    } else {
+      clearPartnerPromoMarkers();
+    }
     
     THY.toast(
       THY.showPartners ? 'THY Partner Ayrıcalıkları Haritada Gösteriliyor!' : 'Partner Ayrıcalıkları Gizlendi',
@@ -73,6 +80,13 @@ function initMap() {
   });
 
   map.controls[google.maps.ControlPosition.TOP_RIGHT].push(partnerBtn);
+
+  // Update promo pins when map is dragged/moved and showPartners is active
+  map.addListener('idle', () => {
+    if (THY.showPartners) {
+      showNearbyPartnerPromo();
+    }
+  });
 
   // ---- Custom Marker SVG & Partner Icons ----
   function createWaypointIcon(index, color = '#E31837') {
@@ -156,6 +170,101 @@ function initMap() {
       }
     }
     return null;
+  }
+
+  // ---- THY Partner Promo Pins (Automatic Sponsored Pins) ----
+  let partnerPromoMarkers = [];
+
+  function clearPartnerPromoMarkers() {
+    partnerPromoMarkers.forEach(m => m.setMap(null));
+    partnerPromoMarkers = [];
+  }
+
+  function showNearbyPartnerPromo() {
+    clearPartnerPromoMarkers();
+    if (!THY.showPartners || !placesService) return;
+
+    const center = map.getCenter();
+    if (!center) return;
+
+    // Search for "Avis", "Hilton", "Sheraton", "Marriott", "Rixos" around the center
+    const searchTerms = ['Avis', 'Hilton', 'Sheraton', 'Marriott', 'Rixos'];
+    searchTerms.forEach(term => {
+      placesService.textSearch({
+        location: center,
+        radius: 8000, // 8km radius for better density
+        query: term
+      }, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+          // Take top 3 results per brand to avoid map clutter
+          results.slice(0, 3).forEach(place => {
+            const lat = place.geometry.location.lat();
+            const lng = place.geometry.location.lng();
+            
+            // Avoid adding if already in waypoint list to prevent duplicate icons
+            const isDuplicate = THY.waypoints.some(wp => Math.abs(wp.lat - lat) < 0.0001 && Math.abs(wp.lng - lng) < 0.0001);
+            if (isDuplicate) return;
+
+            const partnerInfo = getPartnerMatch(place.name, place.place_id);
+            if (!partnerInfo) return;
+
+            const marker = new google.maps.Marker({
+              position: { lat, lng },
+              map: map,
+              icon: createPartnerIcon(),
+              title: place.name,
+              zIndex: 140
+            });
+
+            marker.addListener('click', () => {
+              let photoHtml = '';
+              if (place.photos && place.photos.length > 0) {
+                const photoUrl = place.photos[0].getUrl({ maxWidth: 240, maxHeight: 120 });
+                photoHtml = `<img src="${photoUrl}" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px;box-shadow:0 2px 4px rgba(0,0,0,0.3);" alt="${place.name}">`;
+              }
+
+              const ratingHtml = place.rating 
+                ? `<div style="color:#C8A951;font-size:12px;margin-bottom:6px;">${renderStars(place.rating)} ${place.rating} (${place.user_ratings_total || 0})</div>` 
+                : '';
+
+              const partnerHtml = `
+                <div style="background: linear-gradient(135deg, #E31837 0%, #B01026 100%); color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(227,24,55,0.3); max-width: 220px; white-space: normal;">
+                  <span>✈️ THY Partner Avantajı:</span>
+                  <span style="font-weight: 500;">${partnerInfo.offer}</span>
+                </div>
+              `;
+
+              const contentDiv = document.createElement('div');
+              contentDiv.style.background = '#1A2235';
+              contentDiv.style.color = '#F1F5F9';
+              contentDiv.style.padding = '10px 14px';
+              contentDiv.style.borderRadius = '8px';
+              contentDiv.style.fontFamily = 'Inter,sans-serif';
+              contentDiv.style.minWidth = '180px';
+              contentDiv.innerHTML = `
+                ${photoHtml}
+                ${partnerHtml}
+                <div style="font-weight:700;font-size:13px;margin-bottom:4px;">${partnerInfo.iconEmoji} ${place.name}</div>
+                <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.formatted_address || place.vicinity || ''}</div>
+                ${ratingHtml}
+                <button id="btnPromoMarkerAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">Rotaya Ekle</button>
+              `;
+
+              contentDiv.querySelector('#btnPromoMarkerAddToRoute').addEventListener('click', () => {
+                THY.addWaypoint(lat, lng, place.name);
+                THY.toast(`"${place.name}" rotaya eklendi!`, 'success');
+                infoWindow.close();
+              });
+
+              infoWindow.setContent(contentDiv);
+              infoWindow.open(map, marker);
+            });
+
+            partnerPromoMarkers.push(marker);
+          });
+        }
+      });
+    });
   }
 
   // ---- Waypoint Management (Firestore Operations) ----
