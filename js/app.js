@@ -157,6 +157,12 @@ const firebaseConfig = {
     try {
       window.firebase.initializeApp(fbSettings);
       THY.firebaseDb = window.firebase.firestore();
+      
+      if (window.firebase.analytics) {
+        window.firebase.analytics();
+        console.log("📈 Firebase Analytics initialized.");
+      }
+
       console.log("🔥 Firebase initialized with Project ID:", fbSettings.projectId);
 
       const tripId = THY.currentTripId;
