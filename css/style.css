@@ -530,11 +530,29 @@ input, textarea, select {
   gap: 4px;
   overflow-x: auto;
   flex: 1;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  align-items: center;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 169, 81, 0.35) rgba(255, 255, 255, 0.03);
 }
 
 .day-tabs::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for Chrome/Safari */
+  height: 4px;
+  display: block;
+}
+
+.day-tabs::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+}
+
+.day-tabs::-webkit-scrollbar-thumb {
+  background: rgba(200, 169, 81, 0.35);
+  border-radius: var(--radius-sm);
+}
+
+.day-tabs::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 169, 81, 0.6);
 }
 
 .day-tab-btn {
