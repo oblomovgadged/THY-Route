@@ -118,6 +118,28 @@ const thyApiConfig = {
 
     container.innerHTML = '';
 
+    // Add "Tam Rota" tab button
+    const allBtn = document.createElement('button');
+    allBtn.className = `day-tab-btn ${THY.activeDay === 0 ? 'active' : ''}`;
+    allBtn.style.setProperty('--day-color', '#94A3B8');
+    allBtn.innerHTML = `<span>Tam Rota</span>`;
+    allBtn.addEventListener('click', () => {
+      if (THY.activeDay !== 0) {
+        THY.activeDay = 0;
+        if (typeof THY.playSplitFlapSound === 'function') {
+          THY.playSplitFlapSound(2);
+        }
+        THY.updateDayTabs();
+        if (typeof THY.renderTripState === 'function') {
+          THY.renderTripState({
+            waypoints: THY.waypoints,
+            maxDays: THY.maxDays
+          });
+        }
+      }
+    });
+    container.appendChild(allBtn);
+
     for (let d = 1; d <= THY.maxDays; d++) {
       const btn = document.createElement('button');
       btn.className = `day-tab-btn ${d === THY.activeDay ? 'active' : ''}`;
@@ -340,7 +362,7 @@ const thyApiConfig = {
           });
           const maxWpDay = THY.waypoints.reduce((max, wp) => Math.max(max, wp.day), 1);
           THY.maxDays = Math.max(maxWpDay, data.maxDays || 1);
-          if (THY.activeDay > THY.maxDays) {
+          if (THY.activeDay !== 0 && THY.activeDay > THY.maxDays) {
             THY.activeDay = THY.maxDays;
           }
           if (typeof THY.updateDayTabs === 'function') {
@@ -2186,7 +2208,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=2.3')
+    navigator.serviceWorker.register('/sw.js?v=2.4')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }

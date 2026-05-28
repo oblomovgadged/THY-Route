@@ -86,8 +86,10 @@ function initMap() {
       THY.playSplitFlapSound(4);
     }
     
+    const targetDay = THY.activeDay === 0 ? THY.maxDays : (THY.activeDay || 1);
+    
     // Find how many waypoints are already in this day to make a friendly default label
-    const dayWpCount = THY.waypoints.filter(wp => (wp.day || 1) === (THY.activeDay || 1)).length;
+    const dayWpCount = THY.waypoints.filter(wp => (wp.day || 1) === targetDay).length;
     const defaultName = `Nokta ${dayWpCount + 1}`;
 
     const wp = { 
@@ -95,7 +97,7 @@ function initMap() {
       lng, 
       name: name || defaultName, 
       note: note || '',
-      day: THY.activeDay || 1 
+      day: targetDay
     };
     const updated = [...THY.waypoints, wp];
     THY.updateTripInFirestore({ waypoints: updated });
@@ -114,9 +116,14 @@ function initMap() {
     if (typeof THY.playSplitFlapSound === 'function') {
       THY.playSplitFlapSound(8);
     }
-    // Delete waypoints of active day only, keeping other days intact
-    const updated = THY.waypoints.filter(wp => (wp.day || 1) !== (THY.activeDay || 1));
-    THY.updateTripInFirestore({ waypoints: updated });
+    if (THY.activeDay === 0) {
+      // Clear entire trip
+      THY.updateTripInFirestore({ waypoints: [] });
+    } else {
+      // Delete waypoints of active day only, keeping other days intact
+      const updated = THY.waypoints.filter(wp => (wp.day || 1) !== THY.activeDay);
+      THY.updateTripInFirestore({ waypoints: updated });
+    }
   };
 
   // ---- Centralized Collaborative State Renderer ----
@@ -191,13 +198,42 @@ function initMap() {
 
   // ---- Polyline ----
   let routePolylines = [];
+  let globalRoutePolyline = null;
 
   function updatePolyline() {
     // Clear old polylines
     routePolylines.forEach(p => p.setMap(null));
     routePolylines = [];
 
-    // Group waypoints by day
+    if (globalRoutePolyline) {
+      globalRoutePolyline.setMap(null);
+      globalRoutePolyline = null;
+    }
+
+    if (THY.waypoints.length < 2) return;
+
+    // 1. Draw global dashed background line
+    const globalPath = THY.waypoints.map(wp => ({ lat: wp.lat, lng: wp.lng }));
+    globalRoutePolyline = new google.maps.Polyline({
+      path: globalPath,
+      geodesic: true,
+      strokeColor: '#94A3B8',
+      strokeOpacity: 0,
+      icons: [{
+        icon: {
+          path: 'M 0,-1 0,1',
+          strokeOpacity: 0.5,
+          scale: 2,
+          strokeColor: '#94A3B8',
+          strokeWeight: 2
+        },
+        offset: '0',
+        repeat: '12px'
+      }],
+      map: map
+    });
+
+    // 2. Group waypoints by day
     const waypointsByDay = {};
     THY.waypoints.forEach(wp => {
       const d = wp.day || 1;
@@ -221,7 +257,7 @@ function initMap() {
         geodesic: true,
         strokeColor: color,
         strokeOpacity: 0.9,
-        strokeWeight: 3,
+        strokeWeight: 3.5,
         icons: [{
           icon: {
             path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
@@ -246,39 +282,62 @@ function initMap() {
 
     list.innerHTML = '';
 
+    const showAll = (THY.activeDay === 0);
+
     // Filter waypoints for active selection
     const activeWaypoints = THY.waypoints
       .map((wp, originalIndex) => ({ ...wp, originalIndex }))
-      .filter(wp => (wp.day || 1) === (THY.activeDay || 1));
+      .filter(wp => showAll || (wp.day || 1) === (THY.activeDay || 1));
 
     if (activeWaypoints.length === 0) {
+      const titleText = showAll ? 'Rota Boş' : `${THY.activeDay || 1}. Gün Boş`;
+      const emptyText = showAll 
+        ? 'Haritaya tıklayarak veya "Rota Çiz" modunda ekleyebilirsiniz.' 
+        : 'Bu güne henüz rota noktası eklenmemiş. Haritaya tıklayarak veya "Rota Çiz" modunda ekleyebilirsiniz.';
       list.innerHTML = `
         <div class="empty-state" id="emptyRouteState">
           <div class="empty-state__icon">📅</div>
-          <div class="empty-state__title">${THY.activeDay || 1}. Gün Boş</div>
-          <div class="empty-state__text">Bu güne henüz rota noktası eklenmemiş. Haritaya tıklayarak veya "Rota Çiz" modunda ekleyebilirsiniz.</div>
+          <div class="empty-state__title">${titleText}</div>
+          <div class="empty-state__text">${emptyText}</div>
         </div>
       `;
       return;
     }
 
-    const dayColor = THY.dayColors[((THY.activeDay || 1) - 1) % THY.dayColors.length] || '#E31837';
-
     activeWaypoints.forEach((wp, i) => {
+      const wpColor = THY.dayColors[((wp.day || 1) - 1) % THY.dayColors.length] || '#E31837';
+
       // Connector
       if (i > 0) {
         const connector = document.createElement('div');
         connector.className = 'waypoint-connector';
-        connector.style.backgroundColor = dayColor;
+        
+        let connColor = wpColor;
+        if (showAll) {
+          const prevWp = activeWaypoints[i - 1];
+          if (prevWp.day !== wp.day) {
+            connColor = '#94A3B8'; // gray for cross-day connections
+          } else {
+            connColor = THY.dayColors[((wp.day || 1) - 1) % THY.dayColors.length] || '#E31837';
+          }
+        }
+        
+        connector.style.backgroundColor = connColor;
         list.appendChild(connector);
       }
 
       const item = document.createElement('div');
       item.className = 'waypoint-item';
+      
+      let dayBadgeHtml = '';
+      if (showAll) {
+        dayBadgeHtml = `<span style="font-size: 9px; padding: 2px 6px; background: rgba(255,255,255,0.05); border: 1px solid ${wpColor}; border-radius: 4px; color: ${wpColor}; font-weight: 700; margin-left: 6px;">${wp.day}. Gün</span>`;
+      }
+
       item.innerHTML = `
-        <div class="waypoint-marker" style="background-color: ${dayColor}">${i + 1}</div>
+        <div class="waypoint-marker" style="background-color: ${wpColor}">${i + 1}</div>
         <div class="waypoint-info">
-          <div class="waypoint-name">${wp.name}</div>
+          <div class="waypoint-name">${wp.name} ${dayBadgeHtml}</div>
           ${wp.note ? `<div class="waypoint-note" style="color: var(--thy-gold-light)">📝 Not: ${wp.note}</div>` : ''}
           <div class="waypoint-coords">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</div>
         </div>
@@ -639,9 +698,62 @@ function initMap() {
     
     // Set local states
     THY.maxDays = days;
-    THY.activeDay = 1;
+    THY.activeDay = 0; // Default to Tam Rota view so they see the entire trip first!
     if (typeof THY.updateDayTabs === 'function') {
       THY.updateDayTabs();
+    }
+
+    // Helper for smart distribution
+    function distributeWaypointsCount(W, D) {
+      const counts = new Array(D).fill(0);
+      if (W <= 0) return counts;
+      if (W <= D) {
+        for (let i = 0; i < W; i++) {
+          counts[i] = 1;
+        }
+        return counts;
+      }
+
+      const weights = [];
+      if (D === 2) {
+        weights.push(0.6, 0.4);
+      } else if (D === 3) {
+        weights.push(0.4, 0.4, 0.2);
+      } else if (D === 4) {
+        weights.push(0.3, 0.4, 0.2, 0.1);
+      } else {
+        weights.push(0.25, 0.35, 0.2, 0.15, 0.05);
+        while (weights.length < D) {
+          weights.push(0.02);
+        }
+      }
+
+      const sum = weights.reduce((a,b) => a+b, 0);
+      const normWeights = weights.map(w => w / sum);
+
+      for (let d = 0; d < D; d++) {
+        counts[d] = 1;
+      }
+
+      const remaining = W - D;
+      const ideals = normWeights.map(w => w * remaining);
+      const floors = ideals.map(v => Math.floor(v));
+      let floorSum = floors.reduce((a,b) => a+b, 0);
+      
+      for (let d = 0; d < D; d++) {
+        counts[d] += floors[d];
+      }
+
+      let stillRemaining = remaining - floorSum;
+      if (stillRemaining > 0) {
+        const fractions = ideals.map((v, idx) => ({ idx, frac: v - floors[idx] }));
+        fractions.sort((a, b) => b.frac - a.frac);
+        for (let i = 0; i < stillRemaining; i++) {
+          counts[fractions[i].idx]++;
+        }
+      }
+
+      return counts;
     }
 
     // Recommended sights database for major cities
@@ -710,15 +822,24 @@ function initMap() {
       const takeCount = Math.min(sights.length, days * 2);
       THY.toast(`${destAp.city} için ${days} günlük seyahat planı hazırlanıyor...`, 'info');
       
+      const dayCounts = distributeWaypointsCount(takeCount, days);
+      let currentDay = 1;
+      let currentDayAssigned = 0;
+
       const newWaypoints = sights.slice(0, takeCount).map((s, index) => {
-        const dayNumber = Math.min(days, Math.floor(index / 2) + 1);
-        return {
+        const wp = {
           lat: s.lat,
           lng: s.lng,
           name: s.name,
           note: '',
-          day: dayNumber
+          day: currentDay
         };
+        currentDayAssigned++;
+        if (currentDayAssigned >= dayCounts[currentDay - 1]) {
+          currentDay++;
+          currentDayAssigned = 0;
+        }
+        return wp;
       });
 
       // Batch write auto-itinerary to Firestore
@@ -749,16 +870,25 @@ function initMap() {
           map.setZoom(13);
 
           const takeCount = Math.min(results.length, days * 2);
+          const dayCounts = distributeWaypointsCount(takeCount, days);
+          let currentDay = 1;
+          let currentDayAssigned = 0;
+
           const newWaypoints = results.slice(0, takeCount).map((place, index) => {
             const loc = place.geometry.location;
-            const dayNumber = Math.min(days, Math.floor(index / 2) + 1);
-            return {
+            const wp = {
               lat: loc.lat(),
               lng: loc.lng(),
               name: place.name,
               note: '',
-              day: dayNumber
+              day: currentDay
             };
+            currentDayAssigned++;
+            if (currentDayAssigned >= dayCounts[currentDay - 1]) {
+              currentDay++;
+              currentDayAssigned = 0;
+            }
+            return wp;
           });
 
           // Batch write auto-itinerary waypoints to Firestore
