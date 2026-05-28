@@ -91,6 +91,41 @@ const thyApiConfig = {
     }, duration);
   };
 
+  // ---- ROBUST CLIPBOARD COPY HELPER ----
+  THY.copyToClipboard = (text) => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise((resolve, reject) => {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.top = '0';
+        textarea.style.left = '0';
+        textarea.style.width = '2em';
+        textarea.style.height = '2em';
+        textarea.style.padding = '0';
+        textarea.style.border = 'none';
+        textarea.style.outline = 'none';
+        textarea.style.boxShadow = 'none';
+        textarea.style.background = 'transparent';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        if (successful) {
+          resolve();
+        } else {
+          reject(new Error('execCommand failed'));
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  };
+
   // ---- RETRO SPLIT-FLAP MECHANICAL SOUND SYNTHESIZER ----
   THY.playSplitFlapSound = (ticks = 5) => {
     try {
@@ -1566,8 +1601,11 @@ const thyApiConfig = {
 
   document.getElementById('btnCopyExport')?.addEventListener('click', () => {
     const area = document.getElementById('exportJsonArea');
-    navigator.clipboard.writeText(area.value).then(() => {
+    THY.copyToClipboard(area.value).then(() => {
       THY.toast('JSON kopyalandı!', 'success');
+    }).catch(err => {
+      console.error('Failed to copy JSON:', err);
+      window.prompt('Kopyalama başarısız oldu. Lütfen bu alandan seçip kopyalayın:', area.value);
     });
   });
 
@@ -1794,7 +1832,7 @@ ${inviteLink}
     const longUrl = THY.generateShareUrl();
     const shareUrl = await THY.getShortenedUrl(longUrl);
     
-    navigator.clipboard.writeText(shareUrl).then(() => {
+    THY.copyToClipboard(shareUrl).then(() => {
       if (shareUrl !== longUrl) {
         THY.toast('Kısa davet linki kopyalandı! 🔗', 'success');
       } else {
@@ -1805,7 +1843,7 @@ ${inviteLink}
       }
     }).catch(err => {
       console.error('Failed to copy link:', err);
-      THY.toast('Link kopyalanamadı, lütfen manuel kopyalayın.', 'error');
+      window.prompt('Link panoya otomatik kopyalanamadı. Lütfen bu alandan seçip kopyalayın:', shareUrl);
     });
   });
 
