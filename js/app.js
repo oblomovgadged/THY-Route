@@ -84,16 +84,12 @@ const thyApiConfig = {
       localStorage.setItem('thy_user_role', THY.userRole);
       console.log("🔗 Shared tripId loaded from URL:", urlTripId, "Role:", THY.userRole);
     } else {
-      const cachedTripId = localStorage.getItem('thy_current_trip_id');
-      if (cachedTripId) {
-        THY.currentTripId = cachedTripId;
-        THY.userRole = localStorage.getItem('thy_user_role') || 'Kaptan';
-      } else {
-        THY.currentTripId = THY.generateTripId();
-        THY.userRole = 'Kaptan';
-        localStorage.setItem('thy_current_trip_id', THY.currentTripId);
-        localStorage.setItem('thy_user_role', THY.userRole);
-      }
+      // Start fresh every time! Generate a new trip ID.
+      THY.currentTripId = THY.generateTripId();
+      THY.userRole = 'Kaptan';
+      localStorage.setItem('thy_current_trip_id', THY.currentTripId);
+      localStorage.setItem('thy_user_role', 'Kaptan');
+      console.log("✈️ Fresh trip initialized on startup:", THY.currentTripId);
     }
   };
   parseSharedRoute();
@@ -1221,6 +1217,44 @@ const thyApiConfig = {
       return;
     }
     
+    // Resolve airport code from typed text if necessary
+    function resolveAirportCode(val) {
+      if (!val) return null;
+      const cleanVal = val.toUpperCase().trim();
+      
+      const codeMatch = cleanVal.match(/\(([A-Z]{3})\)/) || cleanVal.match(/^([A-Z]{3})$/);
+      if (codeMatch) {
+        const matchedCode = codeMatch[1];
+        const ap = AIRPORTS.find(a => a.code === matchedCode);
+        if (ap) return ap;
+      }
+      
+      const normalizedInput = normalizeText(val);
+      const matchedByCity = AIRPORTS.find(a => normalizeText(a.city) === normalizedInput);
+      if (matchedByCity) return matchedByCity;
+      
+      const matchedByName = AIRPORTS.find(a => normalizeText(a.name).includes(normalizedInput));
+      if (matchedByName) return matchedByName;
+
+      return null;
+    }
+
+    if (!isFlightCodeSearch) {
+      const resolvedDep = resolveAirportCode(depVal);
+      if (resolvedDep) {
+        depInput.dataset.code = resolvedDep.code;
+        depInput.dataset.lat = resolvedDep.lat;
+        depInput.dataset.lng = resolvedDep.lng;
+      }
+      
+      const resolvedDest = resolveAirportCode(destVal);
+      if (resolvedDest) {
+        destInput.dataset.code = resolvedDest.code;
+        destInput.dataset.lat = resolvedDest.lat;
+        destInput.dataset.lng = resolvedDest.lng;
+      }
+    }
+
     let depCode = depInput.dataset.code;
     let destCode = destInput.dataset.code;
     const depDate = document.getElementById('flightDepartureDate')?.value;
@@ -1586,6 +1620,9 @@ const thyApiConfig = {
             document.getElementById('landingScreen').classList.add('hidden');
             document.getElementById('mapScreen').classList.remove('hidden');
             
+            // Push trip ID to URL query parameters
+            window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
+            
             if (destAp && typeof THY.planAutoItinerary === 'function') {
               THY.planAutoItinerary(destAp, days);
             }
@@ -1623,6 +1660,22 @@ const thyApiConfig = {
     // Reset booking card visibility
     document.getElementById('bookingCard').classList.remove('hidden');
     document.getElementById('flightResultsCard').classList.add('hidden');
+
+    // Start fresh: generate a new trip ID and clear URL query parameters
+    THY.currentTripId = THY.generateTripId();
+    THY.userRole = 'Kaptan';
+    localStorage.setItem('thy_current_trip_id', THY.currentTripId);
+    localStorage.setItem('thy_user_role', 'Kaptan');
+    
+    const tripBadge = document.getElementById('tripIdBadge');
+    if (tripBadge) tripBadge.textContent = THY.currentTripId;
+    
+    window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}`);
+    
+    // Clear local state
+    if (typeof THY.clearLocalState === 'function') {
+      THY.clearLocalState();
+    }
   });
 
   // ---- FLIGHT BOARD CLOCK ----
@@ -1891,7 +1944,11 @@ const thyApiConfig = {
     trips[THY.currentTripId] = {
       tripId: THY.currentTripId,
       savedAt: new Date().toISOString(),
+      flightCode: document.getElementById('flightCode')?.textContent || '---',
+      dep: document.getElementById('flightDep')?.textContent || '---',
+      arr: document.getElementById('flightArr')?.textContent || '---',
       maxDays: THY.maxDays || 1,
+      waypointsCount: THY.waypoints ? THY.waypoints.length : 0,
       waypoints: THY.waypoints.map(wp => ({
         name: wp.name,
         lat: wp.lat,
@@ -2271,7 +2328,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=2.7')
+    navigator.serviceWorker.register('/sw.js?v=2.8')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }
