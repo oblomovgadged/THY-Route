@@ -288,7 +288,20 @@ const thyApiConfig = {
       throw new Error('Response parse error');
     } catch (err) {
       console.warn('[Shortener] API connection failed, using local fallback:', err);
-      return longUrl;
+  };
+
+  THY.cachedShortenedUrl = '';
+  THY.updateCachedShortenedUrl = async () => {
+    if (!THY.currentTripId) {
+      THY.cachedShortenedUrl = '';
+      return;
+    }
+    const longUrl = THY.generateShareUrl();
+    try {
+      THY.cachedShortenedUrl = await THY.getShortenedUrl(longUrl);
+    } catch (e) {
+      console.warn('Background link shortening failed:', e);
+      THY.cachedShortenedUrl = longUrl;
     }
   };
 
@@ -395,6 +408,9 @@ const thyApiConfig = {
           if (typeof THY.updateDayTabs === 'function') {
             THY.updateDayTabs();
           }
+          if (typeof THY.updateCachedShortenedUrl === 'function') {
+            THY.updateCachedShortenedUrl();
+          }
           
           const boardNo = document.getElementById('flightCode');
           const boardDep = document.getElementById('flightDep');
@@ -494,6 +510,9 @@ const thyApiConfig = {
           waypoints: THY.waypoints,
           maxDays: THY.maxDays
         });
+      }
+      if (typeof THY.updateCachedShortenedUrl === 'function') {
+        THY.updateCachedShortenedUrl();
       }
       return;
     }
@@ -2249,20 +2268,19 @@ ${inviteLink}
   });
 
   // ---- COPY INVITE LINK ----
-  document.getElementById('btnCopyInviteLink')?.addEventListener('click', async () => {
+  document.getElementById('btnCopyInviteLink')?.addEventListener('click', () => {
     if (!THY.waypoints || THY.waypoints.length === 0) {
       THY.toast('Davet linki oluşturmak için önce rotaya nokta ekleyin!', 'error');
       return;
     }
-    THY.toast('Davet bağlantısı kısaltılıyor...', 'info');
-    const longUrl = THY.generateShareUrl();
-    const shareUrl = await THY.getShortenedUrl(longUrl);
+    const shareUrl = THY.cachedShortenedUrl || THY.generateShareUrl();
+    const isShortened = shareUrl && shareUrl.includes('is.gd');
     
     THY.copyToClipboard(shareUrl).then(() => {
-      if (shareUrl !== longUrl) {
-        THY.toast('Kısa davet linki kopyalandı! 🔗', 'success');
+      if (isShortened) {
+        THY.toast('Kısa davet bağlantısı kopyalandı! 🔗', 'success');
       } else {
-        THY.toast('Davet linki kopyalandı! (Kısaltma servisi çevrimdışı, standart link kullanıldı) 🔗', 'info');
+        THY.toast('Davet bağlantısı kopyalandı! (Kısaltılmış sürüm hazırlanıyor, standart link kullanıldı) 🔗', 'info');
       }
       if (typeof THY.playSplitFlapSound === 'function') {
         THY.playSplitFlapSound(5);
@@ -2271,6 +2289,10 @@ ${inviteLink}
       console.error('Failed to copy link:', err);
       window.prompt('Link panoya otomatik kopyalanamadı. Lütfen bu alandan seçip kopyalayın:', shareUrl);
     });
+
+    if (!THY.cachedShortenedUrl && typeof THY.updateCachedShortenedUrl === 'function') {
+      THY.updateCachedShortenedUrl();
+    }
   });
 
   // ---- EMAIL PREVIEW UPDATE ----
