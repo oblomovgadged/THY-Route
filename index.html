@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=3.8">
+  <link rel="stylesheet" href="css/style.css?v=3.9">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -203,26 +203,26 @@
         <div class="flight-board__info">
           <div class="flight-info-item">
             <span class="flight-info-label">Uçuş</span>
-            <span class="flight-info-value highlight" id="flightCode">TK 1982</span>
+            <span class="flight-info-value highlight" id="flightCode">---</span>
           </div>
           <div class="flight-info-item">
             <span class="flight-info-label">Kalkış</span>
-            <span class="flight-info-value" id="flightDep">IST</span>
+            <span class="flight-info-value" id="flightDep">---</span>
           </div>
           <div class="flight-info-item">
             <span class="flight-info-label">Varış</span>
-            <span class="flight-info-value" id="flightArr">NRT</span>
+            <span class="flight-info-value" id="flightArr">---</span>
           </div>
           <div class="flight-info-item">
             <span class="flight-info-label">Kapı</span>
-            <span class="flight-info-value" id="flightGate">A7</span>
+            <span class="flight-info-value" id="flightGate">---</span>
           </div>
         </div>
 
         <div class="flight-board__status">
-          <div class="status-badge" id="statusBadge">
+          <div class="status-badge" id="statusBadge" style="border-color: #3B82F6;">
             <span class="status-dot"></span>
-            <span class="status-text" id="statusText">BİNİŞ BAŞLADI</span>
+            <span class="status-text" id="statusText" style="color: #3B82F6;">PLANLANIYOR</span>
           </div>
         </div>
 
@@ -280,9 +280,8 @@
             <span class="panel-tab__icon">💼</span>
             Seyahatler
           </button>
-          <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat" style="margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
-            <span style="font-size: 15px;">✕</span>
-            Kapat
+          <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat" style="margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: color 0.2s;">
+            <span>✕</span>
           </button>
         </div>
 
@@ -486,7 +485,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=3.8"></script>
-  <script src="js/map.js?v=3.8"></script>
+  <script src="js/app.js?v=3.9"></script>
+  <script src="js/map.js?v=3.9"></script>
 </body>
 </html>

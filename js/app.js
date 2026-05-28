@@ -51,6 +51,21 @@ const thyApiConfig = {
     return id;
   };
 
+  THY.clearLocalState = () => {
+    if (typeof THY.resetFirstRender === 'function') {
+      THY.resetFirstRender();
+    }
+    THY.waypoints = [];
+    THY.activeDay = 0; // Default to Tam Rota view
+    THY.maxDays = 1;
+    if (typeof THY.renderTripState === 'function') {
+      THY.renderTripState({ waypoints: [] });
+    }
+    if (typeof THY.updateDayTabs === 'function') {
+      THY.updateDayTabs();
+    }
+  };
+
   // Initialize Trip ID & URL Parsing
   THY.currentTripId = null;
 
@@ -445,11 +460,11 @@ const thyApiConfig = {
           if (mapScreen && !mapScreen.classList.contains('hidden')) {
             console.log("📤 Initializing new trip document in Firestore...");
             THY.updateTripInFirestore({
-              flightCode: document.getElementById('flightCode')?.textContent || 'TK 1982',
-              dep: document.getElementById('flightDep')?.textContent || 'IST',
-              arr: document.getElementById('flightArr')?.textContent || 'NRT',
-              gate: document.getElementById('flightGate')?.textContent || 'A7',
-              statusText: document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+              flightCode: document.getElementById('flightCode')?.textContent || '---',
+              dep: document.getElementById('flightDep')?.textContent || '---',
+              arr: document.getElementById('flightArr')?.textContent || '---',
+              gate: document.getElementById('flightGate')?.textContent || '---',
+              statusText: document.getElementById('statusText')?.textContent || 'PLANLANIYOR',
               waypoints: THY.waypoints || []
             });
           }
@@ -475,11 +490,11 @@ const thyApiConfig = {
       }
       if (typeof THY.renderTripState === 'function') {
         THY.renderTripState({
-          flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || 'TK 1982',
-          dep: fields.dep || document.getElementById('flightDep')?.textContent || 'IST',
-          arr: fields.arr || document.getElementById('flightArr')?.textContent || 'NRT',
-          gate: fields.gate || document.getElementById('flightGate')?.textContent || 'A7',
-          statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+          flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || '---',
+          dep: fields.dep || document.getElementById('flightDep')?.textContent || '---',
+          arr: fields.arr || document.getElementById('flightArr')?.textContent || '---',
+          gate: fields.gate || document.getElementById('flightGate')?.textContent || '---',
+          statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'PLANLANIYOR',
           waypoints: THY.waypoints,
           maxDays: THY.maxDays
         });
@@ -558,11 +573,11 @@ const thyApiConfig = {
         }
         if (typeof THY.renderTripState === 'function') {
           THY.renderTripState({
-            flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || 'TK 1982',
-            dep: fields.dep || document.getElementById('flightDep')?.textContent || 'IST',
-            arr: fields.arr || document.getElementById('flightArr')?.textContent || 'NRT',
-            gate: fields.gate || document.getElementById('flightGate')?.textContent || 'A7',
-            statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+            flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || '---',
+            dep: fields.dep || document.getElementById('flightDep')?.textContent || '---',
+            arr: fields.arr || document.getElementById('flightArr')?.textContent || '---',
+            gate: fields.gate || document.getElementById('flightGate')?.textContent || '---',
+            statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'PLANLANIYOR',
             waypoints: THY.waypoints,
             maxDays: THY.maxDays
           });
@@ -1778,7 +1793,7 @@ const thyApiConfig = {
       window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
 
       // Clear existing local waypoints
-      if (typeof THY.clearRoute === 'function') THY.clearRoute();
+      if (typeof THY.clearLocalState === 'function') THY.clearLocalState();
       
       // Re-initialize Firebase listener to point to the new imported trip ID
       THY.initFirebaseAndSync();
@@ -1786,11 +1801,11 @@ const thyApiConfig = {
       // Write imported trip data to Firestore
       setTimeout(() => {
         THY.updateTripInFirestore({
-          flightCode: data.flightCode || document.getElementById('flightCode')?.textContent || 'TK 1982',
-          dep: data.dep || document.getElementById('flightDep')?.textContent || 'IST',
-          arr: data.arr || document.getElementById('flightArr')?.textContent || 'NRT',
-          gate: data.gate || document.getElementById('flightGate')?.textContent || 'A7',
-          statusText: data.statusText || document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+          flightCode: data.flightCode || document.getElementById('flightCode')?.textContent || '---',
+          dep: data.dep || document.getElementById('flightDep')?.textContent || '---',
+          arr: data.arr || document.getElementById('flightArr')?.textContent || '---',
+          gate: data.gate || document.getElementById('flightGate')?.textContent || '---',
+          statusText: data.statusText || document.getElementById('statusText')?.textContent || 'PLANLANIYOR',
           maxDays: data.maxDays || 1,
           waypoints: data.waypoints.map(wp => ({
             name: wp.name,
@@ -1820,7 +1835,27 @@ const thyApiConfig = {
     window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
 
     // Clear local route first
-    if (typeof THY.clearRoute === 'function') THY.clearRoute();
+    if (typeof THY.clearLocalState === 'function') THY.clearLocalState();
+
+    // Reset cockpit flight board DOM elements
+    const boardNo = document.getElementById('flightCode');
+    const boardDep = document.getElementById('flightDep');
+    const boardArr = document.getElementById('flightArr');
+    const boardGate = document.getElementById('flightGate');
+    const statusText = document.getElementById('statusText');
+    const statusBadge = document.getElementById('statusBadge');
+    
+    if (boardNo) boardNo.textContent = '---';
+    if (boardDep) boardDep.textContent = '---';
+    if (boardArr) boardArr.textContent = '---';
+    if (boardGate) boardGate.textContent = '---';
+    if (statusText) {
+      statusText.textContent = 'PLANLANIYOR';
+      statusText.style.color = '#3B82F6';
+    }
+    if (statusBadge) {
+      statusBadge.style.borderColor = '#3B82F6';
+    }
 
     // Re-initialize Firebase live sync
     THY.initFirebaseAndSync();
@@ -1842,11 +1877,11 @@ const thyApiConfig = {
 
     // Save to Firestore
     THY.updateTripInFirestore({
-      flightCode: document.getElementById('flightCode')?.textContent || 'TK 1982',
-      dep: document.getElementById('flightDep')?.textContent || 'IST',
-      arr: document.getElementById('flightArr')?.textContent || 'NRT',
-      gate: document.getElementById('flightGate')?.textContent || 'A7',
-      statusText: document.getElementById('statusText')?.textContent || 'KALKIŞ HAZIR',
+      flightCode: document.getElementById('flightCode')?.textContent || '---',
+      dep: document.getElementById('flightDep')?.textContent || '---',
+      arr: document.getElementById('flightArr')?.textContent || '---',
+      gate: document.getElementById('flightGate')?.textContent || '---',
+      statusText: document.getElementById('statusText')?.textContent || 'PLANLANIYOR',
       maxDays: THY.maxDays || 1,
       waypoints: THY.waypoints || []
     });
@@ -1897,9 +1932,9 @@ const thyApiConfig = {
     // Build route summary as a Captain's Logbook brochure
     let routeSummary = 'Henüz rota oluşturulmadı.';
     if (THY.waypoints && THY.waypoints.length > 0) {
-      const flightCode = document.getElementById('flightCode')?.textContent || 'TK 1982';
-      const depCode = document.getElementById('flightDep')?.textContent || 'IST';
-      const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
+      const flightCode = document.getElementById('flightCode')?.textContent || '---';
+      const depCode = document.getElementById('flightDep')?.textContent || '---';
+      const arrCode = document.getElementById('flightArr')?.textContent || '---';
       const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
       // Group waypoints by day
@@ -2015,9 +2050,9 @@ ${inviteLink}
       return;
     }
 
-    const flightCode = document.getElementById('flightCode')?.textContent || 'TK 1982';
-    const depCode = document.getElementById('flightDep')?.textContent || 'IST';
-    const arrCode = document.getElementById('flightArr')?.textContent || 'NRT';
+    const flightCode = document.getElementById('flightCode')?.textContent || '---';
+    const depCode = document.getElementById('flightDep')?.textContent || '---';
+    const arrCode = document.getElementById('flightArr')?.textContent || '---';
     const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
     // Group waypoints by day
@@ -2236,7 +2271,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js?v=2.5')
+    navigator.serviceWorker.register('/sw.js?v=2.6')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }
@@ -2283,7 +2318,7 @@ ${inviteLink}
     window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${tripId}`);
     
     // Clear local route first
-    if (typeof THY.clearRoute === 'function') THY.clearRoute();
+    if (typeof THY.clearLocalState === 'function') THY.clearLocalState();
     
     // Re-initialize Firebase live sync
     THY.initFirebaseAndSync();
@@ -2297,9 +2332,9 @@ ${inviteLink}
     trips[tripId] = {
       tripId: tripId,
       savedAt: new Date().toISOString(),
-      flightCode: details.flightCode || trips[tripId]?.flightCode || 'TK 1982',
-      dep: details.dep || trips[tripId]?.dep || 'IST',
-      arr: details.arr || trips[tripId]?.arr || 'NRT',
+      flightCode: details.flightCode || trips[tripId]?.flightCode || '---',
+      dep: details.dep || trips[tripId]?.dep || '---',
+      arr: details.arr || trips[tripId]?.arr || '---',
       maxDays: details.maxDays || trips[tripId]?.maxDays || 1,
       waypointsCount: details.waypointsCount !== undefined ? details.waypointsCount : (trips[tripId]?.waypointsCount || 0)
     };
@@ -2341,8 +2376,8 @@ ${inviteLink}
         </div>
         <div class="trip-card-body">
           <div class="trip-card-flight">
-            <span class="flight-route">${trip.dep || 'IST'} ➔ ${trip.arr || 'NRT'}</span>
-            <span class="flight-code">${trip.flightCode || 'TK 1982'}</span>
+            <span class="flight-route">${trip.dep || '---'} ➔ ${trip.arr || '---'}</span>
+            <span class="flight-code">${trip.flightCode || '---'}</span>
           </div>
           <div class="trip-card-meta">
             <span>📅 ${trip.maxDays || 1} Gün</span>
@@ -2371,7 +2406,7 @@ ${inviteLink}
             THY.currentTripId = THY.generateTripId();
             localStorage.setItem('thy_current_trip_id', THY.currentTripId);
             window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
-            if (typeof THY.clearRoute === 'function') THY.clearRoute();
+            if (typeof THY.clearLocalState === 'function') THY.clearLocalState();
             THY.initFirebaseAndSync();
           }
 

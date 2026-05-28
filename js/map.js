@@ -316,6 +316,10 @@ function initMap() {
   // ---- Centralized Collaborative State Renderer ----
   let firstRenderDone = false;
 
+  THY.resetFirstRender = () => {
+    firstRenderDone = false;
+  };
+
   function getContrastColor(hex) {
     if (!hex) return '#FFFFFF';
     const color = hex.replace('#', '');
