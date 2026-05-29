@@ -7,38 +7,46 @@
 
 /* --- CSS Custom Properties --- */
 :root {
-  /* THY Brand Colors */
-  --thy-red: #E31837;
-  --thy-red-dark: #B81230;
-  --thy-red-light: #FF2D4D;
-  --thy-navy: #0B1D3A;
-  --thy-navy-light: #132D5E;
-  --thy-gold: #C8A951;
+  /* --- User Color Variables (Antrasit & Canlı Kırmızı Konsepti) --- */
+  --thy-red: #E11A22;          /* İkonik ve canlı THY Kırmızısı */
+  --thy-red-dark: #A81016;     /* Gradiyent için koyu kırmızı */
+  --thy-red-light: #FF3B45;    /* Canlı kırmızı vurgular */
+  --bg-dark: #12161A;          /* Asil antrasit arka plan */
+  --bg-card-user: #1A2026;     /* Kartların arka planı */
+  --text-main: #FFFFFF;        /* Başlıklar ve ana metin */
+  --text-muted-user: #8E9AA6;  /* Soft gri açıklamalar */
+  --border-color-user: #2D3742;/* İnce kenarlık rengi */
+  --route-glow: rgba(225, 26, 34, 0.4); /* Haritadaki rotanın parlayan gölgesi */
+
+  /* --- Mapped Brand Tokens (Compatibility Layer) --- */
+  --thy-navy: var(--bg-dark);
+  --thy-navy-light: var(--bg-card-user);
+  --thy-gold: #C8A951;         /* Gold detaylar korunuyor */
   --thy-gold-light: #E5C96E;
 
-  /* Neutrals */
-  --bg-primary: #0A0E1A;
-  --bg-secondary: #111827;
-  --bg-card: #1A2235;
-  --bg-card-hover: #212D45;
-  --bg-glass: rgba(17, 24, 39, 0.85);
-  --bg-glass-light: rgba(26, 34, 53, 0.7);
+  /* --- Neutrals & Backgrounds --- */
+  --bg-primary: var(--bg-dark);
+  --bg-secondary: #0D1013;     /* primary'den daha derin koyu antrasit */
+  --bg-card: var(--bg-card-user);
+  --bg-card-hover: #222931;    /* kartların üzerine gelindiğindeki ton */
+  --bg-glass: rgba(18, 22, 26, 0.85);
+  --bg-glass-light: rgba(26, 32, 38, 0.7);
 
-  /* Text */
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-  --text-accent: #E31837;
+  /* --- Text & Typo --- */
+  --text-primary: var(--text-main);
+  --text-secondary: #B1BDC9;   /* orta ton gri/mavi metin */
+  --text-muted: var(--text-muted-user);
+  --text-accent: var(--thy-red);
 
-  /* Borders */
-  --border-subtle: rgba(148, 163, 184, 0.1);
-  --border-glow: rgba(227, 24, 55, 0.3);
+  /* --- Borders & Outlines --- */
+  --border-subtle: var(--border-color-user);
+  --border-glow: var(--route-glow);
 
-  /* Shadows */
+  /* --- Shadows --- */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(227, 24, 55, 0.15);
+  --shadow-glow: 0 0 20px rgba(225, 26, 34, 0.15);
   --shadow-gold: 0 0 20px rgba(200, 169, 81, 0.15);
 
   /* Spacing */
@@ -1172,15 +1180,15 @@ input, textarea, select {
 }
 
 .splash-logo {
-  width: 80px;
-  height: 80px;
+  width: 280px;
+  height: 68px;
+  max-width: 90%;
   animation: splashPulse 2s ease-in-out infinite;
 }
 
 .splash-logo svg {
   width: 100%;
   height: 100%;
-  fill: var(--thy-red);
 }
 
 @keyframes splashPulse {
