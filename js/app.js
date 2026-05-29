@@ -2891,13 +2891,13 @@ ${inviteLink}
     const val = document.getElementById('pilotIdInput')?.value;
     if (val) {
       navigator.clipboard.writeText(val).then(() => {
-        THY.toast('Pilot Eşitleme Kodu kopyalandı! 📋', 'success');
+        THY.toast('Cihaz Eşitleme Kodu kopyalandı! 📋', 'success');
       }).catch(() => {
         const input = document.getElementById('pilotIdInput');
         if (input) {
           input.select();
           document.execCommand('copy');
-          THY.toast('Pilot Eşitleme Kodu kopyalandı! 📋', 'success');
+          THY.toast('Cihaz Eşitleme Kodu kopyalandı! 📋', 'success');
         }
       });
     }
@@ -2918,7 +2918,7 @@ ${inviteLink}
     const targetPilotId = targetInput?.value?.trim();
     
     if (!targetPilotId) {
-      THY.toast('Lütfen geçerli bir Pilot ID girin.', 'error');
+      THY.toast('Lütfen geçerli bir Eşitleme Kodu girin.', 'error');
       return;
     }
     
@@ -2934,7 +2934,7 @@ ${inviteLink}
     try {
       const doc = await THY.firebaseDb.collection("users").doc(targetPilotId).get();
       if (!doc.exists) {
-        THY.toast('Girdiğiniz Pilot ID bulunamadı. Lütfen kodu kontrol edin.', 'error');
+        THY.toast('Girdiğiniz Eşitleme Kodu bulunamadı. Lütfen kodu kontrol edin.', 'error');
         confirmBtn.disabled = false;
         confirmBtn.innerText = 'Eşitlemeyi Başlat';
         return;
