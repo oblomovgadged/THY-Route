@@ -342,6 +342,7 @@ input, textarea, select {
   bottom: 0;
   z-index: var(--z-map);
   transition: right var(--transition-aerodynamic);
+  overflow: hidden; /* Prevent Google Maps canvas/panes from spilling out on mobile */
 }
 
 .panel-collapsed .map-container {
@@ -373,12 +374,12 @@ input, textarea, select {
   flex-direction: column;
   overflow: hidden;
   transition: transform var(--transition-aerodynamic), opacity var(--transition-aerodynamic);
-  transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 10px);
   will-change: transform, opacity;
 }
 
 .side-panel.collapsed {
-  transform: translateX(calc(100% + 32px));
+  transform: translate3d(calc(100% + 32px), 0, 10px);
   opacity: 0;
   pointer-events: none;
 }
@@ -415,6 +416,8 @@ input, textarea, select {
   transform: translateX(100px);
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
+  z-index: -1;
 }
 
 /* Panel Tabs */
@@ -585,6 +588,11 @@ input, textarea, select {
 .day-tab-btn:hover {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.05);
+}
+
+.day-tab-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .day-tab-btn.active {
@@ -1016,6 +1024,7 @@ input, textarea, select {
   flex-direction: column;
   gap: var(--space-sm);
   align-items: center;
+  pointer-events: none; /* Allow clicks to pass through empty space */
 }
 
 .toast {
@@ -1024,6 +1033,7 @@ input, textarea, select {
   backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
+  pointer-events: auto; /* Make the toast itself interactive */
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
@@ -1198,7 +1208,7 @@ input, textarea, select {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--z-modal);
+  z-index: -1; /* Place behind everything when inactive */
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   display: flex;
@@ -1206,12 +1216,15 @@ input, textarea, select {
   justify-content: center;
   opacity: 0;
   visibility: hidden;
-  transition: var(--transition-base);
+  transition: opacity var(--transition-base), visibility var(--transition-base), z-index var(--transition-base) step-end;
+  pointer-events: none; /* Allow clicks to pass through when inactive */
 }
 
 .modal-overlay.active {
+  z-index: var(--z-modal); /* Bring to front when active */
   opacity: 1;
   visibility: visible;
+  pointer-events: auto; /* Enable clicks when visible */
 }
 
 .modal {
@@ -1409,10 +1422,11 @@ input, textarea, select {
     width: 100%;
     height: 50vh;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    transform: translate3d(0, 0, 10px); /* Push panel in front of WebGL/GPU layers */
   }
 
   .side-panel.collapsed {
-    transform: translateY(100%);
+    transform: translate3d(0, 100%, 10px);
   }
 
   .map-controls {
@@ -1473,13 +1487,15 @@ input, textarea, select {
   justify-content: center;
   overflow-y: auto;
   padding: var(--space-xl) var(--space-md);
-  transition: opacity 0.6s cubic-bezier(0.85, 0, 0.15, 1), transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
+  transition: opacity 0.6s cubic-bezier(0.85, 0, 0.15, 1), transform 0.6s cubic-bezier(0.85, 0, 0.15, 1), visibility 0.6s cubic-bezier(0.85, 0, 0.15, 1);
 }
 
 .landing-screen.hidden {
   opacity: 0;
   transform: scale(1.05);
   pointer-events: none;
+  visibility: hidden; /* Prevent hit-testing of hidden screen */
+  z-index: -1; /* Safely push it behind the map screen */
 }
 
 .landing-container {
