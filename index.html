@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=4.6">
+  <link rel="stylesheet" href="css/style.css?v=4.7">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -533,6 +533,29 @@
     </div>
   </div>
 
+  <!-- CUSTOM CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal" style="max-width: 400px; border: 1px solid var(--thy-red);">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--thy-red); font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+          ⚠️ Seyahati Sil
+        </h3>
+        <button class="modal-close" id="btnCloseConfirmModal">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 10px 0;">
+        <p id="confirmModalText" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+          Bu seyahat planını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+        </p>
+      </div>
+      <div class="modal-footer" style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button class="btn btn-secondary" id="btnConfirmCancel" style="width: 40%;">Vazgeç</button>
+        <button class="btn btn-primary" id="btnConfirmProceed" style="width: 60%; background-color: var(--thy-red); border-color: var(--thy-red);">
+          Seyahati Sil
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- PILOT ID SYNC MODAL -->
   <div class="modal-overlay" id="pilotSyncModal">
     <div class="modal" style="max-width: 400px;">
@@ -559,7 +582,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=4.6"></script>
-  <script src="js/map.js?v=4.6"></script>
+  <script src="js/app.js?v=4.7"></script>
+  <script src="js/map.js?v=4.7"></script>
 </body>
 </html>

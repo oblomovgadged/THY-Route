@@ -2779,9 +2779,12 @@ ${inviteLink}
         THY.loadTrip(id);
       });
 
-      card.querySelector('.btn-delete').addEventListener('click', (e) => {
+      card.querySelector('.btn-delete').addEventListener('click', async (e) => {
         e.stopPropagation();
-        if (confirm(`"${id}" seyahatini hem bu cihazdan hem de bulut veritabanından kalıcı olarak silmek istediğinize emin misiniz?`)) {
+        const cleanId = id.replace('TRIP-', '');
+        const message = `<strong>"${cleanId}"</strong> kodlu seyahat planını silmek istediğinizden emin misiniz?<br><br><span style="color: var(--text-muted); font-size: 11px;">Bu işlem seyahati bu cihazdan ve ortak bulut veritabanından kalıcı olarak silecektir.</span>`;
+        const confirmed = await THY.confirm(message, '⚠️ Seyahati Sil');
+        if (confirmed) {
           // Delete from Firestore
           if (THY.firebaseDb) {
             THY.firebaseDb.collection("trips").doc(id).delete()
@@ -2813,7 +2816,7 @@ ${inviteLink}
           }
 
           THY.renderSavedTrips();
-          THY.toast('Seyahat bulut veritabanından ve listeden silindi.', 'success');
+          THY.toast('Seyahat başarıyla silindi.', 'success');
         }
       });
 
@@ -2975,6 +2978,44 @@ ${inviteLink}
       confirmBtn.innerText = 'Eşitlemeyi Başlat';
     }
   });
+
+  // Custom Asynchronous Confirmation Modal
+  THY.confirm = (message, title = '⚠️ Uyarı') => {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('confirmModal');
+      const titleEl = modal?.querySelector('.modal-title');
+      const textEl = document.getElementById('confirmModalText');
+      const btnCancel = document.getElementById('btnConfirmCancel');
+      const btnClose = document.getElementById('btnCloseConfirmModal');
+      const btnProceed = document.getElementById('btnConfirmProceed');
+
+      if (!modal || !textEl || !btnCancel || !btnProceed) {
+        // Fallback to native confirm if DOM is missing
+        resolve(window.confirm(message));
+        return;
+      }
+
+      if (titleEl) titleEl.innerHTML = title;
+      textEl.innerHTML = message;
+      
+      modal.classList.add('active');
+
+      const cleanup = (result) => {
+        modal.classList.remove('active');
+        btnCancel.removeEventListener('click', onCancel);
+        if (btnClose) btnClose.removeEventListener('click', onCancel);
+        btnProceed.removeEventListener('click', onProceed);
+        resolve(result);
+      };
+
+      const onCancel = () => cleanup(false);
+      const onProceed = () => cleanup(true);
+
+      btnCancel.addEventListener('click', onCancel);
+      if (btnClose) btnClose.addEventListener('click', onCancel);
+      btnProceed.addEventListener('click', onProceed);
+    });
+  };
 
   console.log('✈️ THY Route App Core initialized');
 })();
