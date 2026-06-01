@@ -2665,7 +2665,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=2.9')
+    navigator.serviceWorker.register('./sw.js?v=3.0')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }

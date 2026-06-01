@@ -2,7 +2,7 @@
 // THY Route - Service Worker
 // ============================================
 
-const CACHE_NAME = 'thy-route-v38';
+const CACHE_NAME = 'thy-route-v39';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -12,7 +12,10 @@ const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/icons/splash.png',
   '/icons/favicon.png',
-  '/icons/logo.png'
+  '/icons/logo.png',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/icon-512.svg'
 ];
 
 // Install - cache core assets
