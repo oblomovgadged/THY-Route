@@ -184,17 +184,14 @@ input, textarea, select {
 .flight-board__logo {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0 35px 0 20px;
-  min-width: 240px;
+  padding: 0 var(--space-lg);
   height: 100%;
-  background: #ffffff;
+  background: transparent;
   position: relative;
-  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
 }
 
 .flight-board__logo-img {
-  height: 42px;
+  height: 38px;
   width: auto;
   object-fit: contain;
 }
@@ -1502,14 +1499,9 @@ input, textarea, select {
 }
 
 .landing-logo-img {
-  height: 64px;
+  height: 52px;
   width: auto;
   object-fit: contain;
-  background: #ffffff;
-  padding: 10px 24px;
-  border-radius: 40px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 @keyframes logoFloat {

@@ -2,13 +2,13 @@
 // THY Route - Service Worker
 // ============================================
 
-const CACHE_NAME = 'thy-route-v34';
+const CACHE_NAME = 'thy-route-v35';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/css/style.css?v=5.3',
-  '/js/app.js?v=5.3',
-  '/js/map.js?v=5.3',
+  '/css/style.css?v=5.4',
+  '/js/app.js?v=5.4',
+  '/js/map.js?v=5.4',
   '/manifest.json',
   '/icons/splash.png',
   '/icons/favicon.png',
