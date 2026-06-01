@@ -2,13 +2,13 @@
 // THY Route - Service Worker
 // ============================================
 
-const CACHE_NAME = 'thy-route-v37';
+const CACHE_NAME = 'thy-route-v38';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/css/style.css?v=5.6',
-  '/js/app.js?v=5.6',
-  '/js/map.js?v=5.6',
+  '/css/style.css?v=5.7',
+  '/js/app.js?v=5.7',
+  '/js/map.js?v=5.7',
   '/manifest.json',
   '/icons/splash.png',
   '/icons/favicon.png',
@@ -65,8 +65,18 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Fallback to cache
-        return caches.match(event.request);
+        // Fallback to cache (ignore search query params like ?tripId=...)
+        return caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // If not in cache and network failed, return a fallback empty response with error status
+          return new Response('Çevrimdışı / Bağlantı hatası', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers({ 'Content-Type': 'text/plain; charset=utf-8' })
+          });
+        });
       })
   );
 });

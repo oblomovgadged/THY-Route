@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com https://*.googleusercontent.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://api.emailjs.com; frame-src 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://maps.googleapis.com https://*.gstatic.com https://www.gstatic.com https://cdn.jsdelivr.net https://*.googletagmanager.com https://www.googletagmanager.com https://*.google-analytics.com https://*.kaspersky-labs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com https://*.googleusercontent.com https://*.googletagmanager.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://api.emailjs.com https://*.gstatic.com https://www.gstatic.com https://*.google-analytics.com https://*.googletagmanager.com https://*.kaspersky-labs.com wss://*.kaspersky-labs.com; frame-src 'self';">
   <meta name="description" content="THY Route - Interactive travel journal with route planning, Google Maps, and flight-inspired design.">
   <meta name="theme-color" content="#E31837">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css?v=5.6">
+  <link rel="stylesheet" href="css/style.css?v=5.7">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -48,8 +48,7 @@
   <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
-  <!-- Google Maps API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg&libraries=places&callback=initMap" async defer></script>
+  <!-- Google Maps API is loaded dynamically from map.js to prevent API key exposure and race conditions -->
 </head>
 <body>
   <noscript>
@@ -586,7 +585,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=5.6"></script>
-  <script src="js/map.js?v=5.6"></script>
+  <script src="js/app.js?v=5.7"></script>
+  <script src="js/map.js?v=5.7"></script>
 </body>
 </html>

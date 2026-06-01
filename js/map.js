@@ -1307,3 +1307,32 @@ function initMap() {
 
   console.log('🗺️ THY Route Map Engine initialized — Real-time Firestore sync active');
 }
+
+// ---- DYNAMIC GOOGLE MAPS API LOADER ----
+async function loadGoogleMapsScript() {
+  try {
+    const res = await fetch('/api/maps-key');
+    if (!res.ok) {
+      throw new Error(`Maps key API returned ${res.status}`);
+    }
+    const data = await res.json();
+    const key = data.key || 'AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg';
+    
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+    console.log("🗺️ Google Maps API script loaded dynamically from backend key.");
+  } catch (err) {
+    console.error("❌ Failed to fetch dynamically. Loading static fallback key:", err);
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg&libraries=places&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+}
+
+// Trigger Google Maps dynamic loading now that all JS functions are declared
+loadGoogleMapsScript();
