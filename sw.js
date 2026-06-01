@@ -2,14 +2,15 @@
 // THY Route - Service Worker
 // ============================================
 
-const CACHE_NAME = 'thy-route-v30';
+const CACHE_NAME = 'thy-route-v31';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/css/style.css?v=4.9',
-  '/js/app.js?v=4.9',
-  '/js/map.js?v=4.9',
-  '/manifest.json'
+  '/css/style.css?v=5.0',
+  '/js/app.js?v=5.0',
+  '/js/map.js?v=5.0',
+  '/manifest.json',
+  '/icons/splash.png'
 ];
 
 // Install - cache core assets
