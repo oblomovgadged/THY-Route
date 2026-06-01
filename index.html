@@ -2,12 +2,27 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.googleapis.com https://maps.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://api.emailjs.com; frame-src 'self';">
   <meta name="description" content="THY Route - Interactive travel journal with route planning, Google Maps, and flight-inspired design.">
   <meta name="theme-color" content="#E31837">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="THY Route">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thy-route.vercel.app/">
+  <meta property="og:title" content="THY Route — Seyahat Journal">
+  <meta property="og:description" content="Turkish Airlines ile uçuşlarınızı planlayın ve interaktif seyahat günlüğünüzü oluşturun.">
+  <meta property="og:image" content="https://thy-route.vercel.app/icons/logo.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://thy-route.vercel.app/">
+  <meta property="twitter:title" content="THY Route — Seyahat Journal">
+  <meta property="twitter:description" content="Turkish Airlines ile uçuşlarınızı planlayın ve interaktif seyahat günlüğünüzü oluşturun.">
+  <meta property="twitter:image" content="https://thy-route.vercel.app/icons/logo.png">
 
   <title>THY Route — Seyahat Journal</title>
 
@@ -22,8 +37,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=5.4">
+  <link rel="stylesheet" href="css/style.css?v=5.5">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -38,6 +52,15 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg&libraries=places&callback=initMap" async defer></script>
 </head>
 <body>
+  <noscript>
+    <div style="position: fixed; inset: 0; z-index: 10000; background: #12161A; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; font-family: sans-serif;">
+      <h2 style="color: #E11A22; margin-bottom: 15px;">JavaScript Gerekli / JavaScript Required</h2>
+      <p style="max-width: 500px; line-height: 1.6; color: #8E9AA6; font-size: 14px;">
+        THY Route uygulamasını kullanabilmek için tarayıcınızda JavaScript'in etkinleştirilmiş olması gerekmektedir. 
+        Lütfen tarayıcı ayarlarınızdan JavaScript'i etkinleştirip sayfayı yenileyiniz.
+      </p>
+    </div>
+  </noscript>
   <!-- ============================================
        SPLASH SCREEN
        ============================================ -->
@@ -159,11 +182,11 @@
 
             <div class="results-header-banner">
               <div class="results-header-banner-text" id="resultsRouteBanner">
-                🛫 GİDİŞ UÇUŞU SEÇİN (IST ➔ FCO)
+                🛫 UÇUŞ SEÇİN
               </div>
             </div>
 
-            <h3 class="results-title">Uygun Uçuşlar (<span id="resultsRouteLabel">IST - FCO</span>)</h3>
+            <h3 class="results-title">Uygun Uçuşlar (<span id="resultsRouteLabel">...</span>)</h3>
           </div>
           <div class="flight-list" id="flightListContainer">
             <!-- Flights will be loaded here dynamically -->
@@ -563,7 +586,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=5.4"></script>
-  <script src="js/map.js?v=5.4"></script>
+  <script src="js/app.js?v=5.5"></script>
+  <script src="js/map.js?v=5.5"></script>
 </body>
 </html>

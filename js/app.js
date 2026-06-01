@@ -1085,8 +1085,26 @@ const thyApiConfig = {
 
   const depDateInput = document.getElementById('flightDepartureDate');
   const retDateInput = document.getElementById('flightReturnDate');
-  if (depDateInput) depDateInput.value = formatDateLocal(today);
-  if (retDateInput) retDateInput.value = formatDateLocal(returnDate);
+  const todayStr = formatDateLocal(today);
+  
+  if (depDateInput) {
+    depDateInput.setAttribute('min', todayStr);
+    depDateInput.value = todayStr;
+    
+    depDateInput.addEventListener('change', () => {
+      if (retDateInput) {
+        retDateInput.setAttribute('min', depDateInput.value);
+        if (retDateInput.value && retDateInput.value < depDateInput.value) {
+          retDateInput.value = depDateInput.value;
+        }
+      }
+    });
+  }
+  
+  if (retDateInput) {
+    retDateInput.setAttribute('min', todayStr);
+    retDateInput.value = formatDateLocal(returnDate);
+  }
 
   let currentTripType = 'round-trip';
   const btnRoundTrip = document.getElementById('btnRoundTrip');
