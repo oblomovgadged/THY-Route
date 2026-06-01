@@ -42,6 +42,7 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET, non-HTTP, and Google Maps API requests
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith('http')) return;
+  if (event.request.url.includes('/api/')) return;
   if (event.request.url.includes('googleapis.com') || 
       event.request.url.includes('gstatic.com') ||
       event.request.url.includes('emailjs.com')) {

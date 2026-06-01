@@ -5,7 +5,7 @@
 // Bu dosya API anahtarını sunucu tarafında tutar.
 // Client-side koddan /api/flights?type=route&from=IST&to=FCO şeklinde çağrılır.
 
-const AVIATIONSTACK_KEY = '7b44b2dfa6bc8aae041fc12c67e7cee8';
+const AVIATIONSTACK_KEY = process.env.AVIATIONSTACK_KEY;
 
 module.exports = async (req, res) => {
   // CORS headers
