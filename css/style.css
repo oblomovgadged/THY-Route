@@ -184,49 +184,19 @@ input, textarea, select {
 .flight-board__logo {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  padding: 0 var(--space-lg);
-  min-width: 200px;
+  justify-content: center;
+  padding: 0 35px 0 20px;
+  min-width: 240px;
   height: 100%;
-  background: linear-gradient(135deg, var(--thy-red), var(--thy-red-dark));
+  background: #ffffff;
   position: relative;
   clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 0 100%);
 }
 
-.flight-board__logo-icon {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flight-board__logo-icon svg {
-  width: 100%;
-  height: 100%;
-  fill: white;
-}
-
-.flight-board__logo-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.flight-board__logo-title {
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: white;
-  line-height: 1.1;
-}
-
-.flight-board__logo-subtitle {
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
+.flight-board__logo-img {
+  height: 42px;
+  width: auto;
+  object-fit: contain;
 }
 
 .flight-board__info {
@@ -1399,16 +1369,11 @@ input, textarea, select {
   }
 
   .flight-board__logo {
-    min-width: 130px;
-    padding: 0 var(--space-md);
+    min-width: 150px;
+    padding: 0 25px 0 10px;
   }
-
-  .flight-board__logo-title {
-    font-size: 11px;
-  }
-
-  .flight-board__logo-subtitle {
-    display: none;
+  .flight-board__logo-img {
+    height: 32px;
   }
 
   .flight-board__info {
@@ -1533,39 +1498,23 @@ input, textarea, select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  justify-content: center;
 }
 
-.landing-logo-svg {
-  width: 60px;
-  height: 60px;
-  animation: logoFloat 4s ease-in-out infinite;
+.landing-logo-img {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+  background: #ffffff;
+  padding: 10px 24px;
+  border-radius: 40px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 @keyframes logoFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
-}
-
-.landing-logo-svg svg {
-  width: 100%;
-  height: 100%;
-}
-
-.landing-logo h1 {
-  font-size: 24px;
-  font-weight: 900;
-  letter-spacing: 4px;
-  color: var(--text-primary);
-  text-transform: uppercase;
-}
-
-.landing-subtitle {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 6px;
-  color: var(--thy-gold);
-  text-transform: uppercase;
 }
 
 /* Booking Card & Flight Results */

@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css?v=5.1">
+  <link rel="stylesheet" href="css/style.css?v=5.3">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -59,22 +59,7 @@
       <div class="landing-container">
         <!-- Logo Header -->
         <div class="landing-logo">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="280" height="68" class="thy-route-logo" style="animation: logoFloat 4s ease-in-out infinite;">
-            <defs>
-              <linearGradient id="thyGradientLanding" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#E11A22" />
-                <stop offset="100%" stop-color="#A81016" />
-              </linearGradient>
-            </defs>
-            <g transform="translate(10, 10)">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="url(#thyGradientLanding)" stroke-width="3" stroke-dasharray="6 4" opacity="0.8"/>
-              <path d="M25,70 Q45,35 75,30" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4 3"/>
-              <path d="M42,45 L78,28 L62,52 L55,48 Z" fill="url(#thyGradientLanding)" />
-              <circle cx="75" cy="30" r="4" fill="#E11A22" />
-            </g>
-            <text x="120" y="58" font-family="sans-serif" font-size="28" font-weight="800" fill="#FFFFFF">THY</text>
-            <text x="185" y="58" font-family="sans-serif" font-size="28" font-weight="300" fill="#E11A22">ROUTE</text>
-          </svg>
+          <img src="icons/logo.png?v=5.2" alt="THY Route Logo" class="landing-logo-img" style="animation: logoFloat 4s ease-in-out infinite;">
         </div>
 
         <!-- Booking Form Card -->
@@ -194,21 +179,7 @@
       <!-- FLIGHT INFORMATION BOARD -->
       <header class="flight-board" id="flightBoard">
         <div class="flight-board__logo">
-          <div class="flight-board__logo-icon">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <!-- Pusula Halkası -->
-              <circle cx="50" cy="50" r="42" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="6 4" opacity="0.8"/>
-              <!-- Rota Çizgisi -->
-              <path d="M25,70 Q45,35 75,30" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4 3"/>
-              <!-- Uçak / Turna Figürü -->
-              <path d="M42,45 L78,28 L62,52 L55,48 Z" fill="#FFFFFF" />
-              <circle cx="75" cy="30" r="4" fill="#FFFFFF" />
-            </svg>
-          </div>
-          <div class="flight-board__logo-text">
-            <span class="flight-board__logo-title">THY Route</span>
-            <span class="flight-board__logo-subtitle">Travel Journal</span>
-          </div>
+          <img src="icons/logo.png?v=5.2" alt="THY Route Logo" class="flight-board__logo-img">
         </div>
 
         <div class="flight-board__info">
@@ -592,7 +563,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=5.2"></script>
-  <script src="js/map.js?v=5.2"></script>
+  <script src="js/app.js?v=5.3"></script>
+  <script src="js/map.js?v=5.3"></script>
 </body>
 </html>
