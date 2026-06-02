@@ -124,6 +124,10 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
    * Aviationstack API anahtarının Vercel üzerinde tanımlanmaması ihtimaline karşı akıllı bir varsayılan yedek (fallback) değer tanımlanarak uçuş aramalarının çökmesi engellenmiştir.
    * Ücretsiz üyelik planlarında Aviationstack API'nin sadece `http://` (şifresiz) bağlantıya izin vermesi kısıtı nedeniyle, tüm uçuş sorgulamaları sunucu tarafında (Vercel Serverless Function proxy) yapılarak güvenceye alınmıştır. İstemci ile sunucumuz arasındaki bağlantı **%100 HTTPS (şifreli)** olarak kalır. Eğer ücretli Aviationstack planına geçilirse, Vercel panelinden `AVIATIONSTACK_HTTPS=true` tanımlanarak uçuş sorgulamaları sunucu tarafında da tamamen HTTPS yapılabilir.
 
+8. **IP Tabanlı Hız Sınırlandırması (Rate Limiting):**
+   * API uç noktalarının (Google Maps anahtarı, Aviationstack limitleri ve EmailJS e-posta gönderimi) kötü niyetli botlar veya spam saldırıları tarafından tüketilmesini önlemek amacıyla sunucu tarafında IP tabanlı hız sınırlandırması (Rate Limiting) aktif edilmiştir.
+   * `api/maps-key.js` için dakikada maks 5 istek, `api/flights.js` için dakikada maks 15 istek ve `api/send-email.js` için dakikada maks 3 e-posta gönderim sınırı getirilmiştir. Limit aşımında API'ler standart `429 Too Many Requests` hatası döndürür.
+
 ---
 
 ## 🌐 Canlı Yayın (Deployment)

@@ -3,7 +3,34 @@
 // Vercel Serverless Function
 // ============================================
 
+// In-memory rate limiting map
+const rateLimitMap = new Map();
+
 module.exports = async (req, res) => {
+  // Rate limiting check (3 requests per 1 minute window)
+  const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+  const now = Date.now();
+
+  // Periodically clean up expired entries to prevent memory leaks
+  if (rateLimitMap.size > 500) {
+    for (const [k, v] of rateLimitMap.entries()) {
+      if (now > v.resetTime) rateLimitMap.delete(k);
+    }
+  }
+
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + 60000 });
+  } else {
+    const data = rateLimitMap.get(ip);
+    if (now > data.resetTime) {
+      rateLimitMap.set(ip, { count: 1, resetTime: now + 60000 });
+    } else {
+      data.count++;
+      if (data.count > 3) {
+        return res.status(429).json({ error: 'Too many requests. Rate limit is 3 requests per minute.' });
+      }
+    }
+  }
   // Dynamic CORS setup
   const origin = req.headers.origin;
   let corsOrigin = null;
