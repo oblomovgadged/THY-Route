@@ -1148,7 +1148,7 @@ input, textarea, select {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: #e6edf3 url('../icons/splash.png') no-repeat center center;
+  background: #e6edf3 url('../icons/splash.png') no-repeat center top;
   background-size: cover;
   display: flex;
   flex-direction: column;
@@ -1494,7 +1494,7 @@ input, textarea, select {
   inset: 0;
   background-image: url('../icons/splash.png');
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center top;
   background-size: cover;
   opacity: 0.18; /* Elegant, high-contrast dark map blend */
   pointer-events: none;
