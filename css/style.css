@@ -155,9 +155,9 @@ input, textarea, select {
   left: 0;
   right: 0;
   z-index: var(--z-header);
-  background: linear-gradient(135deg, var(--thy-navy) 0%, #0D1B2A 50%, var(--thy-navy) 100%);
-  border-bottom: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg);
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   padding: 0;
   height: 72px;
   display: flex;
@@ -250,7 +250,7 @@ input, textarea, select {
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
-  background: rgba(227, 24, 55, 0.15);
+  background: #F8FAFC;
   border: 1px solid var(--thy-red);
   border-radius: var(--radius-full);
   animation: statusPulse 2s ease-in-out infinite;
@@ -304,6 +304,23 @@ input, textarea, select {
   font-weight: 500;
   color: var(--text-muted);
   letter-spacing: 1px;
+}
+
+/* Specific flight-board light theme overrides */
+.flight-board .flight-info-label {
+  color: #64748B !important;
+}
+.flight-board .flight-info-value {
+  color: #0F172A !important;
+}
+.flight-board .flight-info-value.highlight {
+  color: var(--thy-gold) !important;
+}
+.flight-board .flight-info-value.red {
+  color: var(--thy-red) !important;
+}
+.flight-board .board-date {
+  color: #64748B !important;
 }
 
 /* ============================================
