@@ -12,7 +12,17 @@ Turkish Airlines esintili premium tasarımı, Google Maps entegrasyonu, gerçek 
 * **Uçuş Bilgi Panosu (Flight Board):** Aviationstack API altyapısıyla desteklenen, anlık kalkış/varış, uçuş kodu, kapı ve durum takibi sağlayan THY havalimanı panosu tasarımı.
 * **Cihazlar Arası Eşitleme (Pilot ID):** Seyahatlerinizi bulutta yedeklemek ve farklı tarayıcılardaki listelerinizi birleştirmek için kullanabileceğiniz cihaz eşitleme kodu.
 * **Seyir Defteri E-posta Raporu:** Oluşturduğunuz seyahat planını ve özel notları EmailJS aracılığıyla tek tıkla e-posta raporu olarak gönderebilme.
-* **PWA Desteği:** Cihazınıza yerel bir uygulama gibi kurabilme (PWA), çevrimdışı çalışma desteği ve uçuş ağı arka planlı özel yükleme ekranı (Splash Screen).
+* **PWA Desteği:** Cihazınıza yerel bir uygulama gibi kurabilme (PWA), çevrimdışı çalışma desteği, şeffaf dairesel PWA ikonları ve uçuş ağı arka planlı, üstten hizalanmış özel yükleme ekranı (Splash Screen).
+
+---
+
+## 🎨 Görsel Tasarım & Varlıklar
+
+Uygulamanın görsel kalitesini ve responsive yapısını en üst düzeye çıkarmak için aşağıdaki özel varlıklar Pillow (Python) aracılığıyla işlenerek entegre edilmiştir:
+
+* **`icons/favicon.png` (128x128):** Orijinal turnalı dairesel amblemin tam koordinatlarından şeffaf olarak kırpılmış, deformasyonsuz sekme ikonu.
+* **`icons/logo.png` & `icons/logo-dark.png` (h=150px):** Soluk arka plan filigranından arındırılmış, sırasıyla koyu ve açık temalar için beyaz/siyah yazılı, yüksek DPI ekranlar için keskinleştirilmiş horizontal logolar.
+* **`icons/splash.png` (1024x558):** THY uçuş ağını gösteren, responsive tasarıma uygun ve hiçbir ekran boyutunda üst logosu kırpılmayacak şekilde `center top` hizalanmış arka plan görseli.
 
 ---
 
