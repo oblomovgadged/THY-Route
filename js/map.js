@@ -904,6 +904,32 @@ function initMap() {
       THY.toast('Harita merkezi alınamadı.', 'error');
       return;
     }
+
+    if (type === 'local') {
+      const request = {
+        location: center,
+        radius: 12000, // 12km search radius
+        query: 'local favorite restaurant cafe hidden gem authentic'
+      };
+
+      placesService.textSearch(request, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          // Filter: Rating >= 4.3, reviews between 25 and 900 to find "hidden gems" preferred by locals
+          const localSpots = results.filter(place => {
+            const rating = place.rating || 0;
+            const reviews = place.user_ratings_total || 0;
+            return rating >= 4.3 && reviews >= 25 && reviews <= 900;
+          });
+          const finalResults = localSpots.length > 0 ? localSpots : results;
+          displayPlaces(finalResults);
+        } else {
+          displayPlaces([]);
+          THY.toast('Bu bölgede yerel lezzet yok.', 'info');
+        }
+      });
+      return;
+    }
+
     const request = {
       location: center,
       radius: 8000, // Increased default search radius to 8km
