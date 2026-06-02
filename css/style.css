@@ -2494,3 +2494,160 @@ input, textarea, select {
   color: white !important;
 }
 
+/* --- Price Alert Widget & Cards --- */
+.price-alert-widget {
+  background: rgba(26, 32, 38, 0.65);
+  border: 1px solid rgba(200, 169, 81, 0.25);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.price-alert-widget:hover {
+  border-color: rgba(200, 169, 81, 0.6);
+  box-shadow: 0 0 15px rgba(200, 169, 81, 0.15);
+}
+
+.price-alert-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.price-alert-icon {
+  font-size: 24px;
+  display: inline-block;
+  animation: bellRing 3.5s ease-in-out infinite;
+}
+
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0); }
+  4%, 12% { transform: rotate(12deg); }
+  8%, 16% { transform: rotate(-12deg); }
+  20% { transform: rotate(0); }
+}
+
+.price-alert-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.price-alert-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.price-alert-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.price-alert-inputs input {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-primary);
+  width: 130px;
+  transition: all var(--transition-fast);
+}
+
+.price-alert-inputs input:focus {
+  border-color: var(--thy-gold);
+  box-shadow: 0 0 8px rgba(200, 169, 81, 0.2);
+}
+
+.price-alert-inputs input[type="number"] {
+  width: 100px;
+}
+
+.price-alert-inputs .btn {
+  height: 33px;
+  padding: 0 16px;
+  font-size: 11px;
+}
+
+.alert-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  transition: all var(--transition-base);
+}
+
+.alert-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--thy-red);
+  transform: translateX(2px);
+}
+
+.alert-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.alert-card-route {
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+}
+
+.alert-card-price {
+  font-size: 11px;
+  color: var(--thy-gold);
+  font-weight: 600;
+}
+
+.alert-card-email {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.alert-card-delete {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px;
+  font-size: 12px;
+  transition: all var(--transition-fast);
+  border-radius: 50%;
+}
+
+.alert-card-delete:hover {
+  color: var(--thy-red-light);
+  background: rgba(225, 26, 34, 0.1);
+}
+
+@media (max-width: 768px) {
+  .price-alert-widget {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .price-alert-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .price-alert-inputs input, .price-alert-inputs input[type="number"] {
+    width: 100%;
+  }
+}
+

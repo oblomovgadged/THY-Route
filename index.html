@@ -27,7 +27,7 @@
   <title>THY Route — Seyahat Journal</title>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="icons/favicon.png?v=6.5">
+  <link rel="icon" type="image/png" href="icons/favicon.png?v=6.6">
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css?v=6.5">
+  <link rel="stylesheet" href="css/style.css?v=6.6">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -187,6 +187,23 @@
 
             <h3 class="results-title">Uygun Uçuşlar (<span id="resultsRouteLabel">...</span>)</h3>
           </div>
+
+          <!-- Price Alert Widget -->
+          <div class="price-alert-widget" id="priceAlertWidget">
+            <div class="price-alert-info">
+              <span class="price-alert-icon">🔔</span>
+              <div>
+                <div class="price-alert-title">Akıllı Fiyat Alarmı (Mil & Fiyat Takipçisi)</div>
+                <div class="price-alert-desc">Seçtiğiniz tarihlerde bilet fiyatı veya mil değeri limitin altına indiğinde e-posta ile haber verelim.</div>
+              </div>
+            </div>
+            <div class="price-alert-inputs">
+              <input type="number" id="alertTargetPrice" placeholder="Hedef Fiyat (TL)" value="12000">
+              <input type="email" id="alertEmail" placeholder="E-posta Adresi">
+              <button class="btn btn-gold btn-sm" id="btnCreatePriceAlert">Alarm Kur</button>
+            </div>
+          </div>
+
           <div class="flight-list" id="flightListContainer">
             <!-- Flights will be loaded here dynamically -->
           </div>
@@ -566,6 +583,14 @@
                 </div>
               </div>
 
+              <!-- Category 5: Aktif Fiyat Alarmları -->
+              <div style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 12px; margin-bottom: 4px;">🔔 AKTİF FİYAT ALARMLARI</div>
+              <div id="activeAlertsList" style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 12px; border: 1px dashed var(--border-subtle); border-radius: 6px; background: rgba(255, 255, 255, 0.01);">
+                  Henüz aktif bir fiyat alarmı bulunmuyor.
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -716,7 +741,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=6.5"></script>
-  <script src="js/map.js?v=6.5"></script>
+  <script src="js/app.js?v=6.6"></script>
+  <script src="js/map.js?v=6.6"></script>
 </body>
 </html>

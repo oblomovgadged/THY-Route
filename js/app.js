@@ -254,6 +254,28 @@ const thyApiConfig = {
         THY.toast(`${THY.activeDay}. Gün oluşturuldu!`, 'success');
       });
     }
+
+    // Pre-fill email address if available
+    const alertEmailInput = document.getElementById('alertEmail');
+    if (alertEmailInput) {
+      const savedEmail = document.getElementById('emailTo')?.value || localStorage.getItem('thy_saved_email') || '';
+      alertEmailInput.value = savedEmail;
+    }
+
+    // Initialize Price Alert Button Click
+    document.getElementById('btnCreatePriceAlert')?.addEventListener('click', () => {
+      const email = document.getElementById('alertEmail')?.value?.trim();
+      const targetPrice = document.getElementById('alertTargetPrice')?.value?.trim();
+      if (email) {
+        localStorage.setItem('thy_saved_email', email);
+      }
+      THY.createPriceAlert(email, targetPrice);
+    });
+
+    // Load active alerts
+    if (typeof THY.loadPriceAlerts === 'function') {
+      THY.loadPriceAlerts();
+    }
   });
 
   THY.updateDayTabs = () => {
@@ -1573,6 +1595,14 @@ const thyApiConfig = {
     const retDate = document.getElementById('flightReturnDate')?.value;
     const cabin = document.getElementById('flightCabinClass')?.value;
     
+    THY.lastFlightSearch = {
+      depCode: depCode,
+      destCode: destCode,
+      depDate: depDate,
+      retDate: retDate,
+      cabin: cabin
+    };
+    
     if (!isFlightCodeSearch && depCode === destCode) {
       THY.toast('Kalkış ve varış noktaları aynı olamaz.', 'error');
       return;
@@ -2090,7 +2120,7 @@ const thyApiConfig = {
     places: document.getElementById('tabPlaces'),
     email: document.getElementById('tabEmail'),
     trips: document.getElementById('tabTrips'),
-    milesSmiles: document.getElementById('tabMilesSmiles')
+    'miles-smiles': document.getElementById('tabMilesSmiles')
   };
 
   tabs.forEach(tab => {
@@ -3091,6 +3121,139 @@ ${inviteLink}
       if (btnClose) btnClose.addEventListener('click', onCancel);
       btnProceed.addEventListener('click', onProceed);
     });
+  };
+
+  // ---- PRICE ALERT SYSTEMS ----
+  THY.loadPriceAlerts = () => {
+    const listContainer = document.getElementById('activeAlertsList');
+    if (!listContainer) return;
+
+    // Load from local storage backup first
+    const alerts = JSON.parse(localStorage.getItem('thy_price_alerts') || '[]');
+
+    if (alerts.length === 0) {
+      listContainer.innerHTML = `
+        <div style="font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 12px; border: 1px dashed var(--border-subtle); border-radius: 6px; background: rgba(255, 255, 255, 0.01);">
+          Henüz aktif bir fiyat alarmı bulunmuyor.
+        </div>
+      `;
+      return;
+    }
+
+    listContainer.innerHTML = '';
+    alerts.forEach((alert) => {
+      const card = document.createElement('div');
+      card.className = 'alert-card';
+      card.innerHTML = `
+        <div class="alert-card-info">
+          <div class="alert-card-route">🛫 ${alert.dep} ➔ ${alert.arr}</div>
+          <div class="alert-card-email">📬 ${alert.email}</div>
+          <div style="font-size: 10px; color: var(--text-muted);">${alert.depDate} ${alert.retDate ? ` - ${alert.retDate}` : ''}</div>
+          <div class="alert-card-price">Hedef: ${Number(alert.targetPrice).toLocaleString('tr-TR')} TL</div>
+        </div>
+        <button class="alert-card-delete" data-id="${alert.id}" title="Alarmı Sil">✕</button>
+      `;
+
+      card.querySelector('.alert-card-delete').addEventListener('click', (e) => {
+        e.stopPropagation();
+        THY.deletePriceAlert(alert.id);
+      });
+
+      listContainer.appendChild(card);
+    });
+  };
+
+  THY.createPriceAlert = (email, targetPrice) => {
+    if (!email || !targetPrice) {
+      THY.toast('Lütfen geçerli bir e-posta ve hedef fiyat girin.', 'error');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      THY.toast('Geçerli bir e-posta adresi giriniz.', 'error');
+      return;
+    }
+
+    const search = THY.lastFlightSearch || {
+      depCode: document.getElementById('flightDepartureInput')?.dataset?.code || 'IST',
+      destCode: document.getElementById('flightDestinationInput')?.dataset?.code || 'FCO',
+      depDate: document.getElementById('flightDepartureDate')?.value || new Date().toISOString().split('T')[0],
+      retDate: document.getElementById('flightReturnDate')?.value || '',
+      cabin: document.getElementById('flightCabinClass')?.value || 'economy'
+    };
+
+    const newAlert = {
+      id: 'ALT-' + Date.now() + '-' + Math.floor(Math.random()*1000),
+      dep: search.depCode,
+      arr: search.destCode,
+      depDate: search.depDate,
+      retDate: search.retDate || '',
+      cabin: search.cabin,
+      email: email,
+      targetPrice: targetPrice,
+      createdAt: new Date().toISOString()
+    };
+
+    // Save to LocalStorage
+    const currentAlerts = JSON.parse(localStorage.getItem('thy_price_alerts') || '[]');
+    currentAlerts.push(newAlert);
+    localStorage.setItem('thy_price_alerts', JSON.stringify(currentAlerts));
+
+    // Save to Firestore
+    if (THY.firebaseDb) {
+      THY.firebaseDb.collection("price_alerts").doc(newAlert.id).set(newAlert)
+        .then(() => console.log("🔥 Price alert synced to Firestore:", newAlert.id))
+        .catch(err => console.error("Firestore Price Alert save failed:", err));
+    }
+
+    // Refresh UI
+    THY.loadPriceAlerts();
+
+    // Sound effect
+    if (typeof THY.playSplitFlapSound === 'function') {
+      THY.playSplitFlapSound(8);
+    }
+
+    // Send Confirm Email via EmailJS
+    const settings = emailJsConfig;
+    if (settings.serviceId && settings.templateId && settings.publicKey) {
+      const templateParams = {
+        to_email: email,
+        from_name: 'THY Fiyat Takip Servisi',
+        trip_id: newAlert.id,
+        note: `Seçtiğiniz ${search.depCode} ➔ ${search.destCode} rotası için bilet fiyatı veya mil değeri ${Number(targetPrice).toLocaleString('tr-TR')} TL limitinin altına indiğinde sizi bilgilendireceğiz.`,
+        route_summary: `🔔 FİYAT ALARMI OLUŞTURULDU\n-----------------------------------\nRota: ${search.depCode} ➔ ${search.destCode}\nKabin: ${search.cabin.toUpperCase()}\nLimit: ${Number(targetPrice).toLocaleString('tr-TR')} TL\nGidiş Tarihi: ${search.depDate}\nDönüş Tarihi: ${search.retDate || 'Tek Yön'}\n-----------------------------------\nBu alarm bilet fiyatı düştüğünde size e-posta göndermek üzere kurulmuştur.`,
+        inviteLink: `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`
+      };
+      
+      emailjs.send(settings.serviceId, settings.templateId, templateParams, settings.publicKey)
+        .then(() => console.log("📧 EmailJS confirm alert mail sent."))
+        .catch(err => console.error("EmailJS confirm alert mail failed:", err));
+    }
+
+    THY.toast(`Alarm kuruldu! Fiyat ${Number(targetPrice).toLocaleString('tr-TR')} TL altına indiğinde haber vereceğiz. 🔔`, 'success');
+  };
+
+  THY.deletePriceAlert = (id) => {
+    let currentAlerts = JSON.parse(localStorage.getItem('thy_price_alerts') || '[]');
+    currentAlerts = currentAlerts.filter(a => a.id !== id);
+    localStorage.setItem('thy_price_alerts', JSON.stringify(currentAlerts));
+
+    // Delete from Firestore
+    if (THY.firebaseDb) {
+      THY.firebaseDb.collection("price_alerts").doc(id).delete()
+        .then(() => console.log("🔥 Price alert deleted from Firestore:", id))
+        .catch(err => console.error("Firestore Price Alert delete failed:", err));
+    }
+
+    // Refresh UI
+    THY.loadPriceAlerts();
+
+    if (typeof THY.playSplitFlapSound === 'function') {
+      THY.playSplitFlapSound(3);
+    }
+    THY.toast('Fiyat alarmı başarıyla kaldırıldı.', 'info');
   };
 
   console.log('✈️ THY Route App Core initialized');
