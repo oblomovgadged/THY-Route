@@ -66,8 +66,9 @@ const thyApiConfig = {
     }
   };
 
-  // Initialize Trip ID & URL Parsing
+  // Initialize Trip ID, Versioning (Optimistic Locking) & URL Parsing
   THY.currentTripId = null;
+  THY.currentTripVersion = 1;
 
   const parseSharedRoute = () => {
     const params = new URLSearchParams(window.location.search);
@@ -550,6 +551,9 @@ const thyApiConfig = {
           const data = doc.data();
           console.log("📥 Firestore Sync Update Received:", data);
           
+          // Keep version counter synchronized locally
+          THY.currentTripVersion = data.version || 1;
+          
           // Auto-save/update metadata in the local saved trips list
           if (typeof THY.addTripToSavedList === 'function') {
             THY.addTripToSavedList(tripId, {
@@ -770,31 +774,70 @@ const thyApiConfig = {
     }
     cleanedFields.updatedAt = new Date().toISOString();
 
-    THY.firebaseDb.collection("trips").doc(tripId).set(cleanedFields, { merge: true })
-      .then(() => {
-        console.log("📤 Firestore document updated successfully for:", tripId);
-      })
-      .catch(error => {
-        console.error("❌ Firestore update failed:", error);
-        THY.toast("Değişiklikler Firestore'a kaydedilemedi. Yerel önbelleğe yazıldı.", "error");
-        if (fields.waypoints !== undefined) {
-          THY.waypoints = fields.waypoints;
+    const docRef = THY.firebaseDb.collection("trips").doc(tripId);
+    const localVersion = THY.currentTripVersion || 1;
+
+    THY.firebaseDb.runTransaction(async (transaction) => {
+      const doc = await transaction.get(docRef);
+      if (!doc.exists) {
+        // If document doesn't exist, create it with version 1
+        const newDocData = { ...cleanedFields, version: 1 };
+        transaction.set(docRef, newDocData);
+        return 1;
+      }
+
+      const serverData = doc.data() || {};
+      const serverVersion = serverData.version || 1;
+
+      // Optimistic Locking Check:
+      // If server version is greater than what we have locally, someone else updated it first!
+      // Exception: If the only field being updated is 'lastAction' with type 'join', we allow it.
+      const isJoinAction = cleanedFields.lastAction && cleanedFields.lastAction.type === 'join';
+      if (serverVersion > localVersion && !isJoinAction) {
+        throw new Error("version_conflict");
+      }
+
+      const mergedFields = { ...cleanedFields };
+      mergedFields.version = serverVersion + 1;
+
+      transaction.update(docRef, mergedFields);
+      return mergedFields.version;
+    })
+    .then((newVersion) => {
+      console.log(`📤 Firestore document updated successfully with Transaction (Version: ${newVersion}) for: ${tripId}`);
+      THY.currentTripVersion = newVersion;
+    })
+    .catch(error => {
+      if (error.message === "version_conflict") {
+        console.warn("⚠️ Version conflict detected. Server has newer changes.");
+        THY.toast("⚠️ Rota çakışması engellendi: Başka bir pilot bu rotayı güncelledi. Değişiklikleriniz yerel kaldı, sayfa güncelleniyor.", "error", 6000);
+        if (typeof THY.playSplitFlapSound === 'function') {
+          THY.playSplitFlapSound(3);
         }
-        if (fields.maxDays !== undefined) {
-          THY.maxDays = fields.maxDays;
-        }
-        if (typeof THY.renderTripState === 'function') {
-          THY.renderTripState({
-            flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || '---',
-            dep: fields.dep || document.getElementById('flightDep')?.textContent || '---',
-            arr: fields.arr || document.getElementById('flightArr')?.textContent || '---',
-            gate: fields.gate || document.getElementById('flightGate')?.textContent || '---',
-            statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'PLANLANIYOR',
-            waypoints: THY.waypoints,
-            maxDays: THY.maxDays
-          });
-        }
-      });
+        return;
+      }
+
+      console.error("❌ Firestore transaction update failed:", error);
+      THY.toast("Değişiklikler Firestore'a kaydedilemedi. Yerel önbelleğe yazıldı.", "error");
+      
+      if (fields.waypoints !== undefined) {
+        THY.waypoints = fields.waypoints;
+      }
+      if (fields.maxDays !== undefined) {
+        THY.maxDays = fields.maxDays;
+      }
+      if (typeof THY.renderTripState === 'function') {
+        THY.renderTripState({
+          flightCode: fields.flightCode || document.getElementById('flightCode')?.textContent || '---',
+          dep: fields.dep || document.getElementById('flightDep')?.textContent || '---',
+          arr: fields.arr || document.getElementById('flightArr')?.textContent || '---',
+          gate: fields.gate || document.getElementById('flightGate')?.textContent || '---',
+          statusText: fields.statusText || document.getElementById('statusText')?.textContent || 'PLANLANIYOR',
+          waypoints: THY.waypoints,
+          maxDays: THY.maxDays
+        });
+      }
+    });
   };
 
 

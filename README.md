@@ -116,6 +116,10 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
    * API uç noktalarındaki güvensiz `Access-Control-Allow-Origin: '*'` (CORS) yapısı kaldırılarak dinamik CORS kontrolü eklenmiştir.
    * Sunucu tarafındaki isteklerin `Origin` başlığı kontrol edilerek sadece localhost, `thy-route.vercel.app` ve Vercel Preview domainlerine izin verilmekte, yabancı kaynaklı istekler `403 Forbidden` hatasıyla engellenmektedir.
 
+6. **Çoklu Kullanıcı Çakışma Önleme (Optimistic Locking & Transactions):**
+   * Aynı rota üzerinde birden fazla pilotun (kullanıcının) aynı anda değişiklik yapması durumunda veri ezilmesini (Last Write Wins) önlemek amacıyla **Firestore Transactions** altyapısı kurulmuştur.
+   * Her rota dokümanı `version` alanı ile sürüm kontrolü altında tutulur. Eşzamanlı çakışma durumunda sunucu sürümü ile istemci sürümü karşılaştırılır; çakışma varsa güncelleme reddedilir ve kullanıcı uyarılır.
+
 ---
 
 ## 🌐 Canlı Yayın (Deployment)
