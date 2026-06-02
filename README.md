@@ -145,6 +145,24 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
     * Firebase Firestore bağlantısı koptuğunda veya başlatılamadığında seyahat planlama özellikleri kesintiye uğramaz; uygulama verileri tarayıcının `localStorage` hafızasında saklar ve Aviationstack verileri offline simülasyon motoruna kayarak uygulamanın çökmesi engellenir.
     * Tarayıcının internet bağlantı durumundaki değişiklikler (`online`/`offline` olayları) anlık izlenerek kullanıcıya Türkçe/İngilizce durum bildirimleri (toast) gösterilir ve çevrimdışı toplanan verilerin bağlantı geri geldiğinde sunucuyla eşitlemesi başlatılır.
 
+## 🔮 Teknik Entegrasyon & API Yol Haritası (Technical Roadmap)
+
+Uygulamanın mevcut mimarisi, kurumsal ölçekte canlı entegrasyonlara hazır modüler bir veri katmanına (data abstraction layer) sahiptir. Türk Hava Yolları (THY) teknik ekiplerinden resmi API yetkileri sağlandığında gerçekleştirilecek tam zamanlı entegrasyon planı aşağıda sunulmuştur:
+
+1. **Uçuş Arama & Canlı Bilgi Entegrasyonu:**
+   * **Mevcut Durum:** Aviationstack API ve dinamik kalkış/varış uçuş ağı simülasyon motoru kullanılmaktadır.
+   * **Hedef Durum:** THY Live Flight Availability & Scheduling API entegrasyonu ile resmi uçuş kodları, bilet fiyatları, kapı numaraları ve uçak tipleri tam zamanlı ve %100 gerçek verilerle sunulacaktır.
+
+2. **Sadakat Programı & Mil Entegrasyonu (Miles&Smiles):**
+   * **Mevcut Durum:** M&S ortaklarına (Avis, Budget, Hilton vb.) ait mil kazanımları ve indirim oranları görsel prototip amaçlı zenginleştirilmiş mock verilerle gösterilmektedir.
+   * **Hedef Durum:** THY Miles&Smiles Partner & Award Mileage API bağlantısı kurularak; kullanıcıların canlı hesap bakiyelerine göre özel teklifler sunulacak, Avis araç kiralama veya Hilton otel konaklamalarından kazanacakları miller tam zamanlı olarak hesaplanıp doğrudan Miles&Smiles üyelik profillerine işlenebilecektir.
+
+3. **B2B Otel & Hizmet Rezervasyon Entegrasyonu:**
+   * **Mevcut Durum:** Google Places veritabanı üzerinden yakınlardaki konaklama ve turistik noktalar listelenmektedir.
+   * **Hedef Durum:** THY'nin anlaşmalı otel/konaklama API'leri ile harita üzerindeki oteller doğrudan uygulama içinden rezerve edilebilecek, mil harcama/kazanma seçenekleri dinamik olarak aktifleştirilecektir.
+
+Bu entegrasyon adımları, client-side kodlarda herhangi bir arayüz değişikliği gerektirmeden, sadece `/api/*` serverless proxy fonksiyonlarındaki veri beslemelerinin güncellenmesiyle gerçekleştirilecektir.
+
 ---
 
 ## 🌐 Canlı Yayın (Deployment)
