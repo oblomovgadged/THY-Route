@@ -1374,10 +1374,48 @@ input, textarea, select {
   color: var(--text-primary);
 }
 
+/* Language Toggle Buttons */
+.lang-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lang-toggle-btn:hover {
+  border-color: var(--thy-gold);
+  color: var(--thy-gold);
+  background: rgba(199, 168, 80, 0.1);
+}
+
+.landing-lang-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lang-toggle-mobile {
+  display: none;
+}
+
 /* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
+  .lang-toggle-mobile {
+    display: inline-flex;
+  }
+
   .flight-board {
     height: 56px;
   }

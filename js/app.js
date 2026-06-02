@@ -95,6 +95,203 @@ const thyApiConfig = {
   };
   parseSharedRoute();
 
+  const UI_TRANSLATIONS = {
+    tr: {
+      '#bookingCard .booking-card-title': 'Nereye uçmak istersiniz?',
+      '#btnRoundTrip': 'Gidiş-Dönüş',
+      '#btnOneWay': 'Tek Yön',
+      '#lblDeparture': 'Kalkış Noktası',
+      '#flightDepartureInput': { placeholder: 'Şehir veya Havalimanı ara...' },
+      '#lblDestination': 'Varış Noktası',
+      '#flightDestinationInput': { placeholder: 'Nereye gitmek istersiniz?' },
+      '#lblDepDate': 'Gidiş Tarihi',
+      '#lblRetDate': 'Dönüş Tarihi (Kaç Gün Kalacaksınız?)',
+      '#lblPassengers': 'Yolcu',
+      '#lblCabinClass': 'Kabin Sınıfı',
+      '#btnSearchFlights': '<span class="icon">✈️</span> UÇUŞ ARA',
+      '#btnBackToSearch': '← Aramayı Düzenle',
+      '#resultsRouteBanner': '🛫 UÇUŞ SEÇİN',
+      '#stepOutbound .step-label': 'Gidiş Uçuşu',
+      '#stepInbound .step-label': 'Dönüş Uçuşu',
+      '#priceAlertWidget .price-alert-title': 'Akıllı Fiyat Alarmı (Mil & Fiyat Takipçisi)',
+      '#priceAlertWidget .price-alert-desc': 'Seçtiğiniz tarihlerde bilet fiyatı veya mil değeri limitin altına indiğinde e-posta ile haber verelim.',
+      '#alertTargetPrice': { placeholder: 'Hedef Fiyat (TL)' },
+      '#alertEmail': { placeholder: 'E-posta Adresi' },
+      '#btnCreatePriceAlert': 'Alarm Kur',
+      '#lblBoardFlight': 'Uçuş',
+      '#lblBoardDep': 'Kalkış',
+      '#lblBoardArr': 'Varış',
+      '#lblBoardGate': 'Kapı',
+      '[data-tab="route"]': '<span class="panel-tab__icon">🗺️</span> Rota',
+      '[data-tab="places"]': '<span class="panel-tab__icon">📌</span> Yerler',
+      '[data-tab="email"]': '<span class="panel-tab__icon">✉️</span> Rapor',
+      '[data-tab="trips"]': '<span class="panel-tab__icon">💼</span> Seyahatler',
+      '[data-tab="miles-smiles"]': '<span class="panel-tab__icon">❤️</span> M&S',
+      '#tabRoute .route-title': '<span class="icon">✈️</span> <span id="lblRouteTitle">Seyahat Rotası</span>',
+      '#btnAddingDay': { title: 'Yeni Gün Ekle' },
+      '#joinModal .modal-title': '🛫 Rotaya Katıl',
+      '#joinModal p': 'Bir seyahat planına davet edildiniz! Rota üzerinde ortak çalışmak, durakları ve notları düzenlemek için lütfen isminizi girin.',
+      '#joinModal label': 'İsminiz',
+      '#joinUserNameInput': { placeholder: 'Adınızı yazın...' },
+      '#btnConfirmJoin': '<span class="icon">✈️</span> Rotaya Dahil Ol',
+      '#importModal .modal-title': '📥 Trip İçe Aktar',
+      '#importJsonArea': { placeholder: 'JSON verisini buraya yapıştırın...' },
+      '#btnCancelImport': 'İptal',
+      '#btnConfirmImport': 'İçe Aktar',
+      '#exportModal .modal-title': '📤 Rota Paylaş / Davet Et',
+      '#exportModal p': 'Bu seyahat planını başkalarıyla paylaşarak aynı rota üzerinde gerçek zamanlı olarak birlikte çalışabilirsiniz.',
+      '#lblCaptainCode': 'Kaptan Eşitleme Kodu (Sizin Kodunuz)',
+      '#lblCoPilotCode': 'Yardımcı Pilot Eşitleme Kodu (Davet Ettiğiniz Kişi)',
+      '#btnCopyInviteLink': '🔗 Davet Linkini Kopyala',
+      '#btnShareByEmail': '✉️ Raporu E-posta ile Gönder',
+      '#btnCloseExport': 'Kapat',
+      '#syncModal .modal-title': '🔄 Diğer Cihazla Eşitle',
+      '#syncModal p': 'Diğer cihazınızdaki seyahatlerinizi bu cihaza aktarmak için o cihazın Cihaz Eşitleme Kodu\'nu girin. Bu işlem iki cihazdaki seyahat listelerini birleştirecektir.',
+      '#targetPilotIdInput': { placeholder: 'Örn: a1b2c3d4...' },
+      '#btnCancelSync': 'İptal',
+      '#btnConfirmSync': 'Eşitlemeyi Başlat'
+    },
+    en: {
+      '#bookingCard .booking-card-title': 'Where would you like to fly?',
+      '#btnRoundTrip': 'Round Trip',
+      '#btnOneWay': 'One Way',
+      '#lblDeparture': 'Departure Point',
+      '#flightDepartureInput': { placeholder: 'Search city or airport...' },
+      '#lblDestination': 'Destination Point',
+      '#flightDestinationInput': { placeholder: 'Where would you like to go?' },
+      '#lblDepDate': 'Departure Date',
+      '#lblRetDate': 'Return Date (Duration)',
+      '#lblPassengers': 'Passengers',
+      '#lblCabinClass': 'Cabin Class',
+      '#btnSearchFlights': '<span class="icon">✈️</span> SEARCH FLIGHTS',
+      '#btnBackToSearch': '← Edit Search',
+      '#resultsRouteBanner': '🛫 SELECT FLIGHT',
+      '#stepOutbound .step-label': 'Outbound Flight',
+      '#stepInbound .step-label': 'Inbound Flight',
+      '#priceAlertWidget .price-alert-title': 'Smart Price Alert (Miles & Price Tracker)',
+      '#priceAlertWidget .price-alert-desc': 'We will email you when ticket prices or mile values drop below your target limit.',
+      '#alertTargetPrice': { placeholder: 'Target Price (TL)' },
+      '#alertEmail': { placeholder: 'Email Address' },
+      '#btnCreatePriceAlert': 'Set Alert',
+      '#lblBoardFlight': 'Flight',
+      '#lblBoardDep': 'Departure',
+      '#lblBoardArr': 'Arrival',
+      '#lblBoardGate': 'Gate',
+      '[data-tab="route"]': '<span class="panel-tab__icon">🗺️</span> Route',
+      '[data-tab="places"]': '<span class="panel-tab__icon">📌</span> Places',
+      '[data-tab="email"]': '<span class="panel-tab__icon">✉️</span> Report',
+      '[data-tab="trips"]': '<span class="panel-tab__icon">💼</span> Trips',
+      '[data-tab="miles-smiles"]': '<span class="panel-tab__icon">❤️</span> M&S',
+      '#tabRoute .route-title': '<span class="icon">✈️</span> <span id="lblRouteTitle">Travel Route</span>',
+      '#btnAddingDay': { title: 'Add New Day' },
+      '#joinModal .modal-title': '🛫 Join Route',
+      '#joinModal p': 'You have been invited to a travel route! Please enter your name to collaborate and edit stops and notes.',
+      '#joinModal label': 'Your Name',
+      '#joinUserNameInput': { placeholder: 'Enter your name...' },
+      '#btnConfirmJoin': '<span class="icon">✈️</span> Join Route Now',
+      '#importModal .modal-title': '📥 Import Trip',
+      '#importJsonArea': { placeholder: 'Paste JSON data here...' },
+      '#btnCancelImport': 'Cancel',
+      '#btnConfirmImport': 'Import',
+      '#exportModal .modal-title': '📤 Share Route / Invite',
+      '#exportModal p': 'Share this trip plan with others to collaborate on the same route in real-time.',
+      '#lblCaptainCode': 'Captain Sync Code (Your Code)',
+      '#lblCoPilotCode': 'Co-Pilot Sync Code (The Person You Invite)',
+      '#btnCopyInviteLink': '🔗 Copy Invite Link',
+      '#btnShareByEmail': '✉️ Send Report by Email',
+      '#btnCloseExport': 'Close',
+      '#syncModal .modal-title': '🔄 Sync with Other Device',
+      '#syncModal p': 'To transfer your trips from another device, enter its Device Sync Code. This will merge the trip lists on both devices.',
+      '#targetPilotIdInput': { placeholder: 'E.g., a1b2c3d4...' },
+      '#btnCancelSync': 'Cancel',
+      '#btnConfirmSync': 'Start Syncing'
+    }
+  };
+
+  THY.currentLanguage = localStorage.getItem('thy_lang') || (navigator.language.startsWith('tr') ? 'tr' : 'en');
+
+  THY.translateStatus = (statusStr) => {
+    if (!statusStr) return '---';
+    const lang = THY.currentLanguage || 'tr';
+    if (lang === 'tr') {
+      if (statusStr.includes('PLANNING') || statusStr.includes('SCHEDULED')) return 'PLANLANIYOR';
+      if (statusStr.includes('DELAYED')) return 'GECİKMELİ';
+      if (statusStr.includes('IN FLIGHT')) return 'UÇUŞTA';
+      if (statusStr.includes('COMPLETED') || statusStr.includes('LANDED') || statusStr.includes('VARIS YAPILDI')) return 'VARIS YAPILDI';
+      if (statusStr.includes('READY FOR TAKE OFF') || statusStr.includes('KALKIŞ HAZIR')) return 'KALKIŞ HAZIR';
+      if (statusStr.includes('BOARDING') || statusStr.includes('BİNİŞ BAŞLADI')) return 'BİNİŞ BAŞLADI';
+      if (statusStr.includes('GATE CLOSING') || statusStr.includes('KAPI KAPANIYOR')) return 'KAPI KAPANIYOR';
+      if (statusStr.includes('LANDING') || statusStr.includes('İNİŞ YAPILIYOR')) return 'İNİŞ YAPILIYOR';
+      if (statusStr.includes('CANCELLED') || statusStr.includes('İPTAL EDİLDİ')) return 'İPTAL EDİLDİ';
+      return statusStr;
+    } else {
+      if (statusStr.includes('PLANLANIYOR')) return 'PLANNING';
+      if (statusStr.includes('GECİKMELİ') || statusStr.includes('RÖTAR')) return 'DELAYED';
+      if (statusStr.includes('UÇUŞTA')) return 'IN FLIGHT';
+      if (statusStr.includes('TAMAMLANDI') || statusStr.includes('VARIS YAPILDI')) return 'COMPLETED';
+      if (statusStr.includes('KALKIŞ HAZIR')) return 'READY FOR TAKE OFF';
+      if (statusStr.includes('BİNİŞ BAŞLADI')) return 'BOARDING';
+      if (statusStr.includes('KAPI KAPANIYOR')) return 'GATE CLOSING';
+      if (statusStr.includes('İNİŞ YAPILIYOR')) return 'LANDING';
+      if (statusStr.includes('İPTAL EDİLDİ')) return 'CANCELLED';
+      return statusStr;
+    }
+  };
+
+  THY.translateUI = (lang) => {
+    THY.currentLanguage = lang;
+    localStorage.setItem('thy_lang', lang);
+    
+    const dictionary = UI_TRANSLATIONS[lang];
+    if (!dictionary) return;
+    
+    for (const selector in dictionary) {
+      const elements = document.querySelectorAll(selector);
+      const translation = dictionary[selector];
+      
+      elements.forEach(element => {
+        if (typeof translation === 'string') {
+          if (translation.includes('<')) {
+            element.innerHTML = translation;
+          } else {
+            element.textContent = translation;
+          }
+        } else if (typeof translation === 'object') {
+          for (const attr in translation) {
+            if (attr === 'placeholder') {
+              element.placeholder = translation[attr];
+            } else if (attr === 'title') {
+              element.setAttribute('title', translation[attr]);
+            }
+          }
+        }
+      });
+    }
+    
+    const nextLangText = lang === 'tr' ? '🌐 EN' : '🌐 TR';
+    const btnToggle = document.getElementById('btnLangToggle');
+    const btnToggleLanding = document.getElementById('btnLangToggleLanding');
+    const btnToggleMobile = document.getElementById('btnLangToggleMobile');
+    
+    if (btnToggle) btnToggle.textContent = nextLangText;
+    if (btnToggleLanding) btnToggleLanding.textContent = nextLangText;
+    if (btnToggleMobile) btnToggleMobile.textContent = nextLangText;
+    
+    const passengers = document.getElementById('flightPassengers');
+    if (passengers) {
+      const isEn = lang === 'en';
+      passengers.options[0].text = isEn ? '1 Passenger' : '1 Yolcu';
+      passengers.options[1].text = isEn ? '2 Passengers' : '2 Yolcu';
+      passengers.options[2].text = isEn ? '3 Passengers' : '3 Yolcu';
+      passengers.options[3].text = isEn ? '4 Passengers' : '4 Yolcu';
+    }
+    
+    const statusText = document.getElementById('statusText');
+    if (statusText && statusText.textContent) {
+      statusText.textContent = THY.translateStatus(statusText.textContent);
+    }
+  };
+
   // Secure EmailJS Proxy Helper
   THY.sendEmailProxy = async (templateParams) => {
     try {
@@ -120,6 +317,19 @@ const thyApiConfig = {
   document.addEventListener('DOMContentLoaded', () => {
     const tripBadge = document.getElementById('tripIdBadge');
     if (tripBadge) tripBadge.textContent = THY.currentTripId;
+
+    // Initialize UI language translation
+    THY.translateUI(THY.currentLanguage);
+
+    // Bind Language Switches
+    const handleLangToggle = () => {
+      const newLang = THY.currentLanguage === 'tr' ? 'en' : 'tr';
+      THY.translateUI(newLang);
+    };
+    
+    document.getElementById('btnLangToggle')?.addEventListener('click', handleLangToggle);
+    document.getElementById('btnLangToggleLanding')?.addEventListener('click', handleLangToggle);
+    document.getElementById('btnLangToggleMobile')?.addEventListener('click', handleLangToggle);
 
     // Handle shared trip join popup and redirect
     const params = new URLSearchParams(window.location.search);
@@ -629,7 +839,7 @@ const thyApiConfig = {
           if (boardGate && data.gate) boardGate.textContent = data.gate;
           
           if (statusText && data.statusText) {
-            statusText.textContent = data.statusText;
+            statusText.textContent = THY.translateStatus(data.statusText);
             const colors = {
               'BİNİŞ BAŞLADI': '#FF2D4D',
               'KAPI KAPANIYOR': '#FF8C00',
@@ -2031,7 +2241,7 @@ const thyApiConfig = {
               }
             }
 
-            statusText.textContent = statusStr;
+            statusText.textContent = THY.translateStatus(statusStr);
             statusText.style.color = color;
             statusBadge.style.borderColor = color;
           }
@@ -2170,7 +2380,7 @@ const thyApiConfig = {
     const statusText = document.getElementById('statusText');
     const statusBadge = document.getElementById('statusBadge');
     if (statusText && statusBadge) {
-      statusText.textContent = statuses[statusIndex].text;
+      statusText.textContent = THY.translateStatus(statuses[statusIndex].text);
       statusText.style.color = statuses[statusIndex].color;
       statusBadge.style.borderColor = statuses[statusIndex].color;
     }
@@ -2777,7 +2987,7 @@ ${inviteLink}
           if (boardArr) boardArr.textContent = arr;
           if (boardGate) boardGate.textContent = gate;
           if (statusText) {
-            statusText.textContent = statusTextStr;
+            statusText.textContent = THY.translateStatus(statusTextStr);
             const colors = {
               'BİNİŞ BAŞLADI': '#FF2D4D',
               'KAPI KAPANIYOR': '#FF8C00',

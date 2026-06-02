@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css?v=6.6">
+  <link rel="stylesheet" href="css/style.css?v=6.7">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -80,8 +80,9 @@
     <div id="landingScreen" class="landing-screen">
       <div class="landing-container">
         <!-- Logo Header -->
-        <div class="landing-logo">
+        <div class="landing-logo" style="position: relative; display: flex; align-items: center; justify-content: center; width: 100%;">
           <img src="icons/logo.png?v=6.3" alt="THY Route Logo" class="landing-logo-img" style="animation: logoFloat 4s ease-in-out infinite;">
+          <button id="btnLangToggleLanding" class="lang-toggle-btn landing-lang-btn">🌐 EN</button>
         </div>
 
         <!-- Booking Form Card -->
@@ -97,7 +98,7 @@
 
             <!-- Departure (Autocomplete) -->
             <div class="form-group-booking">
-              <label>Kalkış Noktası</label>
+              <label id="lblDeparture">Kalkış Noktası</label>
               <div class="input-wrapper">
                 <span class="input-icon">🛫</span>
                 <input type="text" id="flightDepartureInput" placeholder="Şehir veya Havalimanı ara..." autocomplete="off">
@@ -108,7 +109,7 @@
 
             <!-- Destination (Autocomplete) -->
             <div class="form-group-booking">
-              <label>Varış Noktası</label>
+              <label id="lblDestination">Varış Noktası</label>
               <div class="input-wrapper">
                 <span class="input-icon">🛬</span>
                 <input type="text" id="flightDestinationInput" placeholder="Nereye gitmek istersiniz?" autocomplete="off">
@@ -119,14 +120,14 @@
             <!-- Dates -->
             <div class="form-row-booking">
               <div class="form-group-booking">
-                <label>Gidiş Tarihi</label>
+                <label id="lblDepDate">Gidiş Tarihi</label>
                 <div class="input-wrapper">
                   <span class="input-icon">📅</span>
                   <input type="date" id="flightDepartureDate">
                 </div>
               </div>
               <div class="form-group-booking" id="returnDateGroup">
-                <label>Dönüş Tarihi (Kaç Gün Kalacaksınız?)</label>
+                <label id="lblRetDate">Dönüş Tarihi (Kaç Gün Kalacaksınız?)</label>
                 <div class="input-wrapper">
                   <span class="input-icon">📅</span>
                   <input type="date" id="flightReturnDate">
@@ -137,7 +138,7 @@
             <!-- Passengers & Class -->
             <div class="form-row-booking">
               <div class="form-group-booking">
-                <label>Yolcu</label>
+                <label id="lblPassengers">Yolcu</label>
                 <select id="flightPassengers" class="select-booking">
                   <option value="1">1 Yolcu</option>
                   <option value="2">2 Yolcu</option>
@@ -146,7 +147,7 @@
                 </select>
               </div>
               <div class="form-group-booking">
-                <label>Kabin Sınıfı</label>
+                <label id="lblCabinClass">Kabin Sınıfı</label>
                 <select id="flightCabinClass" class="select-booking">
                   <option value="economy">Economy Class</option>
                   <option value="business">Business Class</option>
@@ -222,19 +223,19 @@
 
         <div class="flight-board__info">
           <div class="flight-info-item">
-            <span class="flight-info-label">Uçuş</span>
+            <span class="flight-info-label" id="lblBoardFlight">Uçuş</span>
             <span class="flight-info-value highlight" id="flightCode">---</span>
           </div>
           <div class="flight-info-item">
-            <span class="flight-info-label">Kalkış</span>
+            <span class="flight-info-label" id="lblBoardDep">Kalkış</span>
             <span class="flight-info-value" id="flightDep">---</span>
           </div>
           <div class="flight-info-item">
-            <span class="flight-info-label">Varış</span>
+            <span class="flight-info-label" id="lblBoardArr">Varış</span>
             <span class="flight-info-value" id="flightArr">---</span>
           </div>
           <div class="flight-info-item">
-            <span class="flight-info-label">Kapı</span>
+            <span class="flight-info-label" id="lblBoardGate">Kapı</span>
             <span class="flight-info-value" id="flightGate">---</span>
           </div>
         </div>
@@ -246,9 +247,12 @@
           </div>
         </div>
 
-        <div class="flight-board__time">
-          <span class="board-time" id="boardTime">--:--</span>
-          <span class="board-date" id="boardDate">--</span>
+        <div class="flight-board__time" style="display: flex; flex-direction: row; align-items: center; gap: 15px;">
+          <div style="display: flex; flex-direction: column; align-items: flex-end;">
+            <span class="board-time" id="boardTime">--:--</span>
+            <span class="board-date" id="boardDate">--</span>
+          </div>
+          <button id="btnLangToggle" class="lang-toggle-btn">🌐 EN</button>
         </div>
       </header>
 
@@ -304,6 +308,7 @@
             <span class="panel-tab__icon">❤️</span>
             M&S
           </button>
+          <button id="btnLangToggleMobile" class="lang-toggle-btn lang-toggle-mobile" style="margin-left: 10px; font-size: 11px; padding: 4px 10px;">🌐 EN</button>
           <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat" style="margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: color 0.2s;">
             <span>✕</span>
           </button>
@@ -741,7 +746,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=6.8"></script>
+  <script src="js/app.js?v=6.9"></script>
   <script src="js/map.js?v=6.6"></script>
 </body>
 </html>
