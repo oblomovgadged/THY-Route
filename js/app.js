@@ -346,7 +346,9 @@ const thyApiConfig = {
       '#btnMyLocation .tooltip': 'Konumum',
       '#btnSearchPlaces': { title: 'Yakındaki Yerler' },
       '#btnSearchPlaces .tooltip': 'Yakındaki Yerler',
-      '#confirmModal .modal-title': '⚠️ Seyahati Sil'
+      '#confirmModal .modal-title': '⚠️ Seyahati Sil',
+      '#priceAlertPrivacyNotice': '* Alarm kurarak verilerinizin <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Gizlilik Politikası (KVKK)</a> uyarınca işlenmesini kabul etmiş olursunuz.',
+      '#emailReportPrivacyNotice': '* Rapor göndererek verilerinizin <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Gizlilik Politikası (KVKK)</a> uyarınca işlenmesini kabul etmiş olursunuz.'
     },
     en: {
       '#bookingCard .booking-card-title': 'Where would you like to fly?',
@@ -452,7 +454,9 @@ const thyApiConfig = {
       '#btnMyLocation .tooltip': 'My Location',
       '#btnSearchPlaces': { title: 'Search Nearby Places' },
       '#btnSearchPlaces .tooltip': 'Search Nearby Places',
-      '#confirmModal .modal-title': '⚠️ DELETE TRIP'
+      '#confirmModal .modal-title': '⚠️ DELETE TRIP',
+      '#priceAlertPrivacyNotice': '* By setting an alert, you consent to the processing of your data under the <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Privacy Policy</a>.',
+      '#emailReportPrivacyNotice': '* By sending reports, you consent to the processing of your data under the <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Privacy Policy</a>.'
     }
   };
 
@@ -4035,17 +4039,13 @@ ${inviteLink}
     }
   }
 
-  // Bind Open links
-  btnOpenPrivacy?.addEventListener('click', (e) => {
-    e.preventDefault();
-    openPrivacy();
-  });
-
-  document.querySelectorAll('.privacy-modal-trigger').forEach(trigger => {
-    trigger.addEventListener('click', (e) => {
+  // Bind Open links via Event Delegation (handles dynamically translated/overwritten elements)
+  document.addEventListener('click', (e) => {
+    const isTrigger = e.target && (e.target.classList.contains('privacy-modal-trigger') || e.target.id === 'btnOpenPrivacyModal' || e.target.closest('#btnOpenPrivacyModal'));
+    if (isTrigger) {
       e.preventDefault();
       openPrivacy();
-    });
+    }
   });
 
   // Bind Close links
