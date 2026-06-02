@@ -2741,32 +2741,6 @@ const thyApiConfig = {
               THY.planAutoItinerary(destAp, days);
             }
           }, 1500);
-        }for one-way flight route
-          if (currentTripType === 'round-trip' && depDate && retDate) {
-            days = Math.max(1, Math.ceil((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)));
-          }
-          
-          if (currentTripType === 'one-way') {
-            THY.toast('Tek Yön Uçuş: 3 Günlük Rota Planlanıyor... ✈️', 'success');
-          } else {
-            THY.toast('Biniş Kartlarınız Hazırlanıyor... ✈️', 'success');
-            if (stepInbound) {
-              stepInbound.classList.remove('active');
-              stepInbound.classList.add('completed');
-            }
-          }
-          
-          setTimeout(() => {
-            document.getElementById('landingScreen').classList.add('hidden');
-            document.getElementById('mapScreen').classList.remove('hidden');
-            
-            // Push trip ID to URL query parameters
-            window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
-            
-            if (destAp && typeof THY.planAutoItinerary === 'function') {
-              THY.planAutoItinerary(destAp, days);
-            }
-          }, 1500);
         }
  
         // 2. Animate list back in

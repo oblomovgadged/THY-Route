@@ -132,6 +132,10 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
    * Uygulamanın tüm alanlarında (Uçuş Arama Sonuçları, Yer Arama, Miles&Smiles, Seyahatlerim listesi, toast bildirimleri, email ve işlem onay pencereleri) tam ve eksiksiz İngilizce desteği sağlanmıştır.
    * İngilizce dil seçildiğinde, CSS `text-transform: uppercase` kurallarının tarayıcı yerel ayarlarına bağlı olarak İngilizce kelimelerde Türkçe noktalı `İ` karakteri (örn: `TURKİSH AİRLİNES`, `FLİGHT ARRİVE`) üretme hatası, İngilizce kaynak sözlüklerin doğrudan büyük harfli (uppercase) olarak beslenmesiyle ve dinamik harf düzeltmeleriyle kökten çözülmüştür.
 
+10. **Ana Ekran Form Yükleme ve JavaScript Sözdizimi Düzeltmesi:**
+    * Dil güncellemeleri esnasında `js/app.js` dosyasında kalan mükerrer kod bloğu ve `}for one-way flight route` sözdizimi (syntax) hatası giderildi.
+    * Bu hatanın tüm JavaScript motorunu kilitleyerek kalkış/varış autocomplete kutularını devre dışı bırakması ve gidiş/dönüş tarihlerini boş göstermesi sorunu tamamen çözüldü; form özellikleri ve varsayılan THY uçuş ağı simülasyonları başarıyla restore edildi.
+
 ---
 
 ## 🌐 Canlı Yayın (Deployment)
