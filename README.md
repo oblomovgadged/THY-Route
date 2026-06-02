@@ -140,6 +140,11 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
     * Kullanıcıların seyahat planları, adları, e-postaları ve konum verilerinin işlenme süreçlerini şeffaflaştırmak amacıyla KVKK (Kişisel Verilerin Korunması Kanunu) ve GDPR (General Data Protection Regulation) uyumlu interaktif bir **Gizlilik Politikası** paneli eklenmiştir.
     * Giriş ekranı alt bilgisine (footer), fiyat alarmı formuna ve e-posta raporlama sekmesine yasal aydınlatma metni onay linkleri yerleştirilmiştir. Bu sayede uygulamanın yasal uyumluluk standartları kurumsal THY satış/sunum kriterlerine uygun hale getirilmiştir.
 
+12. **Gelişmiş Hata Yönetimi ve Çevrimdışı (Offline) Mod Koruması:**
+    * Google Haritalar API'sinin internet bağlantısı veya API anahtarı yetkileri nedeniyle yüklenememesi durumu için dinamik script yükleyiciye hata dinleyicisi (`onerror`) ve küresel yetki reddi (`gm_authFailure`) geri çağrımı eklenmiştir. Yükleme başarısız olduğunda boş veya beyaz ekran yerine antrasit temada bilgilendirici bir çevrimdışı uyarı ekranı gösterilir.
+    * Firebase Firestore bağlantısı koptuğunda veya başlatılamadığında seyahat planlama özellikleri kesintiye uğramaz; uygulama verileri tarayıcının `localStorage` hafızasında saklar ve Aviationstack verileri offline simülasyon motoruna kayarak uygulamanın çökmesi engellenir.
+    * Tarayıcının internet bağlantı durumundaki değişiklikler (`online`/`offline` olayları) anlık izlenerek kullanıcıya Türkçe/İngilizce durum bildirimleri (toast) gösterilir ve çevrimdışı toplanan verilerin bağlantı geri geldiğinde sunucuyla eşitlemesi başlatılır.
+
 ---
 
 ## 🌐 Canlı Yayın (Deployment)

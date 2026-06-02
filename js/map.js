@@ -1365,6 +1365,42 @@ function initMap() {
 
 // ---- DYNAMIC GOOGLE MAPS API LOADER ----
 async function loadGoogleMapsScript() {
+  // Global auth failure handler
+  window.gm_authFailure = () => {
+    const isEn = window.THY && window.THY.currentLanguage === 'en';
+    if (window.THY && typeof window.THY.toast === 'function') {
+      window.THY.toast(
+        isEn ? 'Google Maps authentication failed! Please check your API key restrictions.' : 'Google Maps yetkilendirme hatası! Lütfen API anahtarı kısıtlamalarını kontrol edin.',
+        'error',
+        6000
+      );
+    }
+  };
+
+  const handleScriptError = () => {
+    const isEn = window.THY && window.THY.currentLanguage === 'en';
+    if (window.THY && typeof window.THY.toast === 'function') {
+      window.THY.toast(
+        isEn ? 'Google Maps could not be loaded. Switched to offline map fallback mode.' : 'Google Haritalar yüklenemedi. Çevrimdışı harita moduna geçildi.',
+        'error',
+        6000
+      );
+    }
+    // Visually notify user on the map container
+    const mapEl = document.getElementById('map');
+    if (mapEl) {
+      mapEl.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; width:100%; background:#12161A; color:#EF4444; padding:20px; text-align:center;">
+          <span style="font-size:40px; margin-bottom:10px;">📡</span>
+          <h3 style="margin-bottom:8px; color:white; font-family:'Inter', sans-serif;">${isEn ? 'Google Maps Connection Error' : 'Harita Bağlantı Hatası'}</h3>
+          <p style="font-size:12px; color:#8E9AA6; max-width:320px; line-height:1.5; font-family:'Inter', sans-serif;">
+            ${isEn ? 'Google Maps API script could not be loaded. Please check your internet connection or API restrictions.' : 'Google Haritalar yüklenemedi. Lütfen internet bağlantınızı veya API yetkilerini kontrol edin.'}
+          </p>
+        </div>
+      `;
+    }
+  };
+
   try {
     const res = await fetch('/api/maps-key');
     if (!res.ok) {
@@ -1377,6 +1413,7 @@ async function loadGoogleMapsScript() {
     script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=initMap`;
     script.async = true;
     script.defer = true;
+    script.onerror = handleScriptError;
     document.head.appendChild(script);
     console.log("🗺️ Google Maps API script loaded dynamically from backend key.");
   } catch (err) {
@@ -1385,6 +1422,7 @@ async function loadGoogleMapsScript() {
     script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg&libraries=places&callback=initMap`;
     script.async = true;
     script.defer = true;
+    script.onerror = handleScriptError;
     document.head.appendChild(script);
   }
 }

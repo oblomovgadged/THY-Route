@@ -4063,5 +4063,22 @@ ${inviteLink}
   btnPrivacyTr?.addEventListener('click', () => selectPrivacyTab('tr'));
   btnPrivacyEn?.addEventListener('click', () => selectPrivacyTab('en'));
 
+  // ---- NETWORK CONNECTION MONITORING ----
+  window.addEventListener('online', () => {
+    const isEn = THY.currentLanguage === 'en';
+    THY.toast(
+      isEn ? 'Internet connection restored. Switched to online mode.' : 'İnternet bağlantısı sağlandı. Çevrimdışı veriler eşitleniyor...', 
+      'success'
+    );
+  });
+  
+  window.addEventListener('offline', () => {
+    const isEn = THY.currentLanguage === 'en';
+    THY.toast(
+      isEn ? 'Internet connection lost. Switched to offline mode.' : 'İnternet bağlantısı kesildi. Çevrimdışı moda geçildi.', 
+      'warning'
+    );
+  });
+
   console.log('✈️ THY Route App Core initialized');
 })();
