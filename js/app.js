@@ -31,6 +31,152 @@ const thyApiConfig = {
 
   // ---- TOAST SYSTEM ----
   window.THY = window.THY || {};
+  
+  THY.t = (text) => {
+    if (THY.currentLanguage !== 'en') return text;
+    const translations = {
+      'Yeni seyahat oluşturuldu!': 'New trip created!',
+      'Seyahat başarıyla silindi.': 'Trip successfully deleted.',
+      'Seyahat raporu ve davet bağlantısı başarıyla gönderildi! ✈️': 'Travel report and invite link successfully sent! ✈️',
+      'Canlı seyahat veritabanından yüklendi! ✈️': 'Loaded from live travel database! ✈️',
+      'Firebase SDK yüklenemedi. Çevrimdışı moda geçildi.': 'Failed to load Firebase SDK. Switched to offline mode.',
+      'Firebase kurulumu başarısız oldu.': 'Firebase installation failed.',
+      "Firestore bağlantısı başarısız. Lütfen Ayarlar sekmesinden geçerli Firebase bilgilerinizi girin.": "Firestore connection failed. Please enter valid Firebase details in the Settings tab.",
+      "Firebase başlatılamadı. Ayarları kontrol edin.": "Firebase could not be started. Check settings.",
+      "⚠️ Rota çakışması engellendi: Başka bir pilot bu rotayı güncelledi. Değişiklikleriniz yerel kaldı, sayfa güncelleniyor.": "⚠️ Route conflict prevented: Another pilot updated this route. Your changes remained local, page is reloading.",
+      "Değişiklikler Firestore'a kaydedilemedi. Yerel önbelleğe yazıldı.": "Changes could not be saved to Firestore. Saved to local cache.",
+      'Tarayıcınız konum servisini desteklemiyor.': 'Your browser does not support location services.',
+      'Konumunuz tespit ediliyor...': 'Detecting your location...',
+      'Konum bilgisi alınamadı. Lütfen listeden seçin.': 'Location info could not be retrieved. Please select from the list.',
+      'THY Live API: CORS veya yetkilendirme engeli. Canlı dinamik simülasyona dönüldü.': 'THY Live API: CORS or auth block. Switched to live dynamic simulation.',
+      'Canlı Uçuş Verileri Yüklendi! ✈️': 'Live Flight Data Loaded! ✈️',
+      'Canlı Bağlantı Kısıtlaması. Dinamik Simülasyon Devreye Alındı.': 'Live Connection Restriction. Dynamic Simulation Activated.',
+      'Lütfen kalkış ve varış noktalarını seçin veya geçerli bir uçuş kodu girin.': 'Please select departure and arrival points or enter a valid flight code.',
+      'Kalkış noktası bulunamadı.': 'Departure point not found.',
+      'Varış noktası bulunamadı.': 'Arrival point not found.',
+      'Konumlar çözümlenemedi.': 'Locations could not be resolved.',
+      'Kalkış ve varış noktaları aynı olamaz.': 'Departure and destination points cannot be the same.',
+      'Lütfen gidiş tarihini seçin.': 'Please select departure date.',
+      'Lütfen dönüş tarihini seçin.': 'Please select return date.',
+      'Dönüş tarihi gidiş tarihinden önce olamaz.': 'Return date cannot be before departure date.',
+      'Tek Yön Uçuş: 3 Günlük Rota Planlanıyor... ✈️': 'One Way Flight: Planning 3-Day Route... ✈️',
+      'Biniş Kartlarınız Hazırlanıyor... ✈️': 'Preparing your boarding passes... ✈️',
+      'Dışa aktarılacak rota yok!': 'No route to export!',
+      'JSON kopyalandı!': 'JSON copied!',
+      'JSON dosyası indirildi!': 'JSON file downloaded!',
+      'Rotaya başarıyla katıldınız!': 'Successfully joined the route!',
+      'Aviationstack Canlı Uçuş Veritabanı Sorunu. Simülasyon Çalıştırıldı.': 'Aviationstack Live Flight Database Issue. Simulation Started.',
+      'Temizlenecek rota yok!': 'No route to clear!',
+      'Rota temizlendi!': 'Route cleared!',
+      'Tarayıcınız konum desteği sunmuyor.': 'Your browser does not support location services.',
+      'Konumunuza gidiliyor...': 'Going to your location...',
+      'Konum alınamadı.': 'Location could not be retrieved.',
+      'Yer arama servisi henüz hazır değil.': 'Places search service is not ready yet.',
+      'Harita merkezi alınamadı.': 'Map center could not be retrieved.',
+      'Bu bölgede yerel lezzet yok.': 'No local tastes in this area.',
+      'Bu bölgede eşleşen yer bulunamadı.': 'No matching places found in this area.',
+      'Bu bölgede veya küresel olarak eşleşen yer bulunamadı.': 'No matching places found in this area or globally.',
+      'Hata: API Anahtarında Places API izni veya faturalandırma etkin değil. (REQUEST_DENIED)': 'Error: Places API permission or billing is not enabled on the API Key. (REQUEST_DENIED)',
+      'Hata: API Anahtarında Places API izni yok. (REQUEST_DENIED)': 'Error: No Places API permission on the API Key. (REQUEST_DENIED)',
+      'Arama başarısız oldu. Hata Kodu: ': 'Search failed. Error Code: ',
+      'Yer arama servisi hazır değil.': 'Places search service is not ready.',
+      'THY Partner Ayrıcalıkları Haritada Gösteriliyor!': 'THY Partner Privileges Displayed on Map!',
+      'Partner Ayrıcalıkları Gizlendi': 'Partner Privileges Hidden',
+      'Kayıtlı Seyahat Yok': 'No Saved Trips',
+      'Henüz kaydedilmiş seyahatiniz bulunmuyor. Sol menüde bir rota çizdikten sonra "Kaydet" butonuna basarak seyahatlerinizi burada listeleyebilirsiniz.': 'You have no saved trips yet. After drawing a route on the left menu, you can list your trips here by clicking the "Save" button.',
+      'Aktif': 'Active',
+      'Gün': 'Day',
+      'Durak': 'Stop',
+      'Aç': 'Open',
+      'Sil': 'Delete',
+      'PLANLANIYOR': 'PLANNING',
+      '⚠️ Seyahati Sil': '⚠️ Delete Trip',
+      'Arama başarısız oldu. Hata Kodu:': 'Search failed. Error Code:',
+      'Fiyat alarmı başarıyla kaldırıldı.': 'Price alert successfully removed.',
+      'Avis araç kiralamalarında %30 İndirim + 500 Mil Hediye!': '30% Discount + 500 Miles on Avis Car Rentals!',
+      'THY İş Ortaklığı ile konaklamalarda 3 Kat Mil Kazanma Fırsatı!': 'Earn 3x Miles on Stays with THY Hotel Partnership!',
+      'rotayı temizledi 🗑️': 'cleared the route 🗑️',
+      'rotayı güncelledi 🗺️': 'updated the route 🗺️',
+      'rotadan bir nokta kaldırdı 🗑️': 'removed a stop from the route 🗑️',
+      'uçuş panosu bilgilerini güncelledi ✈️': 'updated flight board information ✈️'
+    };
+
+    if (text.startsWith('Kaptan ')) {
+      return 'Captain ' + THY.t(text.substring(7));
+    }
+    if (text.startsWith('Yardımcı Pilot ')) {
+      return 'Co-Pilot ' + THY.t(text.substring(15));
+    }
+    if (text.startsWith('Konum algılandı: En yakın havalimanı ')) {
+      const remainder = text.replace('Konum algılandı: En yakın havalimanı ', '');
+      return `Location detected: Nearest airport ${remainder}`;
+    }
+    if (text.startsWith('seyahate yeni bir gün ekledi: Toplam ')) {
+      const days = text.replace('seyahate yeni bir gün ekledi: Toplam ', '').replace(' Gün 📅', '');
+      return `added a new day to the trip: Total ${days} ${days === '1' ? 'Day' : 'Days'} 📅`;
+    }
+    if (text.includes('günlük seyahat planı hazırlanıyor...')) {
+      const city = text.split(' için ')[0];
+      const days = text.split(' için ')[1].split(' günlük ')[0];
+      return `Preparing a ${days}-day travel plan for ${city}...`;
+    }
+    if (text.endsWith(' civarı keşfediliyor...')) {
+      const city = text.replace(' civarı keşfediliyor...', '');
+      return `Exploring around ${city}...`;
+    }
+    if (text.endsWith(' yer bulundu!')) {
+      const count = text.replace(' yer bulundu!', '');
+      return `${count} ${count === '1' ? 'place' : 'places'} found!`;
+    }
+    if (text.endsWith(' yer bulundu! (30km yarıçapında)')) {
+      const count = text.replace(' yer bulundu! (30km yarıçapında)', '');
+      return `${count} ${count === '1' ? 'place' : 'places'} found! (30km radius)`;
+    }
+    if (text.endsWith(' sonuç bulundu!')) {
+      const count = text.replace(' sonuç bulundu!', '');
+      return `${count} ${count === '1' ? 'result' : 'results'} found!`;
+    }
+    if (text.endsWith(' sonuç bulundu! (Küresel arama)')) {
+      const count = text.replace(' sonuç bulundu! (Küresel arama)', '');
+      return `${count} ${count === '1' ? 'result' : 'results'} found! (Global search)`;
+    }
+    if (text.endsWith(' rotaya eklendi!')) {
+      const placeName = text.replace(' rotaya eklendi!', '');
+      return `${placeName} added to route!`;
+    }
+    if (text.endsWith('. Gün oluşturuldu!')) {
+      const day = text.replace('. Gün oluşturuldu!', '');
+      return `Day ${day} created!`;
+    }
+    if (text.includes('. Gün rotasına yeni rota noktası ekledi: ')) {
+      const parts = text.split('. Gün rotasına yeni rota noktası ekledi: ');
+      const day = parts[0];
+      const name = parts[1];
+      return `added a new stop to Day ${day} route: ${name}`;
+    }
+    if (text.endsWith('durağının notunu sildi 📝')) {
+      const name = text.replace(' durağının notunu sildi 📝', '');
+      return `deleted note for stop ${name} 📝`;
+    }
+    if (text.includes(' durağına not ekledi: ')) {
+      const parts = text.split(' durağına not ekledi: ');
+      const name = parts[0];
+      const note = parts[1];
+      return `added a note to stop ${name}: ${note}`;
+    }
+    if (text.startsWith('Alarm kuruldu! Fiyat ')) {
+      const price = text.replace('Alarm kuruldu! Fiyat ', '').replace(' altına indiğinde haber vereceğiz. 🔔', '');
+      return `Alert set! We will notify you when the price drops below ${price} TRY. 🔔`;
+    }
+
+    for (const trKey in translations) {
+      if (text.startsWith(trKey)) {
+        return translations[trKey] + text.substring(trKey.length);
+      }
+    }
+    return text;
+  };
+
   THY.userRole = 'Kaptan'; // Default role is Captain
   THY.activeDay = 1;
   THY.maxDays = 1;
@@ -111,6 +257,7 @@ const thyApiConfig = {
       '#btnSearchFlights': '<span class="icon">✈️</span> UÇUŞ ARA',
       '#btnBackToSearch': '← Aramayı Düzenle',
       '#resultsRouteBanner': '🛫 UÇUŞ SEÇİN',
+      '#lblAvailableFlightsTitle': 'Uygun Uçuşlar',
       '#stepOutbound .step-label': 'Gidiş Uçuşu',
       '#stepInbound .step-label': 'Dönüş Uçuşu',
       '#priceAlertWidget .price-alert-title': 'Akıllı Fiyat Alarmı (Mil & Fiyat Takipçisi)',
@@ -138,18 +285,68 @@ const thyApiConfig = {
       '#importJsonArea': { placeholder: 'JSON verisini buraya yapıştırın...' },
       '#btnCancelImport': 'İptal',
       '#btnConfirmImport': 'İçe Aktar',
-      '#exportModal .modal-title': '📤 Rota Paylaş / Davet Et',
+      '#exportModal .modal-title': '📤 Trip Dışa Aktar',
       '#exportModal p': 'Bu seyahat planını başkalarıyla paylaşarak aynı rota üzerinde gerçek zamanlı olarak birlikte çalışabilirsiniz.',
       '#lblCaptainCode': 'Kaptan Eşitleme Kodu (Sizin Kodunuz)',
       '#lblCoPilotCode': 'Yardımcı Pilot Eşitleme Kodu (Davet Ettiğiniz Kişi)',
-      '#btnCopyInviteLink': '🔗 Davet Linkini Kopyala',
+      '#btnCopyInviteLink': '<span class="icon">🔗</span> Davet Linkini Kopyala',
       '#btnShareByEmail': '✉️ Raporu E-posta ile Gönder',
       '#btnCloseExport': 'Kapat',
-      '#syncModal .modal-title': '🔄 Diğer Cihazla Eşitle',
-      '#syncModal p': 'Diğer cihazınızdaki seyahatlerinizi bu cihaza aktarmak için o cihazın Cihaz Eşitleme Kodu\'nu girin. Bu işlem iki cihazdaki seyahat listelerini birleştirecektir.',
+      '#btnCopyExport': '📋 Kopyala',
+      '#btnDownloadExport': '⬇️ İndir',
+      '#pilotSyncModal .modal-title': '🔄 Diğer Cihazla Eşitle',
+      '#pilotSyncModal p': 'Diğer cihazınızdaki seyahatlerinizi bu cihaza aktarmak için o cihazın <strong>Cihaz Eşitleme Kodu</strong>\'nu girin. Bu işlem iki cihazdaki seyahat listelerini birleştirecektir.',
+      '#pilotSyncModal label': 'Diğer Cihazın Eşitleme Kodu',
       '#targetPilotIdInput': { placeholder: 'Örn: a1b2c3d4...' },
       '#btnCancelSync': 'İptal',
-      '#btnConfirmSync': 'Eşitlemeyi Başlat'
+      '#btnConfirmSync': 'Eşitlemeyi Başlat',
+      '#lblEmailTo': 'Alıcı E-posta',
+      '#emailTo': { placeholder: 'ornek@email.com' },
+      '#lblEmailFromName': 'Gönderen Adı',
+      '#emailFrom': { placeholder: 'Gezgin Adı' },
+      '#lblEmailNote': 'Ek Not',
+      '#emailNote': { placeholder: 'Seyahat hakkında notlarınız...' },
+      '#lblEmailPreviewHeader': '✈️ THY Route — Seyahat Raporu',
+      '#btnSendEmail': '<span class="icon">📧</span> Rapor & Davet Gönder',
+      '#lblSavedTripsTitle': '<span class="icon">💼</span> Seyahatlerim',
+      '#lblSyncCodeTitle': 'Cihaz Eşitleme Kodu',
+      '#syncStatus': '<span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10B981;"></span> Eşitlendi',
+      '#pilotIdInput': { value: 'Bağlanıyor...' },
+      '#btnShowSyncModal': '🔄 Diğer Cihazla Eşitle',
+      '#lblMsTitle': '<span class="icon">❤️</span> Miles&Smiles Ortakları',
+      '#lblMsDesc': '💡 Partner logolarına tıklayarak etraftaki şubelerini harita üzerinde anında keşfedebilir ve rotanıza ekleyebilirsiniz!',
+      '#lblMsCarRental': '🚗 ARAÇ KİRALAMA',
+      '#lblMsAccommodation': '🏨 KONAKLAMA VE OTELLER',
+      '#lblMsVip': '🚐 HAVALİMANI VIP TAŞIMACILIK',
+      '#lblMsAgencies': '✈️ ACENTALAR VE GEZİ TURLARI',
+      '#lblMsActiveAlerts': '🔔 AKTİF FİYAT ALARMLARI',
+      '#lblPlacesEmptyTitle': 'Yer Keşfet',
+      '#lblPlacesEmptyText': 'Filtrelere tıklayarak veya arama yaparak etraftaki yerleri keşfedin.',
+      '#lblRouteEmptyTitle': 'Rota Boş',
+      '#lblRouteEmptyText': 'Haritaya tıklayarak veya "Rota Çiz" modunu açarak nokta ekleyin.',
+      '#btnSaveTrip': '<span class="icon">💾</span> Kaydet',
+      '#btnNewTrip': '<span class="icon">➕</span> Yeni Trip',
+      '#btnExportTrip': '<span class="icon">📤</span> Dışa Aktar',
+      '#btnImportTrip': '<span class="icon">📥</span> İçe Aktar',
+      '#btnReturnToLanding': '<span class="icon">🛫</span> Yeni Uçuş Ara / Ana Sayfa',
+      '#btnConfirmCancel': 'Vazgeç',
+      '#btnConfirmProceed': 'Seyahati Sil',
+      '#noteModal .modal-title': '📝 Not Ekle / Düzenle',
+      '#noteTxt': { placeholder: 'Bu konum için planlarınızı veya notunuzu yazın...' },
+      '#btnDeleteNote': 'Notu Sil',
+      '#btnCancelNote': 'İptal',
+      '#btnSaveNote': 'Kaydet',
+      '#pwaInstallBanner .pwa-install-text': '📲 THY Route\'u cihazına yükle!',
+      '#btnInstallPwa': 'Yükle',
+      '#btnDrawRoute': { title: 'Rota Çiz' },
+      '#btnDrawRoute .tooltip': 'Rota Çiz',
+      '#btnClearRoute': { title: 'Rotayı Temizle' },
+      '#btnClearRoute .tooltip': 'Rotayı Temizle',
+      '#btnMyLocation': { title: 'Konumum' },
+      '#btnMyLocation .tooltip': 'Konumum',
+      '#btnSearchPlaces': { title: 'Yakındaki Yerler' },
+      '#btnSearchPlaces .tooltip': 'Yakındaki Yerler',
+      '#confirmModal .modal-title': '⚠️ Seyahati Sil'
     },
     en: {
       '#bookingCard .booking-card-title': 'Where would you like to fly?',
@@ -166,45 +363,96 @@ const thyApiConfig = {
       '#btnSearchFlights': '<span class="icon">✈️</span> SEARCH FLIGHTS',
       '#btnBackToSearch': '← Edit Search',
       '#resultsRouteBanner': '🛫 SELECT FLIGHT',
+      '#lblAvailableFlightsTitle': 'Available Flights',
       '#stepOutbound .step-label': 'Outbound Flight',
       '#stepInbound .step-label': 'Inbound Flight',
-      '#priceAlertWidget .price-alert-title': 'Smart Price Alert (Miles & Price Tracker)',
+      '#priceAlertWidget .price-alert-title': 'SMART PRICE ALERT (MILES & PRICE TRACKER)',
       '#priceAlertWidget .price-alert-desc': 'We will email you when ticket prices or mile values drop below your target limit.',
       '#alertTargetPrice': { placeholder: 'Target Price (TL)' },
       '#alertEmail': { placeholder: 'Email Address' },
       '#btnCreatePriceAlert': 'Set Alert',
-      '#lblBoardFlight': 'Flight',
-      '#lblBoardDep': 'Departure',
-      '#lblBoardArr': 'Arrival',
-      '#lblBoardGate': 'Gate',
-      '[data-tab="route"]': '<span class="panel-tab__icon">🗺️</span> Route',
-      '[data-tab="places"]': '<span class="panel-tab__icon">📌</span> Places',
-      '[data-tab="email"]': '<span class="panel-tab__icon">✉️</span> Report',
-      '[data-tab="trips"]': '<span class="panel-tab__icon">💼</span> Trips',
+      '#lblBoardFlight': 'FLIGHT',
+      '#lblBoardDep': 'DEPARTURE',
+      '#lblBoardArr': 'ARRIVAL',
+      '#lblBoardGate': 'GATE',
+      '[data-tab="route"]': '<span class="panel-tab__icon">🗺️</span> ROUTE',
+      '[data-tab="places"]': '<span class="panel-tab__icon">📌</span> PLACES',
+      '[data-tab="email"]': '<span class="panel-tab__icon">✉️</span> REPORT',
+      '[data-tab="trips"]': '<span class="panel-tab__icon">💼</span> TRIPS',
       '[data-tab="miles-smiles"]': '<span class="panel-tab__icon">❤️</span> M&S',
-      '#tabRoute .route-title': '<span class="icon">✈️</span> <span id="lblRouteTitle">Travel Route</span>',
+      '#tabRoute .route-title': '<span class="icon">✈️</span> <span id="lblRouteTitle">TRAVEL ROUTE</span>',
       '#btnAddingDay': { title: 'Add New Day' },
-      '#joinModal .modal-title': '🛫 Join Route',
+      '#joinModal .modal-title': '🛫 JOIN ROUTE',
       '#joinModal p': 'You have been invited to a travel route! Please enter your name to collaborate and edit stops and notes.',
       '#joinModal label': 'Your Name',
       '#joinUserNameInput': { placeholder: 'Enter your name...' },
       '#btnConfirmJoin': '<span class="icon">✈️</span> Join Route Now',
-      '#importModal .modal-title': '📥 Import Trip',
+      '#importModal .modal-title': '📥 IMPORT TRIP',
       '#importJsonArea': { placeholder: 'Paste JSON data here...' },
       '#btnCancelImport': 'Cancel',
       '#btnConfirmImport': 'Import',
-      '#exportModal .modal-title': '📤 Share Route / Invite',
+      '#exportModal .modal-title': '📤 EXPORT TRIP',
       '#exportModal p': 'Share this trip plan with others to collaborate on the same route in real-time.',
       '#lblCaptainCode': 'Captain Sync Code (Your Code)',
       '#lblCoPilotCode': 'Co-Pilot Sync Code (The Person You Invite)',
-      '#btnCopyInviteLink': '🔗 Copy Invite Link',
+      '#btnCopyInviteLink': '<span class="icon">🔗</span> Copy Invite Link',
       '#btnShareByEmail': '✉️ Send Report by Email',
       '#btnCloseExport': 'Close',
-      '#syncModal .modal-title': '🔄 Sync with Other Device',
-      '#syncModal p': 'To transfer your trips from another device, enter its Device Sync Code. This will merge the trip lists on both devices.',
+      '#btnCopyExport': '📋 Copy',
+      '#btnDownloadExport': '⬇️ Download',
+      '#pilotSyncModal .modal-title': '🔄 SYNC WITH OTHER DEVICE',
+      '#pilotSyncModal p': 'To transfer your trips from another device, enter its <strong>Device Sync Code</strong>. This will merge the trip lists on both devices.',
+      '#pilotSyncModal label': 'Other Device Sync Code',
       '#targetPilotIdInput': { placeholder: 'E.g., a1b2c3d4...' },
       '#btnCancelSync': 'Cancel',
-      '#btnConfirmSync': 'Start Syncing'
+      '#btnConfirmSync': 'Start Syncing',
+      '#lblEmailTo': 'Recipient Email',
+      '#emailTo': { placeholder: 'example@email.com' },
+      '#lblEmailFromName': 'Sender Name',
+      '#emailFrom': { placeholder: 'Traveler Name' },
+      '#lblEmailNote': 'Additional Note',
+      '#emailNote': { placeholder: 'Your travel notes...' },
+      '#lblEmailPreviewHeader': '✈️ THY Route — Travel Report',
+      '#btnSendEmail': '<span class="icon">📧</span> Send Report & Invite',
+      '#lblSavedTripsTitle': '<span class="icon">💼</span> MY TRIPS',
+      '#lblSyncCodeTitle': 'DEVICE SYNC CODE',
+      '#syncStatus': '<span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10B981;"></span> SYNCED',
+      '#pilotIdInput': { value: 'Connecting...' },
+      '#btnShowSyncModal': '🔄 SYNC WITH OTHER DEVICE',
+      '#lblMsTitle': '<span class="icon">❤️</span> MILES&SMILES PARTNERS',
+      '#lblMsDesc': '💡 Click on partner logos to instantly discover their nearby branches on the map and add them to your route!',
+      '#lblMsCarRental': '🚗 CAR RENTAL',
+      '#lblMsAccommodation': '🏨 ACCOMMODATION & HOTELS',
+      '#lblMsVip': '🚐 AIRPORT VIP TRANSPORTATION',
+      '#lblMsAgencies': '✈️ AGENCIES & TOURS',
+      '#lblMsActiveAlerts': '🔔 ACTIVE PRICE ALERTS',
+      '#lblPlacesEmptyTitle': 'EXPLORE PLACES',
+      '#lblPlacesEmptyText': 'Discover nearby places by clicking filters or searching.',
+      '#lblRouteEmptyTitle': 'ROUTE IS EMPTY',
+      '#lblRouteEmptyText': 'Add points by clicking on the map or activating "Draw Route" mode.',
+      '#btnSaveTrip': '<span class="icon">💾</span> Save Route',
+      '#btnNewTrip': '<span class="icon">➕</span> New Trip',
+      '#btnExportTrip': '<span class="icon">📤</span> Export',
+      '#btnImportTrip': '<span class="icon">📥</span> Import',
+      '#btnReturnToLanding': '<span class="icon">🛫</span> New Search / Home',
+      '#btnConfirmCancel': 'Cancel',
+      '#btnConfirmProceed': 'Delete Trip',
+      '#noteModal .modal-title': '📝 ADD / EDIT NOTE',
+      '#noteTxt': { placeholder: 'Write your plans or notes for this location...' },
+      '#btnDeleteNote': 'Delete Note',
+      '#btnCancelNote': 'Cancel',
+      '#btnSaveNote': 'Save',
+      '#pwaInstallBanner .pwa-install-text': '📲 Install THY Route on your device!',
+      '#btnInstallPwa': 'Install',
+      '#btnDrawRoute': { title: 'Draw Route' },
+      '#btnDrawRoute .tooltip': 'Draw Route',
+      '#btnClearRoute': { title: 'Clear Route' },
+      '#btnClearRoute .tooltip': 'Clear Route',
+      '#btnMyLocation': { title: 'My Location' },
+      '#btnMyLocation .tooltip': 'My Location',
+      '#btnSearchPlaces': { title: 'Search Nearby Places' },
+      '#btnSearchPlaces .tooltip': 'Search Nearby Places',
+      '#confirmModal .modal-title': '⚠️ DELETE TRIP'
     }
   };
 
@@ -242,6 +490,9 @@ const thyApiConfig = {
     THY.currentLanguage = lang;
     localStorage.setItem('thy_lang', lang);
     
+    // Set Document Language dynamically to prevent browser text-transform issues with Turkish I vs English I
+    document.documentElement.setAttribute('lang', lang);
+    
     const dictionary = UI_TRANSLATIONS[lang];
     if (!dictionary) return;
     
@@ -262,6 +513,8 @@ const thyApiConfig = {
               element.placeholder = translation[attr];
             } else if (attr === 'title') {
               element.setAttribute('title', translation[attr]);
+            } else if (attr === 'value') {
+              element.value = translation[attr];
             }
           }
         }
@@ -290,6 +543,193 @@ const thyApiConfig = {
     if (statusText && statusText.textContent) {
       statusText.textContent = THY.translateStatus(statusText.textContent);
     }
+
+    // Translate dynamic partner buttons and descriptions
+    const partnerBtns = document.querySelectorAll('.partner-item button');
+    partnerBtns.forEach(btn => {
+      btn.textContent = lang === 'en' ? 'Find on Map' : 'Haritada Bul';
+    });
+
+    document.querySelectorAll('.partner-item').forEach(item => {
+      const query = item.dataset.query;
+      const nameEl = item.querySelector('.partner-name');
+      const offerEl = item.querySelector('.partner-offer');
+      if (!nameEl || !offerEl) return;
+      
+      const isEn = lang === 'en';
+      if (query === 'Avis') {
+        nameEl.textContent = isEn ? 'Avis Car Rental' : 'Avis Araç Kiralama';
+        offerEl.textContent = isEn ? '30% Discount + 500 Miles!' : '%30 İndirim + 500 Mil!';
+      } else if (query === 'Budget Rent A Car') {
+        nameEl.textContent = 'Budget Rent A Car';
+        offerEl.textContent = isEn ? '25% Discount + 400 Miles!' : '%25 İndirim + 400 Mil!';
+      } else if (query === 'Hilton Hotel') {
+        nameEl.textContent = 'Hilton Hotels & Resorts';
+        offerEl.textContent = isEn ? '3x Miles on Stays!' : 'Konaklamalarda 3 Kat Mil!';
+      } else if (query === 'Marriott Hotel') {
+        nameEl.textContent = 'Marriott Bonvoy';
+        offerEl.textContent = isEn ? '500 Miles per Stay!' : 'Her Konaklamada 500 Mil!';
+      } else if (query === 'Rixos Hotel') {
+        nameEl.textContent = 'Rixos Hotels';
+        offerEl.textContent = isEn ? '15% Discount + Double Miles!' : '%15 İndirim + Çift Mil!';
+      } else if (query === 'Airport Transfer Shuttle') {
+        nameEl.textContent = isEn ? 'Havaş & Havaist Transport' : 'Havaş & Havaist Ulaşım';
+        offerEl.textContent = isEn ? '20% Mile Discount on Tickets!' : 'Bilet Alımlarında %20 Mil İndirimi!';
+      } else if (query === 'Secure Drive Airport Transfer') {
+        nameEl.textContent = 'Secure Drive VIP Transfer';
+        offerEl.textContent = isEn ? '200 Bonus Miles on Transfer!' : 'Transferde 200 Mil Hediye!';
+      } else if (query === 'Setur') {
+        nameEl.textContent = isEn ? 'Setur Travel Agency' : 'Setur Seyahat Acentası';
+        offerEl.textContent = isEn ? '2,500 Bonus Miles on Tours!' : 'Turlarda 2.500 Mil Hediye!';
+      } else if (query === 'Jolly Tur') {
+        nameEl.textContent = 'Jolly Tur';
+        offerEl.textContent = isEn ? '10% Extra Mile Earnings!' : '%10 Ek Mil Kazanımı!';
+      }
+    });
+
+    // Translate sponsored map button
+    const btnThyPartners = document.getElementById('btnThyPartnersToggle');
+    if (btnThyPartners) {
+      btnThyPartners.innerHTML = `<span class="btn-icon"></span>${lang === 'en' ? 'THY Partners' : 'THY Partnerleri'}`;
+    }
+
+    // Places Tab Filters translation
+    const placesInput = document.getElementById('placesSearchInput');
+    if (placesInput) {
+      placesInput.placeholder = lang === 'en' ? 'Search places... (e.g. Ramen, Hotel)' : 'Yer ara... (ör. Ramen, Hotel)';
+    }
+
+    const chips = document.querySelectorAll('.filter-chip');
+    if (chips.length >= 6) {
+      const chipLabels = lang === 'en' ? [
+        '🍜 Restaurants',
+        '🏨 Hotels',
+        '🏯 Attractions',
+        '☕ Cafes',
+        '🛍️ Shopping',
+        '🏠 Locals\' Choice'
+      ] : [
+        '🍜 Restoranlar',
+        '🏨 Oteller',
+        '🏯 Turistik',
+        '☕ Kafeler',
+        '🛍️ Alışveriş',
+        '🏠 Yerel Halk (Local)'
+      ];
+      chips.forEach((chip, i) => {
+        if (chipLabels[i]) {
+          chip.textContent = chipLabels[i];
+        }
+      });
+    }
+
+    // Refresh email preview
+    if (typeof THY.updateEmailPreview === 'function') {
+      THY.updateEmailPreview();
+    }
+
+    // Refresh day tabs
+    if (typeof THY.updateDayTabs === 'function') {
+      THY.updateDayTabs();
+    }
+
+    // Refresh active price alerts list
+    if (typeof THY.loadPriceAlerts === 'function') {
+      THY.loadPriceAlerts();
+    }
+
+    // Refresh saved trips list representation
+    if (typeof THY.renderSavedTrips === 'function') {
+      THY.renderSavedTrips();
+    }
+
+    // Translate dynamic search results items and title
+    const resultsLabel = document.getElementById('resultsRouteLabel');
+    if (resultsLabel && resultsLabel.textContent && resultsLabel.textContent !== '...') {
+      const txt = resultsLabel.textContent;
+      const match = txt.match(/\(([^)]+)\)/);
+      if (match) {
+        const codes = match[1]; // e.g. "IST ➔ FCO"
+        const isOutbound = txt.toLowerCase().includes('gidiş') || txt.toLowerCase().includes('outbound');
+        resultsLabel.textContent = isEn
+          ? (isOutbound ? `Select Outbound Flight (${codes})` : `Select Inbound Flight (${codes})`)
+          : (isOutbound ? `Gidiş Uçuşu Seçin (${codes})` : `Dönüş Uçuşu Seçin (${codes})`);
+      }
+    }
+
+    const resultsBanner = document.getElementById('resultsRouteBanner');
+    if (resultsBanner && resultsBanner.textContent) {
+      const txt = resultsBanner.textContent;
+      const match = txt.match(/\(([^)]+)\)/);
+      if (match) {
+        const codes = match[1]; // e.g. "IST ➔ FCO"
+        const isOutbound = txt.toLowerCase().includes('gidiş') || txt.toLowerCase().includes('outbound');
+        resultsBanner.textContent = isEn
+          ? (isOutbound ? `🛫 SELECT OUTBOUND FLIGHT (${codes})` : `🛬 SELECT INBOUND FLIGHT (${codes})`)
+          : (isOutbound ? `🛫 GİDİŞ UÇUŞU SEÇİN (${codes})` : `🛬 DÖNÜŞ UÇUŞU SEÇİN (${codes})`);
+      }
+    }
+
+    // Translate active flight list items if present
+    document.querySelectorAll('.flight-item').forEach(item => {
+      const badge = item.querySelector('.flight-type-badge');
+      if (badge) {
+        const isOutboundBadge = badge.classList.contains('outbound-badge');
+        badge.textContent = isEn
+          ? (isOutboundBadge ? '🛫 OUTBOUND FLIGHT' : '🛬 INBOUND FLIGHT')
+          : (isOutboundBadge ? '🛫 GİDİŞ UÇUŞU' : '🛬 DÖNÜŞ UÇUŞU');
+      }
+
+      const statusSpan = item.querySelector('.flight-status');
+      if (statusSpan) {
+        const txt = statusSpan.textContent;
+        if (txt.includes('Zamanında') || txt.includes('On Time')) {
+          statusSpan.textContent = isEn ? '🟢 On Time' : '🟢 Zamanında';
+        } else if (txt.includes('Rötar') || txt.includes('Delay')) {
+          const minutesMatch = txt.match(/\d+/);
+          const mins = minutesMatch ? minutesMatch[0] : '0';
+          statusSpan.textContent = isEn ? `⚠️ Delay: ${mins} min` : `⚠️ Rötar: ${mins} dk`;
+        }
+      }
+
+      const gateSpan = item.querySelector('.flight-gate');
+      if (gateSpan) {
+        const txt = gateSpan.textContent;
+        const gateVal = txt.replace('🚪 Kapı: ', '').replace('🚪 Gate: ', '').trim();
+        gateSpan.textContent = isEn ? `🚪 Gate: ${gateVal}` : `🚪 Kapı: ${gateVal}`;
+      }
+
+      const durationBlock = item.querySelector('.flight-duration-path');
+      if (durationBlock) {
+        const durationSpans = durationBlock.querySelectorAll('.duration-text');
+        if (durationSpans.length >= 2) {
+          const durSpan = durationSpans[0];
+          const directSpan = durationSpans[1];
+
+          let durTxt = durSpan.textContent;
+          if (isEn) {
+            durTxt = durTxt.replace('sa', 'h').replace('dk', 'm');
+          } else {
+            durTxt = durTxt.replace('h', 'sa').replace('m', 'dk');
+          }
+          durSpan.textContent = durTxt;
+
+          if (directSpan.textContent === 'Direkt' || directSpan.textContent === 'Nonstop') {
+            directSpan.textContent = isEn ? 'Nonstop' : 'Direkt';
+          }
+        }
+      }
+
+      const selectBtn = item.querySelector('.btn-select-flight');
+      if (selectBtn) {
+        const btnTxt = selectBtn.textContent;
+        if (btnTxt.includes('Seçild') || btnTxt.includes('Selected')) {
+          selectBtn.textContent = isEn ? 'Selected ✓' : 'Seçildi ✓';
+        } else {
+          selectBtn.textContent = isEn ? 'Select' : 'Seç';
+        }
+      }
+    });
   };
 
   // Secure EmailJS Proxy Helper
@@ -516,11 +956,13 @@ const thyApiConfig = {
 
     container.innerHTML = '';
 
+    const isEn = THY.currentLanguage === 'en';
+
     // Add "Tam Rota" tab button
     const allBtn = document.createElement('button');
     allBtn.className = `day-tab-btn ${THY.activeDay === 0 ? 'active' : ''}`;
     allBtn.style.setProperty('--day-color', '#94A3B8');
-    allBtn.innerHTML = `<span>Tam Rota</span>`;
+    allBtn.innerHTML = `<span>${isEn ? 'Full Route' : 'Tam Rota'}</span>`;
     allBtn.addEventListener('click', () => {
       if (THY.activeDay !== 0) {
         THY.activeDay = 0;
@@ -544,7 +986,8 @@ const thyApiConfig = {
       
       const color = THY.dayColors[(d - 1) % THY.dayColors.length] || '#E31837';
       btn.style.setProperty('--day-color', color);
-      btn.innerHTML = `<span>${d}. Gün</span>`;
+      const tabLabel = isEn ? `Day ${d}` : `${d}. Gün`;
+      btn.innerHTML = `<span>${tabLabel}</span>`;
       btn.addEventListener('click', () => {
         if (THY.activeDay !== d) {
           THY.activeDay = d;
@@ -565,6 +1008,7 @@ const thyApiConfig = {
   };
 
   THY.toast = (message, type = 'info', duration = 3500) => {
+    message = THY.t(message);
     // Filter out system loading/success messages, keeping errors and collaborative actions
     if (type !== 'error') {
       const lowerMsg = message.toLowerCase();
@@ -1914,36 +2358,13 @@ const thyApiConfig = {
         listContainer.innerHTML = '';
         
         const isOutbound = direction === 'outbound';
-        
-        // Update Step Progress Indicators
-        const stepsContainer = document.getElementById('bookingSteps');
-        const stepOutbound = document.getElementById('stepOutbound');
-        const stepInbound = document.getElementById('stepInbound');
- 
-        if (currentTripType === 'one-way' || isFlightCodeSearch) {
-          if (stepsContainer) stepsContainer.style.display = 'none';
-        } else {
-          if (stepsContainer) stepsContainer.style.display = 'flex';
-          if (isOutbound) {
-            stepOutbound?.classList.add('active');
-            stepOutbound?.classList.remove('completed');
-            stepInbound?.classList.remove('active');
-            stepInbound?.classList.remove('completed');
-            stepsContainer?.classList.remove('step-2-active');
-          } else {
-            stepOutbound?.classList.remove('active');
-            stepOutbound?.classList.add('completed');
-            stepInbound?.classList.add('active');
-            stepsContainer?.classList.add('step-2-active');
-          }
-        }
-
-        // Show loading spinner
+             // Show loading spinner
+        const isEn = THY.currentLanguage === 'en';
         listContainer.innerHTML = `
           <div class="empty-state">
             <div class="empty-state__icon">✈️</div>
-            <div class="empty-state__title">Uçuşlar Sorgulanıyor</div>
-            <div class="empty-state__text">Aviationstack canlı uçuş veritabanına bağlanılıyor...</div>
+            <div class="empty-state__title">${isEn ? 'Searching Flights' : 'Uçuşlar Sorgulanıyor'}</div>
+            <div class="empty-state__text">${isEn ? 'Connecting to Aviationstack live flight database...' : 'Aviationstack canlı uçuş veritabanına bağlanılıyor...'}</div>
           </div>
         `;
         
@@ -1960,7 +2381,7 @@ const thyApiConfig = {
 
           if (!flightOptions) {
             flightOptions = generateSimulatedFlightByCode(depVal);
-            THY.toast('Aviationstack Canlı Uçuş Veritabanı Sorunu. Simülasyon Çalıştırıldı.', 'info', 4500);
+            THY.toast(isEn ? 'Aviationstack Live Flight Database Issue. Simulation Started.' : 'Aviationstack Canlı Uçuş Veritabanı Sorunu. Simülasyon Çalıştırıldı.', 'info', 4500);
           }
 
           if (flightOptions && flightOptions.length > 0) {
@@ -1997,12 +2418,14 @@ const thyApiConfig = {
 
         const fromCode = isOutbound ? depCode : destCode;
         const toCode = isOutbound ? destCode : depCode;
-        const routeLabel = isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`;
+        const routeLabel = isEn
+          ? (isOutbound ? `Select Outbound Flight (${fromCode} ➔ ${toCode})` : `Select Inbound Flight (${fromCode} ➔ ${toCode})`)
+          : (isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`);
         document.getElementById('resultsRouteLabel').textContent = routeLabel;
  
-        const bannerText = isOutbound 
-          ? `🛫 GİDİŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})` 
-          : `🛬 DÖNÜŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})`;
+        const bannerText = isEn
+          ? (isOutbound ? `🛫 SELECT OUTBOUND FLIGHT (${fromCode} ➔ ${toCode})` : `🛬 SELECT INBOUND FLIGHT (${fromCode} ➔ ${toCode})`)
+          : (isOutbound ? `🛫 GİDİŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})` : `🛬 DÖNÜŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})`);
         const bannerEl = document.getElementById('resultsRouteBanner');
         if (bannerEl) bannerEl.textContent = bannerText;
 
@@ -2019,7 +2442,9 @@ const thyApiConfig = {
           // speed 800 km/h: distance * 0.075 + 30 mins overhead
           flightDurationMinutes = Math.max(45, Math.round(dist * 0.075 + 30));
         }
-        const durationHoursStr = `${Math.floor(flightDurationMinutes / 60)}sa ${flightDurationMinutes % 60}dk`;
+        const durationHoursStr = isEn
+          ? `${Math.floor(flightDurationMinutes / 60)}h ${flightDurationMinutes % 60}m`
+          : `${Math.floor(flightDurationMinutes / 60)}sa ${flightDurationMinutes % 60}dk`;
 
         const isSearchToday = formatDateLocal(new Date(searchDate)) === formatDateLocal(today);
 
@@ -2089,15 +2514,23 @@ const thyApiConfig = {
           
           // Generate delay and gate HTML
           const delayHtml = fo.delay > 0 
-            ? `<span class="flight-status delay-status">⚠️ Rötar: ${fo.delay} dk</span>` 
-            : `<span class="flight-status normal-status">🟢 Zamanında</span>`;
-          const gateHtml = `<span class="flight-gate">🚪 Kapı: ${fo.gate}</span>`;
+            ? `<span class="flight-status delay-status">⚠️ ${isEn ? `Delay: ${fo.delay} min` : `Rötar: ${fo.delay} dk`}</span>` 
+            : `<span class="flight-status normal-status">🟢 ${isEn ? 'On Time' : 'Zamanında'}</span>`;
+          const gateHtml = `<span class="flight-gate">🚪 ${isEn ? `Gate: ${fo.gate}` : `Kapı: ${fo.gate}`}</span>`;
 
           const item = document.createElement('div');
           item.className = 'flight-item';
+          
+          const flightTypeLabel = isEn
+            ? (isOutbound ? '🛫 OUTBOUND FLIGHT' : '🛬 INBOUND FLIGHT')
+            : (isOutbound ? '🛫 GİDİŞ UÇUŞU' : '🛬 DÖNÜŞ UÇUŞU');
+          
+          const directLabel = isEn ? 'Nonstop' : 'Direkt';
+          const selectLabel = isEn ? 'Select' : 'Seç';
+
           item.innerHTML = `
             <span class="flight-type-badge ${isOutbound ? 'outbound-badge' : 'inbound-badge'}">
-              ${isOutbound ? '🛫 GİDİŞ UÇUŞU' : '🛬 DÖNÜŞ UÇUŞU'}
+              ${flightTypeLabel}
             </span>
             <div class="flight-carrier">
               <div class="flight-logo-small">
@@ -2124,7 +2557,7 @@ const thyApiConfig = {
                 <div class="duration-line">
                   <span class="duration-plane">✈️</span>
                 </div>
-                <span class="duration-text">Direkt</span>
+                <span class="duration-text">${directLabel}</span>
               </div>
               <div class="schedule-block">
                 <span class="schedule-time">${fo.arr}</span>
@@ -2142,7 +2575,7 @@ const thyApiConfig = {
                 data-arr="${toCode}"
                 data-gate="${fo.gate}"
                 data-delay="${fo.delay || 0}"
-                data-status="${fo.status || 'scheduled'}">Seç</button>
+                data-status="${fo.status || 'scheduled'}">${selectLabel}</button>
             </div>
           `;
           listContainer.appendChild(item);
@@ -2165,7 +2598,7 @@ const thyApiConfig = {
             });
 
             // Make the clicked button green and set to selected
-            btn.textContent = 'Seçildi ✓';
+            btn.textContent = isEn ? 'Selected ✓' : 'Seçildi ✓';
             btn.style.opacity = '1';
             btn.style.background = '#22C55E';
             btn.style.borderColor = '#22C55E';
@@ -2185,7 +2618,10 @@ const thyApiConfig = {
                 if (currentTripType === 'one-way' || isFlightCodeSearch) {
                   completeBooking();
                 } else {
-                  THY.toast('Gidiş uçuşu seçildi! Şimdi dönüş uçuşunuzu seçin. ✈️', 'success');
+                  const toastMsg = isEn 
+                    ? 'Outbound flight selected! Now select your inbound flight. ✈️'
+                    : 'Gidiş uçuşu seçildi! Şimdi dönüş uçuşunuzu seçin. ✈️';
+                  THY.toast(toastMsg, 'success');
                   renderFlights('inbound');
                 }
               } else {
@@ -2195,7 +2631,7 @@ const thyApiConfig = {
             }, 600);
           });
         });
- 
+  
         async function completeBooking() {
           if (typeof THY.playSplitFlapSound === 'function') {
             THY.playSplitFlapSound(16);
@@ -2274,6 +2710,38 @@ const thyApiConfig = {
           }
           
           let days = 3; // Default 3 days for one-way flight route
+          if (currentTripType === 'round-trip' && depDate && retDate) {
+            days = Math.max(1, Math.ceil((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)));
+          }
+          
+          if (currentTripType === 'one-way') {
+            const toastMsg = isEn 
+              ? 'One-way Flight: Planning 3-Day Route... ✈️'
+              : 'Tek Yön Uçuş: 3 Günlük Rota Planlanıyor... ✈️';
+            THY.toast(toastMsg, 'success');
+          } else {
+            const toastMsg = isEn 
+              ? 'Your Boarding Passes are being prepared... ✈️'
+              : 'Biniş Kartlarınız Hazırlanıyor... ✈️';
+            THY.toast(toastMsg, 'success');
+            if (stepInbound) {
+              stepInbound.classList.remove('active');
+              stepInbound.classList.add('completed');
+            }
+          }
+          
+          setTimeout(() => {
+            document.getElementById('landingScreen').classList.add('hidden');
+            document.getElementById('mapScreen').classList.remove('hidden');
+            
+            // Push trip ID to URL query parameters
+            window.history.pushState({}, '', `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`);
+            
+            if (destAp && typeof THY.planAutoItinerary === 'function') {
+              THY.planAutoItinerary(destAp, days);
+            }
+          }, 1500);
+        }for one-way flight route
           if (currentTripType === 'round-trip' && depDate && retDate) {
             days = Math.max(1, Math.ceil((new Date(retDate) - new Date(depDate)) / (1000 * 60 * 60 * 24)));
           }
@@ -2798,15 +3266,19 @@ ${inviteLink}
     const body = document.getElementById('emailPreviewBody');
     if (!body) return;
 
+    const isEn = THY.currentLanguage === 'en';
+
     if (!THY.waypoints || THY.waypoints.length === 0) {
-      body.innerHTML = '<p style="opacity:0.5; text-align: center; padding: 20px 0;">Rota oluşturulduktan sonra Kaptan Pilotun Seyir Defteri burada hazırlanacak.</p>';
+      body.innerHTML = isEn 
+        ? '<p style="opacity:0.5; text-align: center; padding: 20px 0;">Captain\'s Logbook will be prepared here once the route is created.</p>'
+        : '<p style="opacity:0.5; text-align: center; padding: 20px 0;">Rota oluşturulduktan sonra Kaptan Pilotun Seyir Defteri burada hazırlanacak.</p>';
       return;
     }
 
     const flightCode = document.getElementById('flightCode')?.textContent || '---';
     const depCode = document.getElementById('flightDep')?.textContent || '---';
     const arrCode = document.getElementById('flightArr')?.textContent || '---';
-    const dateStr = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+    const dateStr = new Date().toLocaleDateString(isEn ? 'en-US' : 'tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
     // Group waypoints by day
     const groupedWps = {};
@@ -2819,14 +3291,17 @@ ${inviteLink}
     let routeHtml = '';
     Object.keys(groupedWps).sort((a, b) => a - b).forEach(dayNum => {
       const dayColor = THY.dayColors[(dayNum - 1) % THY.dayColors.length] || '#E31837';
+      const dayLabel = isEn ? `DAY ${dayNum} ROUTE` : `${dayNum}. GÜN ROTASI`;
       routeHtml += `
         <div style="margin-top: 16px; margin-bottom: 8px; font-weight: 800; font-size: 12px; color: ${dayColor}; letter-spacing: 1px; text-transform: uppercase;">
-          📅 ${dayNum}. GÜN ROTASI
+          📅 ${dayLabel}
         </div>
         <div style="border-left: 2px solid ${dayColor}; padding-left: 12px; margin-left: 4px; margin-bottom: 16px;">
       `;
       
       groupedWps[dayNum].forEach((wp, idx) => {
+        const wpLabel = isEn ? 'Waypoint' : 'Nokta';
+        const noteLabel = isEn ? 'Note' : 'Not';
         routeHtml += `
           <div style="position: relative; padding-left: 20px; margin-bottom: 12px;">
             <!-- Node Dot -->
@@ -2835,14 +3310,14 @@ ${inviteLink}
             
             <!-- Stop Detail -->
             <div style="font-weight: 600; font-size: 13px; color: var(--text-primary);">
-              Nokta ${idx + 1}: ${wp.name}
+              ${wpLabel} ${idx + 1}: ${wp.name}
             </div>
             <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted);">
               COORD: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E
             </div>
             ${wp.note ? `
               <div style="margin-top: 4px; padding: 6px 10px; background: rgba(255, 255, 255, 0.02); border-left: 2px solid var(--thy-gold); font-size: 11px; color: var(--text-secondary); font-style: italic; border-radius: 0 4px 4px 0;">
-                📝 Not: "${wp.note}"
+                📝 ${noteLabel}: "${wp.note}"
               </div>
             ` : ''}
           </div>
@@ -2853,7 +3328,14 @@ ${inviteLink}
     });
 
     const participants = THY.participants || [];
-    const participantsStr = participants.length > 0 ? participants.join(', ') : 'Kaptan';
+    const participantsStr = participants.length > 0 ? participants.join(', ') : (isEn ? 'Captain' : 'Kaptan');
+
+    const labelFlightCode = isEn ? 'FLIGHT CODE' : 'UÇUŞ KODU';
+    const labelRoute = isEn ? 'ROUTE' : 'GÜZERGAH';
+    const labelCrew = isEn ? 'FLIGHT CREW' : 'UÇUŞ KADROSU';
+    const labelDate = isEn ? 'LOG DATE' : 'SEYİR TARİHİ';
+    const labelStops = isEn ? 'WAYPOINTS' : 'KONTROL NOKTASI';
+    const stopsSuffix = isEn ? `${THY.waypoints.length} Stops` : `${THY.waypoints.length} Durak`;
 
     let html = `
       <div style="font-family: 'Inter', sans-serif; color: var(--text-primary); background: #0E131F; border: 1px solid rgba(200, 169, 81, 0.2); border-radius: 8px; padding: 16px; box-shadow: var(--shadow-md);">
@@ -2861,37 +3343,37 @@ ${inviteLink}
         <!-- Header Banner -->
         <div style="text-align: center; border-bottom: 2px double rgba(200, 169, 81, 0.3); padding-bottom: 12px; margin-bottom: 16px;">
           <div style="font-size: 9px; font-weight: 800; color: var(--thy-gold); letter-spacing: 3px; text-transform: uppercase;">Turkish Airlines | Flight Log</div>
-          <h4 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 4px 0; letter-spacing: 1px;">📋 KAPTAN PİLOTUN SEYİR DEFTERİ</h4>
+          <h4 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 4px 0; letter-spacing: 1px;">📋 ${isEn ? "CAPTAIN'S TRAVEL LOGBOOK" : "KAPTAN PİLOTUN SEYİR DEFTERİ"}</h4>
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted);">${THY.currentTripId}</div>
         </div>
 
         <!-- Metadata Grid -->
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 11px;">
           <tr>
-            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>UÇUŞ KODU:</strong></td>
+            <td style="padding: 4px 0; color: var(--text-secondary); text-transform: uppercase;"><strong>${labelFlightCode}:</strong></td>
             <td style="padding: 4px 0; text-align: right; color: var(--thy-gold-light); font-family: 'JetBrains Mono', monospace;"><strong>${flightCode}</strong></td>
           </tr>
           <tr>
-            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>GÜZERGAH:</strong></td>
+            <td style="padding: 4px 0; color: var(--text-secondary); text-transform: uppercase;"><strong>${labelRoute}:</strong></td>
             <td style="padding: 4px 0; text-align: right; color: var(--text-primary);"><strong>${depCode} ➔ ${arrCode}</strong></td>
           </tr>
           <tr>
-            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>UÇUŞ KADROSU:</strong></td>
+            <td style="padding: 4px 0; color: var(--text-secondary); text-transform: uppercase;"><strong>${labelCrew}:</strong></td>
             <td style="padding: 4px 0; text-align: right; color: var(--thy-gold-light);"><strong>${participantsStr}</strong></td>
           </tr>
           <tr>
-            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>SEYİR TARİHİ:</strong></td>
+            <td style="padding: 4px 0; color: var(--text-secondary); text-transform: uppercase;"><strong>${labelDate}:</strong></td>
             <td style="padding: 4px 0; text-align: right; color: var(--text-primary);">${dateStr}</td>
           </tr>
           <tr>
-            <td style="padding: 4px 0; color: var(--text-secondary);"><strong>KONTROL NOKTASI:</strong></td>
-            <td style="padding: 4px 0; text-align: right; color: var(--text-primary);">${THY.waypoints.length} Durak</td>
+            <td style="padding: 4px 0; color: var(--text-secondary); text-transform: uppercase;"><strong>${labelStops}:</strong></td>
+            <td style="padding: 4px 0; text-align: right; color: var(--text-primary);">${stopsSuffix}</td>
           </tr>
         </table>
 
         <!-- Log Entry Area -->
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px;">
-          <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;">Seyir Güzergah Raporu</div>
+          <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;">${isEn ? 'Travel Route Report' : 'Seyir Güzergah Raporu'}</div>
           <div style="margin-bottom: 16px;">
             ${routeHtml}
           </div>
@@ -2899,7 +3381,7 @@ ${inviteLink}
 
         <!-- Collaboration Link Area -->
         <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; margin-top: 16px; word-break: break-all;">
-          <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;">🔗 Düzenleme ve Davet Bağlantısı</div>
+          <div style="font-size: 10px; font-weight: 700; color: var(--thy-gold); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;">🔗 ${isEn ? 'Collaboration & Invite Link' : 'Düzenleme ve Davet Bağlantısı'}</div>
           <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4; word-break: break-all;">
             <span style="color: var(--thy-gold-light); font-weight: 600;">${THY.generateShareUrl()}</span>
           </div>
@@ -2907,7 +3389,7 @@ ${inviteLink}
 
         <!-- Footer -->
         <div style="border-top: 1px dashed rgba(148, 163, 184, 0.15); margin-top: 20px; padding-top: 12px; text-align: center; font-size: 10px; color: var(--text-muted); font-style: italic;">
-          "Gökyüzünde güvenle planlandı. İyi uçuşlar dileriz."
+          "${isEn ? 'Planned safely in the skies. We wish you a pleasant flight.' : 'Gökyüzünde güvenle planlandı. İyi uçuşlar dileriz.'}"
         </div>
       </div>
     `;
@@ -3113,12 +3595,14 @@ ${inviteLink}
     const trips = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
     const tripIds = Object.keys(trips).sort((a, b) => new Date(trips[b].savedAt) - new Date(trips[a].savedAt));
 
+    const isEn = THY.currentLanguage === 'en';
+
     if (tripIds.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
           <div class="empty-state__icon">💼</div>
-          <div class="empty-state__title">Kayıtlı Seyahat Yok</div>
-          <div class="empty-state__text">Henüz kaydedilmiş seyahatiniz bulunmuyor. Sol menüde bir rota çizdikten sonra "Kaydet" butonuna basarak seyahatlerinizi burada listeleyebilirsiniz.</div>
+          <div class="empty-state__title">${THY.t('Kayıtlı Seyahat Yok')}</div>
+          <div class="empty-state__text">${THY.t('Henüz kaydedilmiş seyahatiniz bulunmuyor. Sol menüde bir rota çizdikten sonra "Kaydet" butonuna basarak seyahatlerinizi burada listeleyebilirsiniz.')}</div>
         </div>
       `;
       return;
@@ -3136,7 +3620,7 @@ ${inviteLink}
       card.innerHTML = `
         <div class="trip-card-header">
           <div class="trip-card-id">${id}</div>
-          ${isActive ? '<span class="trip-card-active-badge">Aktif</span>' : ''}
+          ${isActive ? `<span class="trip-card-active-badge">${THY.t('Aktif')}</span>` : ''}
         </div>
         <div class="trip-card-body">
           <div class="trip-card-flight">
@@ -3144,13 +3628,13 @@ ${inviteLink}
             <span class="flight-code">${trip.flightCode || '---'}</span>
           </div>
           <div class="trip-card-meta">
-            <span>📅 ${trip.maxDays || 1} Gün</span>
-            <span>📍 ${trip.waypointsCount || 0} Durak</span>
+            <span>📅 ${trip.maxDays || 1} ${isEn ? (trip.maxDays === 1 ? 'Day' : 'Days') : 'Gün'}</span>
+            <span>📍 ${trip.waypointsCount || 0} ${isEn ? (trip.waypointsCount === 1 ? 'Stop' : 'Stops') : 'Durak'}</span>
           </div>
         </div>
         <div class="trip-card-actions">
-          <button class="btn btn-primary btn-sm btn-load" data-id="${id}">Aç</button>
-          <button class="btn btn-secondary btn-sm btn-delete" data-id="${id}">Sil</button>
+          <button class="btn btn-primary btn-sm btn-load" data-id="${id}">${THY.t('Aç')}</button>
+          <button class="btn btn-secondary btn-sm btn-delete" data-id="${id}">${THY.t('Sil')}</button>
         </div>
       `;
 
@@ -3360,7 +3844,10 @@ ${inviteLink}
   });
 
   // Custom Asynchronous Confirmation Modal
-  THY.confirm = (message, title = '⚠️ Uyarı') => {
+  THY.confirm = (message, title = null) => {
+    message = THY.t(message);
+    if (!title) title = THY.currentLanguage === 'en' ? '⚠️ Warning' : '⚠️ Uyarı';
+    else title = THY.t(title);
     return new Promise((resolve) => {
       const modal = document.getElementById('confirmModal');
       const titleEl = modal?.querySelector('.modal-title');
@@ -3405,10 +3892,11 @@ ${inviteLink}
     // Load from local storage backup first
     const alerts = JSON.parse(localStorage.getItem('thy_price_alerts') || '[]');
 
+    const isEn = THY.currentLanguage === 'en';
     if (alerts.length === 0) {
       listContainer.innerHTML = `
         <div style="font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 12px; border: 1px dashed var(--border-subtle); border-radius: 6px; background: rgba(255, 255, 255, 0.01);">
-          Henüz aktif bir fiyat alarmı bulunmuyor.
+          ${isEn ? 'No active price alerts found.' : 'Henüz aktif bir fiyat alarmı bulunmuyor.'}
         </div>
       `;
       return;
@@ -3423,9 +3911,9 @@ ${inviteLink}
           <div class="alert-card-route">🛫 ${alert.dep} ➔ ${alert.arr}</div>
           <div class="alert-card-email">📬 ${alert.email}</div>
           <div style="font-size: 10px; color: var(--text-muted);">${alert.depDate} ${alert.retDate ? ` - ${alert.retDate}` : ''}</div>
-          <div class="alert-card-price">Hedef: ${Number(alert.targetPrice).toLocaleString('tr-TR')} TL</div>
+          <div class="alert-card-price">${isEn ? 'Target' : 'Hedef'}: ${Number(alert.targetPrice).toLocaleString(isEn ? 'en-US' : 'tr-TR')} ${isEn ? 'TRY' : 'TL'}</div>
         </div>
-        <button class="alert-card-delete" data-id="${alert.id}" title="Alarmı Sil">✕</button>
+        <button class="alert-card-delete" data-id="${alert.id}" title="${isEn ? 'Delete Alert' : 'Alarmı Sil'}">✕</button>
       `;
 
       card.querySelector('.alert-card-delete').addEventListener('click', (e) => {
@@ -3438,6 +3926,7 @@ ${inviteLink}
   };
 
   THY.createPriceAlert = (email, targetPrice) => {
+    const isEn = THY.currentLanguage === 'en';
     if (!email || !targetPrice) {
       THY.toast('Lütfen geçerli bir e-posta ve hedef fiyat girin.', 'error');
       return;
@@ -3492,10 +3981,14 @@ ${inviteLink}
     // Send Confirm Email via EmailJS Proxy
     const templateParams = {
       to_email: email,
-      from_name: 'THY Fiyat Takip Servisi',
+      from_name: isEn ? 'THY Price Alert Service' : 'THY Fiyat Takip Servisi',
       trip_id: newAlert.id,
-      note: `Seçtiğiniz ${search.depCode} ➔ ${search.destCode} rotası için bilet fiyatı veya mil değeri ${Number(targetPrice).toLocaleString('tr-TR')} TL limitinin altına indiğinde sizi bilgilendireceğiz.`,
-      route_summary: `🔔 FİYAT ALARMI OLUŞTURULDU\n-----------------------------------\nRota: ${search.depCode} ➔ ${search.destCode}\nKabin: ${search.cabin.toUpperCase()}\nLimit: ${Number(targetPrice).toLocaleString('tr-TR')} TL\nGidiş Tarihi: ${search.depDate}\nDönüş Tarihi: ${search.retDate || 'Tek Yön'}\n-----------------------------------\nBu alarm bilet fiyatı düştüğünde size e-posta göndermek üzere kurulmuştur.`,
+      note: isEn 
+        ? `We will notify you when ticket prices or mile values drop below ${Number(targetPrice).toLocaleString('en-US')} TRY for your selected ${search.depCode} ➔ ${search.destCode} route.`
+        : `Seçtiğiniz ${search.depCode} ➔ ${search.destCode} rotası için bilet fiyatı veya mil değeri ${Number(targetPrice).toLocaleString('tr-TR')} TL limitinin altına indiğinde sizi bilgilendireceğiz.`,
+      route_summary: isEn
+        ? `🔔 PRICE ALERT CREATED\n-----------------------------------\nRoute: ${search.depCode} ➔ ${search.destCode}\nCabin: ${search.cabin.toUpperCase()}\nTarget Limit: ${Number(targetPrice).toLocaleString('en-US')} TRY\nDeparture Date: ${search.depDate}\nReturn Date: ${search.retDate || 'One Way'}\n-----------------------------------\nThis alert was set to email you when the ticket price drops.`
+        : `🔔 FİYAT ALARMI OLUŞTURULDU\n-----------------------------------\nRota: ${search.depCode} ➔ ${search.destCode}\nKabin: ${search.cabin.toUpperCase()}\nLimit: ${Number(targetPrice).toLocaleString('tr-TR')} TL\nGidiş Tarihi: ${search.depDate}\nDönüş Tarihi: ${search.retDate || 'Tek Yön'}\n-----------------------------------\nBu alarm bilet fiyatı düştüğünde size e-posta göndermek üzere kurulmuştur.`,
       inviteLink: `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`
     };
     

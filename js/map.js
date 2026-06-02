@@ -227,10 +227,11 @@ function initMap() {
                 ? `<div style="color:#C8A951;font-size:12px;margin-bottom:6px;">${renderStars(place.rating)} ${place.rating} (${place.user_ratings_total || 0})</div>` 
                 : '';
 
+              const isEn = THY.currentLanguage === 'en';
               const partnerHtml = `
                 <div style="background: linear-gradient(135deg, #E31837 0%, #B01026 100%); color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(227,24,55,0.3); max-width: 220px; white-space: normal;">
-                  <span>✈️ THY Partner Avantajı:</span>
-                  <span style="font-weight: 500;">${partnerInfo.offer}</span>
+                  <span>✈️ ${isEn ? 'THY Partner Offer' : 'THY Partner Avantajı'}:</span>
+                  <span style="font-weight: 500;">${THY.t(partnerInfo.offer)}</span>
                 </div>
               `;
 
@@ -247,7 +248,7 @@ function initMap() {
                 <div style="font-weight:700;font-size:13px;margin-bottom:4px;">${partnerInfo.iconEmoji} ${place.name}</div>
                 <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.formatted_address || place.vicinity || ''}</div>
                 ${ratingHtml}
-                <button id="btnPromoMarkerAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">Rotaya Ekle</button>
+                <button id="btnPromoMarkerAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">${isEn ? 'Add to Route' : 'Rotaya Ekle'}</button>
               `;
 
               contentDiv.querySelector('#btnPromoMarkerAddToRoute').addEventListener('click', () => {
@@ -277,7 +278,8 @@ function initMap() {
     
     // Find how many waypoints are already in this day to make a friendly default label
     const dayWpCount = THY.waypoints.filter(wp => (wp.day || 1) === targetDay).length;
-    const defaultName = `Nokta ${dayWpCount + 1}`;
+    const isEn = THY.currentLanguage === 'en';
+    const defaultName = isEn ? `Stop ${dayWpCount + 1}` : `Nokta ${dayWpCount + 1}`;
 
     const wp = { 
       lat, 
@@ -377,13 +379,14 @@ function initMap() {
         const currentWp = THY.waypoints[idx] || wp;
         const noteHtml = currentWp.note ? `<div style="font-size:11px;color:#C8A951;margin-bottom:6px;font-style:italic;">📝 ${currentWp.note}</div>` : '';
         
+        const isEn = THY.currentLanguage === 'en';
         let partnerHtml = '';
         const wpPartner = getPartnerMatch(currentWp.name, currentWp.place_id);
         if (wpPartner && THY.showPartners) {
           partnerHtml = `
             <div style="background: linear-gradient(135deg, #E31837 0%, #B01026 100%); color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(227,24,55,0.3); max-width: 220px; white-space: normal;">
-              <span>✈️ THY Partner Avantajı:</span>
-              <span style="font-weight: 500;">${wpPartner.offer}</span>
+              <span>✈️ ${isEn ? 'THY Partner Offer' : 'THY Partner Avantajı'}:</span>
+              <span style="font-weight: 500;">${THY.t(wpPartner.offer)}</span>
             </div>
           `;
         }
@@ -391,7 +394,7 @@ function initMap() {
         infoWindow.setContent(`
           <div style="background:#1A2235;color:#F1F5F9;padding:10px 14px;border-radius:8px;font-family:Inter,sans-serif;min-width:140px;">
             ${partnerHtml}
-            <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${currentWp.name} (${wpDay}. Gün)</div>
+            <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${currentWp.name} (${isEn ? `Day ${wpDay}` : `${wpDay}. Gün`})</div>
             ${noteHtml}
             <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#94A3B8;">${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
           </div>
@@ -525,6 +528,7 @@ function initMap() {
     list.innerHTML = '';
 
     const showAll = (THY.activeDay === 0);
+    const isEn = THY.currentLanguage === 'en';
 
     // Filter waypoints for active selection
     const activeWaypoints = THY.waypoints
@@ -532,10 +536,16 @@ function initMap() {
       .filter(wp => showAll || (wp.day || 1) === (THY.activeDay || 1));
 
     if (activeWaypoints.length === 0) {
-      const titleText = showAll ? 'Rota Boş' : `${THY.activeDay || 1}. Gün Boş`;
-      const emptyText = showAll 
-        ? 'Haritaya tıklayarak veya "Rota Çiz" modunda ekleyebilirsiniz.' 
-        : 'Bu güne henüz rota noktası eklenmemiş. Haritaya tıklayarak veya "Rota Çiz" modunda ekleyebilirsiniz.';
+      const titleText = isEn 
+        ? (showAll ? 'Route is Empty' : `Day ${THY.activeDay || 1} is Empty`)
+        : (showAll ? 'Rota Boş' : `${THY.activeDay || 1}. Gün Boş`);
+      const emptyText = isEn
+        ? (showAll 
+            ? 'You can add points by clicking on the map or activating "Draw Route" mode.' 
+            : 'No route stops added to this day yet. You can add points by clicking on the map or activating "Draw Route" mode.')
+        : (showAll 
+            ? 'Haritaya tıklayarak veya "Rota Çiz" modunda ekleyebilirsiniz.' 
+            : 'Bu güne henüz rota noktası eklenmemiş. Haritaya tıklayarak veya "Rota Çiz" modunda ekleyebilirsiniz.');
       list.innerHTML = `
         <div class="empty-state" id="emptyRouteState">
           <div class="empty-state__icon">📅</div>
@@ -572,10 +582,10 @@ function initMap() {
         connectorRow.innerHTML = `
           <div class="waypoint-connector-line" style="background-color: ${connColor}"></div>
           <div class="waypoint-transit-menu">
-            <span class="transit-title">🚇 Ulaşım:</span>
-            <a href="${gMapsUrl}" target="_blank" class="transit-option google" title="Google Haritalar ile Yol Tarifi (Toplu Taşıma)">Google</a>
-            <a href="${aMapsUrl}" target="_blank" class="transit-option apple" title="Apple Haritalar ile Yol Tarifi (Transit)">Apple</a>
-            <a href="${yMapsUrl}" target="_blank" class="transit-option yandex" title="Yandex Haritalar ile Yol Tarifi (Metro/Otobüs)">Yandex</a>
+            <span class="transit-title">${isEn ? '🚇 Transit:' : '🚇 Ulaşım:'}</span>
+            <a href="${gMapsUrl}" target="_blank" class="transit-option google" title="${isEn ? 'Directions with Google Maps (Transit)' : 'Google Haritalar ile Yol Tarifi (Toplu Taşıma)'}">Google</a>
+            <a href="${aMapsUrl}" target="_blank" class="transit-option apple" title="${isEn ? 'Directions with Apple Maps (Transit)' : 'Apple Haritalar ile Yol Tarifi (Transit)'}">Apple</a>
+            <a href="${yMapsUrl}" target="_blank" class="transit-option yandex" title="${isEn ? 'Directions with Yandex Maps (Metro/Bus)' : 'Yandex Haritalar ile Yol Tarifi (Metro/Otobüs)'}">Yandex</a>
           </div>
         `;
         list.appendChild(connectorRow);
@@ -587,19 +597,19 @@ function initMap() {
       let dayBadgeHtml = '';
       if (showAll) {
         const contrastColor = getContrastColor(wpColor);
-        dayBadgeHtml = `<span style="font-size: 10px; padding: 2px 6px; background: ${wpColor}; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: ${contrastColor}; font-weight: 700; margin-left: 6px; display: inline-block; vertical-align: middle;">${wp.day}. Gün</span>`;
+        dayBadgeHtml = `<span style="font-size: 10px; padding: 2px 6px; background: ${wpColor}; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: ${contrastColor}; font-weight: 700; margin-left: 6px; display: inline-block; vertical-align: middle;">${isEn ? `Day ${wp.day}` : `${wp.day}. Gün`}</span>`;
       }
 
       item.innerHTML = `
         <div class="waypoint-marker" style="background-color: ${wpColor}">${i + 1}</div>
         <div class="waypoint-info">
           <div class="waypoint-name">${wp.name} ${dayBadgeHtml}</div>
-          ${wp.note ? `<div class="waypoint-note" style="color: var(--thy-gold-light)">📝 Not: ${wp.note}</div>` : ''}
+          ${wp.note ? `<div class="waypoint-note" style="color: var(--thy-gold-light)">📝 ${isEn ? 'Note' : 'Not'}: ${wp.note}</div>` : ''}
           <div class="waypoint-coords">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</div>
         </div>
         <div class="waypoint-actions" style="display: flex; gap: 6px; align-items: center;">
-          <button class="waypoint-note-btn" data-index="${wp.originalIndex}" title="Not Ekle/Düzenle">📝</button>
-          <button class="waypoint-remove" data-index="${wp.originalIndex}" title="Kaldır">✕</button>
+          <button class="waypoint-note-btn" data-index="${wp.originalIndex}" title="${isEn ? 'Add/Edit Note' : 'Not Ekle/Düzenle'}">📝</button>
+          <button class="waypoint-remove" data-index="${wp.originalIndex}" title="${isEn ? 'Remove' : 'Kaldır'}">✕</button>
         </div>
       `;
       list.appendChild(item);
@@ -633,7 +643,10 @@ function initMap() {
       drawMode = !drawMode;
       btnDraw.classList.toggle('active', drawMode);
       map.setOptions({ draggableCursor: drawMode ? 'crosshair' : null });
-      THY.toast(drawMode ? 'Rota çizim modu AÇ — Haritaya tıklayın' : 'Rota çizim modu KAPALI', 'info');
+      const isEn = THY.currentLanguage === 'en';
+      THY.toast(drawMode 
+        ? (isEn ? 'Route drawing mode ON — Click on the map' : 'Rota çizim modu AÇ — Haritaya tıklayın') 
+        : (isEn ? 'Route drawing mode OFF' : 'Rota çizim modu KAPALI'), 'info');
     });
   }
 
@@ -671,12 +684,13 @@ function initMap() {
           contentDiv.style.borderRadius = '8px';
           contentDiv.style.fontFamily = 'Inter,sans-serif';
           contentDiv.style.minWidth = '180px';
+          const isEn = THY.currentLanguage === 'en';
           contentDiv.innerHTML = `
             ${photoHtml}
             <div style="font-weight:700;font-size:13px;margin-bottom:4px;">📍 ${place.name}</div>
             <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.vicinity || ''}</div>
             ${ratingHtml}
-            <button id="btnPoiAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">Rotaya Ekle</button>
+            <button id="btnPoiAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">${isEn ? 'Add to Route' : 'Rotaya Ekle'}</button>
           `;
 
           // Add click listener to the button
@@ -702,7 +716,8 @@ function initMap() {
     // Reverse geocode for name
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-      let name = `Nokta ${THY.waypoints.length + 1}`;
+      const isEn = THY.currentLanguage === 'en';
+      let name = isEn ? `Stop ${THY.waypoints.length + 1}` : `Nokta ${THY.waypoints.length + 1}`;
       if (status === 'OK' && results[0]) {
         // Try to get a short meaningful name
         const components = results[0].address_components;
@@ -884,13 +899,14 @@ function initMap() {
         contentDiv.style.borderRadius = '8px';
         contentDiv.style.fontFamily = 'Inter,sans-serif';
         contentDiv.style.minWidth = '180px';
+        const isEn = THY.currentLanguage === 'en';
         contentDiv.innerHTML = `
           ${photoHtml}
           ${partnerHtml}
           <div style="font-weight:700;font-size:13px;margin-bottom:4px;">${emoji} ${place.name}</div>
           <div style="font-size:11px;color:#94A3B8;margin-bottom:6px;">${place.vicinity || ''}</div>
           ${ratingHtml}
-          <button id="btnPlaceMarkerAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">Rotaya Ekle</button>
+          <button id="btnPlaceMarkerAddToRoute" style="background:#E31837;color:white;border:none;padding:6px 12px;font-size:11px;font-weight:700;border-radius:4px;cursor:pointer;width:100%;transition:background 0.2s;">${isEn ? 'Add to Route' : 'Rotaya Ekle'}</button>
         `;
 
         contentDiv.querySelector('#btnPlaceMarkerAddToRoute').addEventListener('click', () => {

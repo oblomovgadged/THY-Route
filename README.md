@@ -128,6 +128,10 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
    * API uç noktalarının (Google Maps anahtarı, Aviationstack limitleri ve EmailJS e-posta gönderimi) kötü niyetli botlar veya spam saldırıları tarafından tüketilmesini önlemek amacıyla sunucu tarafında IP tabanlı hız sınırlandırması (Rate Limiting) aktif edilmiştir.
    * `api/maps-key.js` için dakikada maks 5 istek, `api/flights.js` için dakikada maks 15 istek ve `api/send-email.js` için dakikada maks 3 e-posta gönderim sınırı getirilmiştir. Limit aşımında API'ler standart `429 Too Many Requests` hatası döndürür.
 
+9. **Gelişmiş Çoklu Dil (İngilizce/Türkçe) ve Tipografi Düzeltmeleri:**
+   * Uygulamanın tüm alanlarında (Uçuş Arama Sonuçları, Yer Arama, Miles&Smiles, Seyahatlerim listesi, toast bildirimleri, email ve işlem onay pencereleri) tam ve eksiksiz İngilizce desteği sağlanmıştır.
+   * İngilizce dil seçildiğinde, CSS `text-transform: uppercase` kurallarının tarayıcı yerel ayarlarına bağlı olarak İngilizce kelimelerde Türkçe noktalı `İ` karakteri (örn: `TURKİSH AİRLİNES`, `FLİGHT ARRİVE`) üretme hatası, İngilizce kaynak sözlüklerin doğrudan büyük harfli (uppercase) olarak beslenmesiyle ve dinamik harf düzeltmeleriyle kökten çözülmüştür.
+
 ---
 
 ## 🌐 Canlı Yayın (Deployment)
