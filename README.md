@@ -74,14 +74,47 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /trips/{tripId} {
-      allow read, write: if request.auth != null;
+      // Rota paylaşımı (collaboration) için belirli bir ID'ye sahip seyahatin okunmasına (get) ve yazılmasına izin ver.
+      // Tüm seyahatleri topluca listelemeyi (list) sızıntı koruması amacıyla yasakla.
+      allow get, write: if request.auth != null;
+      allow list: if false;
     }
     match /users/{userId} {
-      allow read, write: if request.auth != null;
+      // Kullanıcılar sadece kendi kimliklerine ait (UID) verileri okuyup yazabilirler.
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /price_alerts/{alertId} {
+      // E-postaları korumak için istemci tarafından alarmların okunmasını engelle.
+      // Yalnızca oturum açmış kullanıcıların alarm eklemesine ve silmesine (write) izin ver.
+      allow write: if request.auth != null;
+      allow read: if false;
     }
   }
 }
 ```
+
+---
+
+## 🛡️ Güvenlik ve API Koruması (Security & API Protection)
+
+Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5 kritik güvenlik katmanı ile güçlendirilmiştir:
+
+1. **Google Maps API Key Koruması:**
+   * Google Cloud Console üzerinden API anahtarı sınırlandırılarak sadece `http://localhost/*` ve `https://thy-route.vercel.app/*` kaynaklarından gelen harita yükleme isteklerine izin verilmiştir.
+
+2. **Firebase Config ve Firestore Veri Koruması:**
+   * Firebase yapılandırma bilgileri istemci tarafında yer alsa da, yukarıda belirtilen **Firestore Security Rules** sayesinde yetkilendirilmemiş kişilerin veritabanı sorguları yapması veya diğer kullanıcıların rotalarını listelemesi tamamen engellenmiştir.
+
+3. **EmailJS Proxy Entegrasyonu (Serverless Backend):**
+   * Ön yüzde açıkta duran `serviceId`, `templateId` ve `publicKey` bilgileri kod tabanından tamamen temizlenmiştir.
+   * E-posta gönderim mantığı [api/send-email.js](file:///c:/Users/borak/OneDrive/Desktop/Route/api/send-email.js) serverless fonksiyonuna taşınmıştır. Değerler Vercel üzerinden Environment Variables (Çevre Değişkenleri) olarak güvenle saklanmaktadır.
+
+4. **Kişisel Verilerin ve Fiyat Alarmlarının Koruması:**
+   * Fiyat takibi için girilen e-posta adresleri `/price_alerts` koleksiyonunda saklanırken, istemci tarafı okumaları tamamen kapatılarak verilerin kazınması (data scraping) engellenmiştir.
+
+5. **Dinamik CORS Whitelisting:**
+   * API uç noktalarındaki güvensiz `Access-Control-Allow-Origin: '*'` (CORS) yapısı kaldırılarak dinamik CORS kontrolü eklenmiştir.
+   * Sunucu tarafındaki isteklerin `Origin` başlığı kontrol edilerek sadece localhost, `thy-route.vercel.app` ve Vercel Preview domainlerine izin verilmekte, yabancı kaynaklı istekler `403 Forbidden` hatasıyla engellenmektedir.
 
 ---
 
