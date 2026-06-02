@@ -27,7 +27,7 @@
   <title>THY Route — Seyahat Journal</title>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="icons/favicon.png?v=6.3">
+  <link rel="icon" type="image/png" href="icons/favicon.png?v=6.4">
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css?v=6.3">
+  <link rel="stylesheet" href="css/style.css?v=6.4">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -283,6 +283,10 @@
             <span class="panel-tab__icon">💼</span>
             Seyahatler
           </button>
+          <button class="panel-tab" data-tab="b2b">
+            <span class="panel-tab__icon">💎</span>
+            B2B
+          </button>
           <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat" style="margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: color 0.2s;">
             <span>✕</span>
           </button>
@@ -438,6 +442,60 @@
             </div>
           </div>
 
+          <!-- B2B TAB -->
+          <div class="tab-pane" id="tabB2b">
+            <div class="route-header" style="margin-bottom: var(--space-md);">
+              <div class="route-title">
+                <span class="icon">💎</span>
+                THY B2B Ticari Değer
+              </div>
+            </div>
+            
+            <div class="b2b-content" style="display: flex; flex-direction: column; gap: var(--space-md);">
+              <div class="b2b-intro-card" style="padding: 12px; background: linear-gradient(135deg, rgba(225, 26, 34, 0.1) 0%, rgba(200, 169, 81, 0.1) 100%); border: 1px solid var(--border-subtle); border-radius: 8px;">
+                <p style="font-size: 12px; line-height: 1.5; color: var(--text-primary); margin-bottom: 0;">
+                  <strong>THY Route</strong>, yolculara sadece bilet satmakla kalmayıp onlara uçtan uca seyahat küratörlüğü sunarak THY için yüksek ek gelir ve sadakat yaratır.
+                </p>
+              </div>
+
+              <!-- Value Pillar 1 -->
+              <div class="b2b-pillar" style="padding: 10px; background: rgba(255,255,255,0.02); border-left: 3px solid var(--thy-red); border-radius: 4px;">
+                <div style="font-weight: 700; font-size: 12px; color: var(--text-primary); margin-bottom: 4px;">💵 Ek Gelir (Ancillary Revenue)</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                  Avis & Hilton gibi sponsorlu pinlerle yolcular seyahat rotası çizerken doğrudan THY partnerlerinden araç kiralayabilir ve otel rezervasyonu yapabilir.
+                </div>
+              </div>
+
+              <!-- Value Pillar 2 -->
+              <div class="b2b-pillar" style="padding: 10px; background: rgba(255,255,255,0.02); border-left: 3px solid var(--thy-gold); border-radius: 4px;">
+                <div style="font-weight: 700; font-size: 12px; color: var(--text-primary); margin-bottom: 4px;">🔗 Ücretsiz Ulaşım (Zero-Cost Deep-Links)</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                  Pahalı harita yönlendirme (Directions API) ücretleri ödemeden, Google, Apple ve Yandex Maps uygulamalarına <strong>transit modda ücretsiz derin bağlantı (deep-linking)</strong> kurulur.
+                </div>
+              </div>
+
+              <!-- Value Pillar 3 -->
+              <div class="b2b-pillar" style="padding: 10px; background: rgba(255,255,255,0.02); border-left: 3px solid #10B981; border-radius: 4px;">
+                <div style="font-weight: 700; font-size: 12px; color: var(--text-primary); margin-bottom: 4px;">👥 Viral Yayılım (Co-Pilot Modu)</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                  Ortak rota düzenleme özelliği sayesinde tek bir yolcu, rotasını arkadaşlarıyla paylaşarak THY markasını seyahat grupları içinde organik olarak yayar.
+                </div>
+              </div>
+
+              <!-- Value Pillar 4 -->
+              <div class="b2b-pillar" style="padding: 10px; background: rgba(255,255,255,0.02); border-left: 3px solid #3B82F6; border-radius: 4px;">
+                <div style="font-weight: 700; font-size: 12px; color: var(--text-primary); margin-bottom: 4px;">📊 Seyahat Analitiği (Big Data)</div>
+                <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+                  Kullanıcıların çizdiği rotalardan elde edilen verilerle, en popüler destinasyonlar analiz edilerek THY'nin yeni uçuş rotaları ve kampanyaları optimize edilir.
+                </div>
+              </div>
+              
+              <div style="text-align: center; margin-top: 10px;">
+                <span style="font-size: 11px; font-weight: bold; color: var(--thy-gold);">🛫 "Bilet Değil, Deneyim Satıyoruz" 🛫</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </aside>
 
@@ -585,7 +643,7 @@
   </div>
 
   <!-- App Scripts -->
-  <script src="js/app.js?v=6.3"></script>
-  <script src="js/map.js?v=6.3"></script>
+  <script src="js/app.js?v=6.4"></script>
+  <script src="js/map.js?v=6.4"></script>
 </body>
 </html>

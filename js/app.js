@@ -2089,7 +2089,8 @@ const thyApiConfig = {
     route: document.getElementById('tabRoute'),
     places: document.getElementById('tabPlaces'),
     email: document.getElementById('tabEmail'),
-    trips: document.getElementById('tabTrips')
+    trips: document.getElementById('tabTrips'),
+    b2b: document.getElementById('tabB2b')
   };
 
   tabs.forEach(tab => {

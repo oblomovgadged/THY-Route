@@ -549,14 +549,14 @@ function initMap() {
     activeWaypoints.forEach((wp, i) => {
       const wpColor = THY.dayColors[((wp.day || 1) - 1) % THY.dayColors.length] || '#E31837';
 
-      // Connector
+      // Connector and Transit links
       if (i > 0) {
-        const connector = document.createElement('div');
-        connector.className = 'waypoint-connector';
+        const prevWp = activeWaypoints[i - 1];
+        const connectorRow = document.createElement('div');
+        connectorRow.className = 'waypoint-connection-row';
         
         let connColor = wpColor;
         if (showAll) {
-          const prevWp = activeWaypoints[i - 1];
           if (prevWp.day !== wp.day) {
             connColor = '#94A3B8'; // gray for cross-day connections
           } else {
@@ -564,8 +564,21 @@ function initMap() {
           }
         }
         
-        connector.style.backgroundColor = connColor;
-        list.appendChild(connector);
+        // Deep links URLs
+        const gMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${prevWp.lat},${prevWp.lng}&destination=${wp.lat},${wp.lng}&travelmode=transit`;
+        const aMapsUrl = `https://maps.apple.com/?saddr=${prevWp.lat},${prevWp.lng}&daddr=${wp.lat},${wp.lng}&dirflg=r`;
+        const yMapsUrl = `https://yandex.com/maps/?rtext=${prevWp.lat},${prevWp.lng}~${wp.lat},${wp.lng}&rtt=mt`;
+
+        connectorRow.innerHTML = `
+          <div class="waypoint-connector-line" style="background-color: ${connColor}"></div>
+          <div class="waypoint-transit-menu">
+            <span class="transit-title">🚇 Ulaşım:</span>
+            <a href="${gMapsUrl}" target="_blank" class="transit-option google" title="Google Haritalar ile Yol Tarifi (Toplu Taşıma)">Google</a>
+            <a href="${aMapsUrl}" target="_blank" class="transit-option apple" title="Apple Haritalar ile Yol Tarifi (Transit)">Apple</a>
+            <a href="${yMapsUrl}" target="_blank" class="transit-option yandex" title="Yandex Haritalar ile Yol Tarifi (Metro/Otobüs)">Yandex</a>
+          </div>
+        `;
+        list.appendChild(connectorRow);
       }
 
       const item = document.createElement('div');

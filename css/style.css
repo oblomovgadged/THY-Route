@@ -2403,3 +2403,92 @@ input, textarea, select {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* --- Waypoint Connection & Transit Links --- */
+.waypoint-connection-row {
+  display: flex;
+  align-items: center;
+  margin-left: 27px;
+  position: relative;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  gap: 12px;
+  min-height: 24px;
+}
+
+.waypoint-connector-line {
+  width: 2px;
+  align-self: stretch;
+  opacity: 0.3;
+  min-height: 16px;
+}
+
+.waypoint-transit-menu {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(18, 22, 26, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-size: 10px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.transit-title {
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-right: 2px;
+}
+
+.transit-option {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+}
+
+.transit-option:hover {
+  color: var(--text-primary);
+  transform: translateY(-0.5px);
+}
+
+.transit-option.google:hover {
+  background: rgba(66, 133, 244, 0.15);
+  border-color: rgba(66, 133, 244, 0.3);
+  color: #4285F4;
+}
+
+.transit-option.apple:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.transit-option.yandex:hover {
+  background: rgba(255, 204, 0, 0.15);
+  border-color: rgba(255, 204, 0, 0.3);
+  color: #FFCC00;
+}
+
+/* --- B2B Presentation Styles --- */
+.b2b-content {
+  color: var(--text-primary);
+}
+
+.b2b-intro-card {
+  box-shadow: 0 4px 12px rgba(225, 26, 34, 0.08);
+}
+
+.b2b-pillar {
+  transition: all var(--transition-base);
+  border-radius: 4px;
+}
+
+.b2b-pillar:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  transform: translateX(4px);
+}
+
