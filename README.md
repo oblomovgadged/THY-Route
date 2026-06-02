@@ -136,6 +136,10 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
     * Dil güncellemeleri esnasında `js/app.js` dosyasında kalan mükerrer kod bloğu ve `}for one-way flight route` sözdizimi (syntax) hatası giderildi.
     * Bu hatanın tüm JavaScript motorunu kilitleyerek kalkış/varış autocomplete kutularını devre dışı bırakması ve gidiş/dönüş tarihlerini boş göstermesi sorunu tamamen çözüldü; form özellikleri ve varsayılan THY uçuş ağı simülasyonları başarıyla restore edildi.
 
+11. **KVKK & GDPR Gizlilik Politikası Entegrasyonu:**
+    * Kullanıcıların seyahat planları, adları, e-postaları ve konum verilerinin işlenme süreçlerini şeffaflaştırmak amacıyla KVKK (Kişisel Verilerin Korunması Kanunu) ve GDPR (General Data Protection Regulation) uyumlu interaktif bir **Gizlilik Politikası** paneli eklenmiştir.
+    * Giriş ekranı alt bilgisine (footer), fiyat alarmı formuna ve e-posta raporlama sekmesine yasal aydınlatma metni onay linkleri yerleştirilmiştir. Bu sayede uygulamanın yasal uyumluluk standartları kurumsal THY satış/sunum kriterlerine uygun hale getirilmiştir.
+
 ---
 
 ## 🌐 Canlı Yayın (Deployment)

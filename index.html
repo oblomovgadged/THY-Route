@@ -197,17 +197,23 @@
                 <div class="price-alert-title">Akıllı Fiyat Alarmı (Mil & Fiyat Takipçisi)</div>
                 <div class="price-alert-desc">Seçtiğiniz tarihlerde bilet fiyatı veya mil değeri limitin altına indiğinde e-posta ile haber verelim.</div>
               </div>
-            </div>
-            <div class="price-alert-inputs">
+            <div class="price-alert-inputs" style="flex-wrap: wrap;">
               <input type="number" id="alertTargetPrice" placeholder="Hedef Fiyat (TL)" value="12000">
               <input type="email" id="alertEmail" placeholder="E-posta Adresi">
               <button class="btn btn-gold btn-sm" id="btnCreatePriceAlert">Alarm Kur</button>
+              <div style="font-size: 10px; color: var(--text-muted); margin-top: 6px; text-align: left; width: 100%;">
+                * Alarm kurarak verilerinizin <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Gizlilik Politikası (KVKK)</a> uyarınca işlenmesini kabul etmiş olursunuz.
+              </div>
             </div>
           </div>
 
           <div class="flight-list" id="flightListContainer">
             <!-- Flights will be loaded here dynamically -->
           </div>
+        </div>
+        <!-- Landing Page Footer -->
+        <div class="landing-footer">
+          <a href="#" id="btnOpenPrivacyModal">🛡️ KVKK & Gizlilik Politikası / GDPR & Privacy Policy</a>
         </div>
       </div>
     </div>
@@ -427,6 +433,9 @@
                   <span class="icon">📧</span>
                   Rapor & Davet Gönder
                 </button>
+              </div>
+              <div style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 10px; line-height: 1.4;">
+                * Rapor göndererek verilerinizin <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Gizlilik Politikası (KVKK)</a> uyarınca işlenmesini kabul etmiş olursunuz.
               </div>
             </div>
           </div>
@@ -741,6 +750,99 @@
         <button class="btn btn-primary btn-full" id="btnConfirmSync" style="width: 50%;">
           Eşitlemeyi Başlat
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVACY MODAL (KVKK & GDPR) -->
+  <div class="modal-overlay" id="privacyModal">
+    <div class="modal" style="max-width: 550px;">
+      <div class="modal-header" style="margin-bottom: var(--space-md);">
+        <h3 class="modal-title" style="color: var(--thy-gold); display: flex; align-items: center; gap: 8px;">
+          🛡️ KVKK & Gizlilik Politikası / Privacy Policy
+        </h3>
+        <button class="modal-close" id="btnClosePrivacyModal">✕</button>
+      </div>
+      <div class="modal-body" style="margin-bottom: var(--space-md);">
+        <div class="privacy-tabs" style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <button type="button" class="privacy-tab-btn active" id="btnPrivacyTr">Türkçe</button>
+          <button type="button" class="privacy-tab-btn" id="btnPrivacyEn">English</button>
+        </div>
+        
+        <!-- TR Content -->
+        <div class="privacy-scrollable" id="privacyContentTr">
+          <p><strong>THY Route Aydınlatma Metni ve Gizlilik Bildirimi</strong></p>
+          <p>Bu aydınlatma metni, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, THY Route (Uygulama) kullanıcılarının kişisel verilerinin işlenmesi, saklanması ve korunması süreçleri hakkında bilgi sağlamak amacıyla hazırlanmıştır.</p>
+          
+          <h4>1. Veri Sorumlusu</h4>
+          <p>THY Route bir demo/portfolyo uygulaması olup, bu kapsamda toplanan verilerin işlenmesinden ve saklanmasından sorumludur.</p>
+          
+          <h4>2. İşlenen Kişisel Verileriniz</h4>
+          <p>Uygulamayı kullanırken kendi rızanızla sağladığınız şu veriler işlenmektedir:</p>
+          <ul>
+            <li><strong>Kimlik Bilgisi:</strong> Rota kolaborasyonu için girdiğiniz adınız veya takma adınız.</li>
+            <li><strong>İletişim Bilgisi:</strong> Fiyat alarmı kurmak veya e-posta raporu göndermek için girdiğiniz e-posta adresiniz.</li>
+            <li><strong>Konum Bilgisi:</strong> "En Yakın Havalimanını Bul" butonunu kullandığınızda cihazınızdan alınan anlık koordinat veriniz (Bu veri hiçbir sunucuda saklanmaz, sadece tarayıcıda işlenir).</li>
+            <li><strong>Seyahat Verileri:</strong> Oluşturduğunuz rotalar, duraklar, planlanan uçuş saatleri ve eklediğiniz özel notlar.</li>
+          </ul>
+          
+          <h4>3. Veri İşleme Amacı ve Hukuki Sebebi</h4>
+          <p>Verileriniz, KVKK Madde 5/1 uyarınca "açık rızanız" doğrultusunda ve şu amaçlarla işlenmektedir:</p>
+          <ul>
+            <li>Seyahat planlarınızı Firebase Firestore veritabanı üzerinden gerçek zamanlı olarak yardımcı pilotlarınızla eşitlemek.</li>
+            <li>Kurmuş olduğunuz fiyat alarmlarını takip etmek ve bilet fiyatları düştüğünde size bilgilendirme göndermek.</li>
+            <li>EmailJS servis sağlayıcısı aracılığıyla oluşturduğunuz seyahat raporlarını talep ettiğiniz kişilere e-posta ile ulaştırmak.</li>
+          </ul>
+          
+          <h4>4. Verilerin Aktarılması ve Güvenliği</h4>
+          <p>Toplanan veriler üçüncü taraflara ticari amaçlarla kesinlikle satılmaz veya kiralanmaz. Verileriniz, uygulamanın teknik altyapısını sağlayan şu güvenli servis sağlayıcıları bünyesinde saklanır/işlenir:</p>
+          <ul>
+            <li><strong>Firebase (Google LLC):</strong> Veritabanı ve anlık veri eşitlemesi için (ABD/Avrupa sunucularında şifreli saklanır).</li>
+            <li><strong>EmailJS Inc.:</strong> E-posta raporu gönderimlerinin tetiklenmesi için.</li>
+          </ul>
+          
+          <h4>5. Haklarınız (KVKK Madde 11)</h4>
+          <p>Dilediğiniz zaman, veritabanımızda saklanan verilerinizin silinmesini, güncellenmesini veya hangi verilerinizin işlendiğinin bilgisini talep etme hakkınız mevcuttur. Talepleriniz için tarayıcınızın çerezlerini/yerel hafızasını temizleyebilir veya yerel trips listesinden verilerinizi silebilirsiniz.</p>
+        </div>
+        
+        <!-- EN Content -->
+        <div class="privacy-scrollable hidden" id="privacyContentEn">
+          <p><strong>THY Route Privacy Notice & GDPR Compliance Statement</strong></p>
+          <p>This privacy notice has been prepared to inform users of THY Route (the "Application") about the collection, processing, and protection of their personal data in accordance with the General Data Protection Regulation ("GDPR") and applicable privacy regulations.</p>
+          
+          <h4>1. Data Controller</h4>
+          <p>THY Route is a demo/portfolio application that acts as the data controller for the user information processed within the app's functions.</p>
+          
+          <h4>2. Personal Data Processed</h4>
+          <p>The following personal data provided voluntarily by the user is processed:</p>
+          <ul>
+            <li><strong>Identity Data:</strong> Your name or nickname entered to join route collaboration sessions.</li>
+            <li><strong>Contact Data:</strong> Your email address entered to create price alerts or send travel itinerary reports.</li>
+            <li><strong>Location Data:</strong> Real-time coordinates obtained from your device only when you use the "Detect Nearest Airport" feature (this is processed client-side and never saved on servers).</li>
+            <li><strong>Itinerary Data:</strong> Waypoints, custom notes, dates, cabin class, and flight details added to your travel logs.</li>
+          </ul>
+          
+          <h4>3. Purposes and Legal Bases for Processing</h4>
+          <p>Your data is processed based on your explicit consent (GDPR Article 6(1)(a)) for the following purposes:</p>
+          <ul>
+            <li>To synchronize your travel routes in real-time with co-pilots via Firebase Firestore database.</li>
+            <li>To track and notify you via email when flight/mile prices drop below your set target limit.</li>
+            <li>To compile and send travel journal reports to your designated recipients via EmailJS.</li>
+          </ul>
+          
+          <h4>4. Data Sharing and Security</h4>
+          <p>Your personal data is never sold, traded, or rented to third parties for commercial gain. Data is stored and processed securely within the following sub-processors:</p>
+          <ul>
+            <li><strong>Firebase (Google LLC):</strong> Secured and encrypted database storage for real-time sync (hosted on Google Cloud infrastructure).</li>
+            <li><strong>EmailJS Inc.:</strong> Secured email transmission service.</li>
+          </ul>
+          
+          <h4>5. Your Rights (GDPR Articles 15-22)</h4>
+          <p>You have the right to access, rectify, or request the erasure of your personal data stored in our database. You can manage and delete your local data at any time by clearing your browser cache/local storage or using the "Delete" buttons in the app.</p>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top: 15px;">
+        <button class="btn btn-gold btn-full" id="btnAcceptPrivacy" style="width: 100%;">Anladım / Close</button>
       </div>
     </div>
   </div>

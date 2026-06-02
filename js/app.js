@@ -3994,5 +3994,74 @@ ${inviteLink}
     THY.toast('Fiyat alarmı başarıyla kaldırıldı.', 'info');
   };
 
+  // ---- KVKK & PRIVACY POLICY MODAL EVENT HANDLERS ----
+  const privacyModal = document.getElementById('privacyModal');
+  const btnOpenPrivacy = document.getElementById('btnOpenPrivacyModal');
+  const btnClosePrivacy = document.getElementById('btnClosePrivacyModal');
+  const btnAcceptPrivacy = document.getElementById('btnAcceptPrivacy');
+  const btnPrivacyTr = document.getElementById('btnPrivacyTr');
+  const btnPrivacyEn = document.getElementById('btnPrivacyEn');
+  const privacyContentTr = document.getElementById('privacyContentTr');
+  const privacyContentEn = document.getElementById('privacyContentEn');
+
+  function openPrivacy() {
+    if (!privacyModal) return;
+    privacyModal.classList.add('active');
+    
+    // Auto-select tab based on current language
+    const isEn = THY.currentLanguage === 'en';
+    if (isEn) {
+      selectPrivacyTab('en');
+    } else {
+      selectPrivacyTab('tr');
+    }
+  }
+
+  function closePrivacy() {
+    if (privacyModal) privacyModal.classList.remove('active');
+  }
+
+  function selectPrivacyTab(lang) {
+    if (lang === 'tr') {
+      btnPrivacyTr?.classList.add('active');
+      btnPrivacyEn?.classList.remove('active');
+      privacyContentTr?.classList.remove('hidden');
+      privacyContentEn?.classList.add('hidden');
+    } else {
+      btnPrivacyEn?.classList.add('active');
+      btnPrivacyTr?.classList.remove('active');
+      privacyContentEn?.classList.remove('hidden');
+      privacyContentTr?.classList.add('hidden');
+    }
+  }
+
+  // Bind Open links
+  btnOpenPrivacy?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openPrivacy();
+  });
+
+  document.querySelectorAll('.privacy-modal-trigger').forEach(trigger => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openPrivacy();
+    });
+  });
+
+  // Bind Close links
+  btnClosePrivacy?.addEventListener('click', closePrivacy);
+  btnAcceptPrivacy?.addEventListener('click', closePrivacy);
+
+  // Close when clicking outside modal content
+  privacyModal?.addEventListener('click', (e) => {
+    if (e.target === privacyModal) {
+      closePrivacy();
+    }
+  });
+
+  // Tab switching
+  btnPrivacyTr?.addEventListener('click', () => selectPrivacyTab('tr'));
+  btnPrivacyEn?.addEventListener('click', () => selectPrivacyTab('en'));
+
   console.log('✈️ THY Route App Core initialized');
 })();
