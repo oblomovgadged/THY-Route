@@ -101,6 +101,7 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
 
 1. **Google Maps API Key Koruması:**
    * Google Cloud Console üzerinden API anahtarı sınırlandırılarak sadece `http://localhost/*` ve `https://thy-route.vercel.app/*` kaynaklarından gelen harita yükleme isteklerine izin verilmiştir.
+   * Kod tabanında (`js/map.js`) yer alan tüm geçici/sabit (hardcoded) API anahtarı yedekleri (fallbacks) tamamen temizlenmiştir. Herhangi bir ağ hatasında veya anahtar erişim probleminde sistem hiçbir anahtar bilgisini açıkta bırakmaz (data leak); güvenli bir şekilde harita bağlantı hatası arayüzüne geçiş yapar.
 
 2. **Firebase Config ve Firestore Veri Koruması:**
    * Firebase yapılandırma bilgileri istemci tarafında yer alsa da, yukarıda belirtilen **Firestore Security Rules** sayesinde yetkilendirilmemiş kişilerin veritabanı sorguları yapması veya diğer kullanıcıların rotalarını listelemesi tamamen engellenmiştir.

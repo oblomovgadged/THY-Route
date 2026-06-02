@@ -1407,7 +1407,10 @@ async function loadGoogleMapsScript() {
       throw new Error(`Maps key API returned ${res.status}`);
     }
     const data = await res.json();
-    const key = data.key || 'AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg';
+    const key = data.key;
+    if (!key) {
+      throw new Error('Backend returned an empty API key');
+    }
     
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places&callback=initMap`;
@@ -1417,13 +1420,8 @@ async function loadGoogleMapsScript() {
     document.head.appendChild(script);
     console.log("🗺️ Google Maps API script loaded dynamically from backend key.");
   } catch (err) {
-    console.error("❌ Failed to fetch dynamically. Loading static fallback key:", err);
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg&libraries=places&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-    script.onerror = handleScriptError;
-    document.head.appendChild(script);
+    console.error("❌ Failed to load Google Maps API key from serverless backend:", err);
+    handleScriptError();
   }
 }
 

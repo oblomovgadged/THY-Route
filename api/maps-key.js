@@ -3,7 +3,7 @@
 // Vercel Serverless Function
 // ============================================
 
-const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY || 'AIzaSyCTFajPJSFiTgXvDdK5AKp6aMwjrRRGhCg';
+const GOOGLE_MAPS_KEY = process.env.GOOGLE_MAPS_KEY;
 
 // In-memory rate limiting map
 const rateLimitMap = new Map();
