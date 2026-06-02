@@ -14,11 +14,11 @@ const firebaseConfig = {
   measurementId: "G-DXSFM8XBMY"
 };
 
-// Hardcoded EmailJS & THY API Configuration
+// Hardcoded EmailJS & THY API Configuration (Empty on client for security, handled by backend API)
 const emailJsConfig = {
-  serviceId: "service_8oc4sw9",
-  templateId: "template_y1ch11o",
-  publicKey: "Cwjj37r4vlqMA8F83"
+  serviceId: "",
+  templateId: "",
+  publicKey: ""
 };
 
 const thyApiConfig = {
@@ -93,6 +93,27 @@ const thyApiConfig = {
     }
   };
   parseSharedRoute();
+
+  // Secure EmailJS Proxy Helper
+  THY.sendEmailProxy = async (templateParams) => {
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ templateParams })
+      });
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || `Server error: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Email proxy error:', error);
+      throw error;
+    }
+  };
 
   // Set the trip ID badge on DOM load
   document.addEventListener('DOMContentLoaded', () => {
@@ -2490,13 +2511,13 @@ ${inviteLink}
 
     THY.toast('Rapor ve Davet gönderiliyor...', 'info');
 
-    emailjs.send(settings.serviceId, settings.templateId, templateParams, settings.publicKey)
+    THY.sendEmailProxy(templateParams)
       .then(() => {
         THY.toast('Seyahat raporu ve davet bağlantısı başarıyla gönderildi! ✈️', 'success');
       })
       .catch((err) => {
         console.error('EmailJS Error:', err);
-        THY.toast('E-posta gönderilemedi. Ayarları kontrol edin.', 'error');
+        THY.toast('E-posta gönderilemedi. Sunucu hatası oluştu.', 'error');
       });
   });
 
@@ -3215,22 +3236,19 @@ ${inviteLink}
       THY.playSplitFlapSound(8);
     }
 
-    // Send Confirm Email via EmailJS
-    const settings = emailJsConfig;
-    if (settings.serviceId && settings.templateId && settings.publicKey) {
-      const templateParams = {
-        to_email: email,
-        from_name: 'THY Fiyat Takip Servisi',
-        trip_id: newAlert.id,
-        note: `Seçtiğiniz ${search.depCode} ➔ ${search.destCode} rotası için bilet fiyatı veya mil değeri ${Number(targetPrice).toLocaleString('tr-TR')} TL limitinin altına indiğinde sizi bilgilendireceğiz.`,
-        route_summary: `🔔 FİYAT ALARMI OLUŞTURULDU\n-----------------------------------\nRota: ${search.depCode} ➔ ${search.destCode}\nKabin: ${search.cabin.toUpperCase()}\nLimit: ${Number(targetPrice).toLocaleString('tr-TR')} TL\nGidiş Tarihi: ${search.depDate}\nDönüş Tarihi: ${search.retDate || 'Tek Yön'}\n-----------------------------------\nBu alarm bilet fiyatı düştüğünde size e-posta göndermek üzere kurulmuştur.`,
-        inviteLink: `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`
-      };
-      
-      emailjs.send(settings.serviceId, settings.templateId, templateParams, settings.publicKey)
-        .then(() => console.log("📧 EmailJS confirm alert mail sent."))
-        .catch(err => console.error("EmailJS confirm alert mail failed:", err));
-    }
+    // Send Confirm Email via EmailJS Proxy
+    const templateParams = {
+      to_email: email,
+      from_name: 'THY Fiyat Takip Servisi',
+      trip_id: newAlert.id,
+      note: `Seçtiğiniz ${search.depCode} ➔ ${search.destCode} rotası için bilet fiyatı veya mil değeri ${Number(targetPrice).toLocaleString('tr-TR')} TL limitinin altına indiğinde sizi bilgilendireceğiz.`,
+      route_summary: `🔔 FİYAT ALARMI OLUŞTURULDU\n-----------------------------------\nRota: ${search.depCode} ➔ ${search.destCode}\nKabin: ${search.cabin.toUpperCase()}\nLimit: ${Number(targetPrice).toLocaleString('tr-TR')} TL\nGidiş Tarihi: ${search.depDate}\nDönüş Tarihi: ${search.retDate || 'Tek Yön'}\n-----------------------------------\nBu alarm bilet fiyatı düştüğünde size e-posta göndermek üzere kurulmuştur.`,
+      inviteLink: `${window.location.origin}${window.location.pathname}?tripId=${THY.currentTripId}`
+    };
+    
+    THY.sendEmailProxy(templateParams)
+      .then(() => console.log("📧 EmailJS proxy confirm alert mail sent."))
+      .catch(err => console.error("EmailJS proxy confirm alert mail failed:", err));
 
     THY.toast(`Alarm kuruldu! Fiyat ${Number(targetPrice).toLocaleString('tr-TR')} TL altına indiğinde haber vereceğiz. 🔔`, 'success');
   };
