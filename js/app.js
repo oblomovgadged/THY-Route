@@ -311,7 +311,41 @@ const thyApiConfig = {
   };
 
   THY.toast = (message, type = 'info', duration = 3500) => {
+    // Filter out system loading/success messages, keeping errors and collaborative actions
+    if (type !== 'error') {
+      const lowerMsg = message.toLowerCase();
+      // Check if it is a collaborative/user action message (contains '[' or 'kaptan' or 'pilot')
+      const isUserAction = lowerMsg.includes('[') || lowerMsg.includes('kaptan') || lowerMsg.includes('pilot');
+      
+      if (!isUserAction) {
+        const suppressKeywords = [
+          'yüklen', 'yuklen', // yükleniyor, yüklendi
+          'hazırlan', 'hazirlan', // hazırlanıyor, hazırlandı
+          'aran', // aranıyor
+          'keşfed', 'kesfed', // keşfediliyor
+          'gidil', // gidiliyor
+          'bulun', // bulundu
+          'oluştur', 'olustur', // oluşturuldu
+          'kayded', // kaydedildi
+          'kopyalan', 'kopyalan', // kopyalandı
+          'indiril', // indirildi
+          'temizlen', // temizlendi
+          'eklen', // eklendi
+          'seçildi', 'secildi' // seçildi
+        ];
+        
+        for (const keyword of suppressKeywords) {
+          if (lowerMsg.includes(keyword)) {
+            // Silently suppress this toast to avoid visual clutter
+            console.log(`[Toast Filtered] Suppressed system message: "${message}"`);
+            return;
+          }
+        }
+      }
+    }
+
     const container = document.getElementById('toastContainer');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     const icons = { success: '✅', error: '❌', info: '💡' };
@@ -2665,7 +2699,7 @@ ${inviteLink}
 
   // ---- SERVICE WORKER REGISTRATION ----
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?v=3.4')
+    navigator.serviceWorker.register('./sw.js?v=3.5')
       .then(reg => console.log('[SW] Registered:', reg.scope))
       .catch(err => console.warn('[SW] Registration failed:', err));
   }
