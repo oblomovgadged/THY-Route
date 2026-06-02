@@ -66,10 +66,14 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Missing templateParams in request body' });
   }
 
-  // Get credentials from Environment Variables, fallback to hardcoded ones if not defined
-  const serviceId = process.env.EMAILJS_SERVICE_ID || 'service_8oc4sw9';
-  const templateId = process.env.EMAILJS_TEMPLATE_ID || 'template_y1ch11o';
-  const publicKey = process.env.EMAILJS_PUBLIC_KEY || 'Cwjj37r4vlqMA8F83';
+  // Get credentials from Environment Variables
+  const serviceId = process.env.EMAILJS_SERVICE_ID;
+  const templateId = process.env.EMAILJS_TEMPLATE_ID;
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY;
+
+  if (!serviceId || !templateId || !publicKey) {
+    return res.status(500).json({ error: 'EmailJS credentials are not configured on the server.' });
+  }
 
   try {
     const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {

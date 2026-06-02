@@ -108,7 +108,7 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
 
 3. **EmailJS Proxy Entegrasyonu (Serverless Backend):**
    * Ön yüzde açıkta duran `serviceId`, `templateId` ve `publicKey` bilgileri kod tabanından tamamen temizlenmiştir.
-   * E-posta gönderim mantığı [api/send-email.js](file:///c:/Users/borak/OneDrive/Desktop/Route/api/send-email.js) serverless fonksiyonuna taşınmıştır. Değerler Vercel üzerinden Environment Variables (Çevre Değişkenleri) olarak güvenle saklanmaktadır.
+   * E-posta gönderim mantığı [api/send-email.js](file:///c:/Users/borak/OneDrive/Desktop/Route/api/send-email.js) serverless fonksiyonuna taşınmıştır. Kod tabanında (backend dahil) yer alan tüm EmailJS yedek anahtarları tamamen temizlenmiştir. Bu değerler artık sadece Vercel üzerinden Environment Variables (Çevre Değişkenleri) olarak okunur ve güvenli hata kontrolü gerçekleştirilir.
 
 4. **Kişisel Verilerin ve Fiyat Alarmlarının Koruması:**
    * Fiyat takibi için girilen e-posta adresleri `/price_alerts` koleksiyonunda saklanırken, istemci tarafı okumaları tamamen kapatılarak verilerin kazınması (data scraping) engellenmiştir.
@@ -122,7 +122,7 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
    * Her rota dokümanı `version` alanı ile sürüm kontrolü altında tutulur. Eşzamanlı çakışma durumunda sunucu sürümü ile istemci sürümü karşılaştırılır; çakışma varsa güncelleme reddedilir ve kullanıcı uyarılır.
 
 7. **Aviationstack API Key ve Dinamik HTTPS Güvencesi:**
-   * Aviationstack API anahtarının Vercel üzerinde tanımlanmaması ihtimaline karşı akıllı bir varsayılan yedek (fallback) değer tanımlanarak uçuş aramalarının çökmesi engellenmiştir.
+   * Kod tabanında yer alan tüm hardcoded Aviationstack API anahtarı yedekleri (fallbacks) güvenlik amacıyla tamamen temizlenmiştir. Sistem artık sadece Vercel üzerindeki `AVIATIONSTACK_KEY` çevre değişkenini kullanır; bu değişken tanımlı değilse sunucu tarafında hata fırlatılarak güvenli bir şekilde işlenir.
    * Ücretsiz üyelik planlarında Aviationstack API'nin sadece `http://` (şifresiz) bağlantıya izin vermesi kısıtı nedeniyle, tüm uçuş sorgulamaları sunucu tarafında (Vercel Serverless Function proxy) yapılarak güvenceye alınmıştır. İstemci ile sunucumuz arasındaki bağlantı **%100 HTTPS (şifreli)** olarak kalır. Eğer ücretli Aviationstack planına geçilirse, Vercel panelinden `AVIATIONSTACK_HTTPS=true` tanımlanarak uçuş sorgulamaları sunucu tarafında da tamamen HTTPS yapılabilir.
 
 8. **IP Tabanlı Hız Sınırlandırması (Rate Limiting):**

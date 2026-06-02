@@ -5,8 +5,8 @@
 // Bu dosya API anahtarını sunucu tarafında tutar.
 // Client-side koddan /api/flights?type=route&from=IST&to=FCO şeklinde çağrılır.
 
-// Aviationstack API Key - Read from Vercel Environment Variables, fallback to hardcoded default if undefined
-const AVIATIONSTACK_KEY = process.env.AVIATIONSTACK_KEY || '7b44b2dfa6bc8aae041fc12c67e7cee8';
+// Aviationstack API Key - Read from Vercel Environment Variables
+const AVIATIONSTACK_KEY = process.env.AVIATIONSTACK_KEY;
 
 // Aviationstack Free subscription tier restricts request traffic to unencrypted HTTP only.
 // If you have a paid plan, set the environment variable AVIATIONSTACK_HTTPS=true in Vercel to force HTTPS.
@@ -16,6 +16,10 @@ const protocol = process.env.AVIATIONSTACK_HTTPS === 'true' ? 'https' : 'http';
 const rateLimitMap = new Map();
 
 module.exports = async (req, res) => {
+  if (!AVIATIONSTACK_KEY) {
+    return res.status(500).json({ error: 'Aviationstack API key is not configured on the server.' });
+  }
+
   // Rate limiting check (15 requests per 1 minute window)
   const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
   const now = Date.now();
