@@ -2473,22 +2473,24 @@ input, textarea, select {
   color: #FFCC00;
 }
 
-/* --- B2B Presentation Styles --- */
-.b2b-content {
-  color: var(--text-primary);
-}
-
-.b2b-intro-card {
-  box-shadow: 0 4px 12px rgba(225, 26, 34, 0.08);
-}
-
-.b2b-pillar {
+/* --- Miles&Smiles Partners Styles --- */
+.partner-item {
   transition: all var(--transition-base);
-  border-radius: 4px;
 }
 
-.b2b-pillar:hover {
-  background: rgba(255, 255, 255, 0.04) !important;
+.partner-item:hover {
+  background: var(--bg-card-hover) !important;
+  border-color: rgba(225, 26, 34, 0.4) !important;
   transform: translateX(4px);
+}
+
+.partner-item:active {
+  transform: scale(0.98);
+}
+
+.partner-item:hover .btn-secondary {
+  background: var(--thy-red) !important;
+  border-color: var(--thy-red) !important;
+  color: white !important;
 }
 

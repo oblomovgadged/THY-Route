@@ -2090,7 +2090,7 @@ const thyApiConfig = {
     places: document.getElementById('tabPlaces'),
     email: document.getElementById('tabEmail'),
     trips: document.getElementById('tabTrips'),
-    b2b: document.getElementById('tabB2b')
+    milesSmiles: document.getElementById('tabMilesSmiles')
   };
 
   tabs.forEach(tab => {
@@ -2100,6 +2100,29 @@ const thyApiConfig = {
       const target = tab.dataset.tab;
       Object.values(panes).forEach(p => { if (p) p.classList.remove('active'); });
       if (panes[target]) panes[target].classList.add('active');
+    });
+  });
+
+  // ---- MILES&SMILES PARTNER CLICKS ----
+  document.querySelectorAll('.partner-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const query = item.dataset.query;
+      if (query) {
+        if (typeof THY.playSplitFlapSound === 'function') {
+          THY.playSplitFlapSound(3);
+        }
+        
+        // Force-activate Places tab
+        const placesTab = document.querySelector('.panel-tab[data-tab="places"]');
+        placesTab?.click();
+        
+        // Fill search input and execute search
+        const searchInput = document.getElementById('placesSearchInput');
+        if (searchInput) searchInput.value = query;
+        if (typeof THY.textSearchPlaces === 'function') {
+          THY.textSearchPlaces(query);
+        }
+      }
     });
   });
 
