@@ -120,6 +120,10 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
    * Aynı rota üzerinde birden fazla pilotun (kullanıcının) aynı anda değişiklik yapması durumunda veri ezilmesini (Last Write Wins) önlemek amacıyla **Firestore Transactions** altyapısı kurulmuştur.
    * Her rota dokümanı `version` alanı ile sürüm kontrolü altında tutulur. Eşzamanlı çakışma durumunda sunucu sürümü ile istemci sürümü karşılaştırılır; çakışma varsa güncelleme reddedilir ve kullanıcı uyarılır.
 
+7. **Aviationstack API Key ve Dinamik HTTPS Güvencesi:**
+   * Aviationstack API anahtarının Vercel üzerinde tanımlanmaması ihtimaline karşı akıllı bir varsayılan yedek (fallback) değer tanımlanarak uçuş aramalarının çökmesi engellenmiştir.
+   * Ücretsiz üyelik planlarında Aviationstack API'nin sadece `http://` (şifresiz) bağlantıya izin vermesi kısıtı nedeniyle, tüm uçuş sorgulamaları sunucu tarafında (Vercel Serverless Function proxy) yapılarak güvenceye alınmıştır. İstemci ile sunucumuz arasındaki bağlantı **%100 HTTPS (şifreli)** olarak kalır. Eğer ücretli Aviationstack planına geçilirse, Vercel panelinden `AVIATIONSTACK_HTTPS=true` tanımlanarak uçuş sorgulamaları sunucu tarafında da tamamen HTTPS yapılabilir.
+
 ---
 
 ## 🌐 Canlı Yayın (Deployment)

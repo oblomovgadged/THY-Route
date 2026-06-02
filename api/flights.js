@@ -5,7 +5,12 @@
 // Bu dosya API anahtarını sunucu tarafında tutar.
 // Client-side koddan /api/flights?type=route&from=IST&to=FCO şeklinde çağrılır.
 
-const AVIATIONSTACK_KEY = process.env.AVIATIONSTACK_KEY;
+// Aviationstack API Key - Read from Vercel Environment Variables, fallback to hardcoded default if undefined
+const AVIATIONSTACK_KEY = process.env.AVIATIONSTACK_KEY || '7b44b2dfa6bc8aae041fc12c67e7cee8';
+
+// Aviationstack Free subscription tier restricts request traffic to unencrypted HTTP only.
+// If you have a paid plan, set the environment variable AVIATIONSTACK_HTTPS=true in Vercel to force HTTPS.
+const protocol = process.env.AVIATIONSTACK_HTTPS === 'true' ? 'https' : 'http';
 
 module.exports = async (req, res) => {
   // Dynamic CORS setup
@@ -47,7 +52,7 @@ module.exports = async (req, res) => {
       if (!from || !to) {
         return res.status(400).json({ error: 'Missing "from" or "to" parameters for route search.' });
       }
-      apiUrl = `http://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&airline_iata=TK&dep_iata=${from}&arr_iata=${to}`;
+      apiUrl = `${protocol}://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&airline_iata=TK&dep_iata=${from}&arr_iata=${to}`;
 
     } else if (type === 'code') {
       // Flight search by flight code
@@ -58,11 +63,11 @@ module.exports = async (req, res) => {
       if (!cleanCode.startsWith('TK') && !cleanCode.startsWith('THY')) {
         cleanCode = 'TK' + cleanCode;
       }
-      apiUrl = `http://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&airline_iata=TK&flight_iata=${cleanCode}`;
+      apiUrl = `${protocol}://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&airline_iata=TK&flight_iata=${cleanCode}`;
 
     } else if (type === 'board') {
       // Live flight board feed
-      apiUrl = `http://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&airline_iata=TK&limit=10`;
+      apiUrl = `${protocol}://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_KEY}&airline_iata=TK&limit=10`;
 
     } else {
       return res.status(400).json({ error: 'Invalid "type". Use: route, code, or board.' });
