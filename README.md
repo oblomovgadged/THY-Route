@@ -109,6 +109,9 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
 3. **EmailJS Proxy Entegrasyonu (Serverless Backend):**
    * Ön yüzde açıkta duran `serviceId`, `templateId` ve `publicKey` bilgileri kod tabanından tamamen temizlenmiştir.
    * E-posta gönderim mantığı [api/send-email.js](file:///c:/Users/borak/OneDrive/Desktop/Route/api/send-email.js) serverless fonksiyonuna taşınmıştır. Kod tabanında (backend dahil) yer alan tüm EmailJS yedek anahtarları tamamen temizlenmiştir. Bu değerler artık sadece Vercel üzerinden Environment Variables (Çevre Değişkenleri) olarak okunur ve güvenli hata kontrolü gerçekleştirilir.
+   * **EmailJS Yapılandırma Gereksinimi:** Sunucu (Vercel) üzerinden e-postaların hatasız gitmesi için EmailJS panelindeki `Account -> Security` ayarlarında:
+     * `Allow EmailJS API for non-browser applications` seçeneği **işaretli (aktif)** olmalıdır.
+     * `Use Private Key (recommended)` seçeneği **işaretsiz (pasif)** olmalıdır (veya sunucu tarafında özel anahtar tanımlanarak API gövdesine `secret_key` olarak beslenmelidir).
 
 4. **Kişisel Verilerin ve Fiyat Alarmlarının Koruması:**
    * Fiyat takibi için girilen e-posta adresleri `/price_alerts` koleksiyonunda saklanırken, istemci tarafı okumaları tamamen kapatılarak verilerin kazınması (data scraping) engellenmiştir.
