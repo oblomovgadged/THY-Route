@@ -168,6 +168,10 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
     * Firebase Firestore bağlantısı koptuğunda veya başlatılamadığında seyahat planlama özellikleri kesintiye uğramaz; uygulama verileri tarayıcının `localStorage` hafızasında saklar ve Aviationstack verileri offline simülasyon motoruna kayarak uygulamanın çökmesi engellenir.
     * Tarayıcının internet bağlantı durumundaki değişiklikler (`online`/`offline` olayları) anlık izlenerek kullanıcıya Türkçe/İngilizce durum bildirimleri (toast) gösterilir ve çevrimdışı toplanan verilerin bağlantı geri geldiğinde sunucuyla eşitlemesi başlatılır.
 
+13. **Görsel Düzenlemeler ve Kurumsal Kimlik Entegrasyonu:**
+    * Giriş ekranındaki (landing page) THY logosunun görünürlüğü ve estetiğini artırmak amacıyla `.landing-logo-img` yüksekliği `52px`'den **`90px`**'e çıkarılmıştır.
+    * Logo kapsayıcısına özel dikey boşluklar (`padding: 24px 0 8px 0`) eklenmiş ve kurumsal THY kırmızısı renginde yumuşak bir dış gölge (`filter: drop-shadow(0 4px 24px rgba(227, 24, 55, 0.35))`) verilerek görsel derinlik kazandırılmıştır.
+
 ## 🔮 Teknik Entegrasyon & API Yol Haritası (Technical Roadmap)
 
 Uygulamanın mevcut mimarisi, kurumsal ölçekte canlı entegrasyonlara hazır modüler bir veri katmanına (data abstraction layer) sahiptir. Türk Hava Yolları (THY) teknik ekiplerinden resmi API yetkileri sağlandığında gerçekleştirilecek tam zamanlı entegrasyon planı aşağıda sunulmuştur:
