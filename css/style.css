@@ -176,11 +176,11 @@ input, textarea, select {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('../icons/header-panorama.png');
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-  opacity: 0.35;
+  background-image: url('../icons/panorama.png');
+  background-repeat: repeat-x;
+  background-position: center bottom;
+  background-size: auto 100%;
+  opacity: 0.3;
   z-index: 1;
   pointer-events: none;
 }
