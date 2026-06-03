@@ -295,6 +295,14 @@
 
       <!-- SIDE PANEL -->
       <aside class="side-panel" id="sidePanel">
+        <!-- Side Panel Header Bar -->
+        <div class="panel-header-bar">
+          <span class="panel-header-title">COCKPIT CONTROL PANEL</span>
+          <div class="panel-header-actions">
+            <button id="btnLangToggleMobile" class="lang-toggle-btn lang-toggle-mobile">🌐 EN</button>
+            <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat">✕</button>
+          </div>
+        </div>
         <!-- Tabs -->
         <div class="panel-tabs">
           <button class="panel-tab active" data-tab="route">
@@ -314,16 +322,12 @@
             Seyahatler
           </button>
           <button class="panel-tab" data-tab="miles-smiles" title="Miles&Smiles Fırsatları">
-            <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
+            <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 0 0 0 0-7.78z"></path></svg></span>
             <span id="lblTabMS">M&S</span>
           </button>
           <button class="panel-tab" data-tab="baggage-pet" title="Bagaj & Evcil Hayvan">
             <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg></span>
             <span id="lblTabBaggage">Bagaj & Pet</span>
-          </button>
-          <button id="btnLangToggleMobile" class="lang-toggle-btn lang-toggle-mobile" style="margin-left: 10px; font-size: 11px; padding: 4px 10px;">🌐 EN</button>
-          <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat" style="margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: color 0.2s;">
-            <span>✕</span>
           </button>
         </div>
 
