@@ -1212,8 +1212,9 @@ const thyApiConfig = {
           // Keep version counter synchronized locally
           THY.currentTripVersion = data.version || 1;
           
-          // Auto-save/update metadata in the local saved trips list
-          if (typeof THY.addTripToSavedList === 'function') {
+          // Auto-save/update metadata in the local saved trips list ONLY if it is already saved
+          const savedTrips = JSON.parse(localStorage.getItem('thy_saved_trips') || '{}');
+          if (savedTrips[tripId] && typeof THY.addTripToSavedList === 'function') {
             THY.addTripToSavedList(tripId, {
               flightCode: data.flightCode,
               dep: data.dep,
@@ -2538,10 +2539,7 @@ const thyApiConfig = {
             </span>
             <div class="flight-carrier">
               <div class="flight-logo-small">
-                <svg viewBox="0 0 100 100">
-                  <path d="M50 5 C50 5, 85 25, 85 55 C85 75, 70 95, 50 95 C30 95, 15 75, 15 55 C15 25, 50 5, 50 5Z" fill="white"/>
-                  <path d="M50 20 L55 45 L78 45 L59 58 L66 82 L50 67 L34 82 L41 58 L22 45 L45 45 Z" fill="#E31837"/>
-                </svg>
+                <img src="icons/logo-badge.png" alt="THY Logo">
               </div>
               <div class="carrier-details">
                 <span class="flight-no">${fo.flightNo}</span>
@@ -3383,30 +3381,7 @@ ${inviteLink}
     }, 1800);
   });
 
-  // ---- PWA INSTALL ----
-  let deferredPrompt = null;
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    const banner = document.getElementById('pwaInstallBanner');
-    if (banner) banner.classList.add('visible');
-  });
-
-  document.getElementById('btnInstallPwa')?.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const result = await deferredPrompt.userChoice;
-    if (result.outcome === 'accepted') {
-      THY.toast('THY Route yüklendi! ✈️', 'success');
-    }
-    deferredPrompt = null;
-    document.getElementById('pwaInstallBanner')?.classList.remove('visible');
-  });
-
-  document.getElementById('btnDismissPwa')?.addEventListener('click', () => {
-    document.getElementById('pwaInstallBanner')?.classList.remove('visible');
-  });
+  // ---- PWA INSTALL (Disabled) ----
 
   // ---- LOAD LIVE FLIGHT TO COCKPIT BOARD (via Server Proxy) ----
   THY.loadLiveFlightBoard = async () => {
@@ -3496,11 +3471,30 @@ ${inviteLink}
   const filterChips = document.querySelectorAll('.filter-chip');
   filterChips.forEach(chip => {
     chip.addEventListener('click', () => {
+      const wasActive = chip.classList.contains('active');
       filterChips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      const placeType = chip.dataset.type;
-      if (typeof THY.searchNearbyPlaces === 'function') {
-        THY.searchNearbyPlaces(placeType);
+      
+      if (!wasActive) {
+        chip.classList.add('active');
+        const placeType = chip.dataset.type;
+        if (typeof THY.searchNearbyPlaces === 'function') {
+          THY.searchNearbyPlaces(placeType);
+        }
+      } else {
+        if (typeof THY.clearPlaces === 'function') {
+          THY.clearPlaces();
+        }
+        const placesContainer = document.getElementById('placesList');
+        if (placesContainer) {
+          const isEn = (localStorage.getItem('thy_lang') || 'tr') === 'en';
+          placesContainer.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state__icon">📌</div>
+              <div class="empty-state__title" id="lblPlacesEmptyTitle">${isEn ? 'Discover Places' : 'Yer Keşfet'}</div>
+              <div class="empty-state__text" id="lblPlacesEmptyText">${isEn ? 'Discover nearby places by clicking filters or searching.' : 'Filtrelere tıklayarak veya arama yaparak etraftaki mekanları keşfedin.'}</div>
+            </div>
+          `;
+        }
       }
     });
   });

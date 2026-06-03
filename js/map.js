@@ -923,6 +923,10 @@ function initMap() {
     });
   }
 
+  THY.clearPlaces = () => {
+    displayPlaces([]);
+  };
+
   THY.searchNearbyPlaces = (type, customCenter = null) => {
     if (!placesService) {
       THY.toast('Yer arama servisi henüz hazır değil.', 'error');
@@ -1311,13 +1315,7 @@ function initMap() {
   };
 
   // ---- Initial Places Load & Firebase Hydration Trigger ----
-  // If we are not joining a shared trip, load default places around current map center (Tokyo)
-  const urlParams = new URLSearchParams(window.location.search);
-  if (!urlParams.get('tripId')) {
-    setTimeout(() => {
-      THY.searchNearbyPlaces('restaurant');
-    }, 1500);
-  }
+  // No initial places are searched automatically, waiting for user category selection.
 
   // ---- Splash hide ----
   setTimeout(() => {
