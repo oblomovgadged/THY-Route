@@ -81,9 +81,9 @@
 
 /* --- Core Utility Classes (Design System Compliance) --- */
 .glass-panel {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: var(--bg-glass);
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: var(--shadow-lg);
 }
@@ -195,14 +195,14 @@ input, textarea, select {
    HEADER / FLIGHT INFO BOARD
    ============================================ */
 .flight-board {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: var(--z-header);
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
   box-shadow: var(--shadow-md);
   padding: 0;
@@ -419,6 +419,8 @@ input, textarea, select {
    SIDE PANEL
    ============================================ */
 .side-panel {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   position: fixed;
   top: 88px;
   right: 16px;
@@ -426,8 +428,6 @@ input, textarea, select {
   width: 380px;
   z-index: var(--z-panel);
   background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -446,6 +446,8 @@ input, textarea, select {
 }
 
 .panel-toggle {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   position: fixed;
   top: 88px;
   right: 16px;
@@ -454,7 +456,6 @@ input, textarea, select {
   height: 44px;
   border-radius: var(--radius-md);
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -1025,12 +1026,12 @@ input, textarea, select {
 }
 
 .place-card {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: flex;
   gap: var(--space-md);
   padding: 14px;
   background: rgba(19, 34, 55, 0.45);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-sm);
   transition: transform var(--transition-base), background-color var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
@@ -1209,9 +1210,10 @@ input, textarea, select {
 }
 
 .toast {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   padding: var(--space-sm) var(--space-lg);
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-full);
   pointer-events: auto; /* Make the toast itself interactive */
@@ -1283,11 +1285,12 @@ input, textarea, select {
 }
 
 .map-control-btn {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   width: 44px;
   height: 44px;
   border-radius: var(--radius-md);
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -1355,12 +1358,12 @@ input, textarea, select {
 }
 
 .splash-loader {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   gap: var(--space-md);
   background: rgba(18, 22, 26, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   padding: 12px 24px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(183, 49, 44, 0.25);
@@ -1400,11 +1403,12 @@ input, textarea, select {
    MODAL
    ============================================ */
 .modal-overlay {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   position: fixed;
   inset: 0;
   z-index: -1; /* Place behind everything when inactive */
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1522,13 +1526,14 @@ input, textarea, select {
    INSTALL PWA BANNER
    ============================================ */
 .pwa-install-banner {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   position: fixed;
   bottom: var(--space-lg);
   right: var(--space-lg);
   z-index: var(--z-panel);
   padding: var(--space-md) var(--space-lg);
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
   border: 1px solid var(--thy-gold);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-gold);
@@ -1784,10 +1789,10 @@ input, textarea, select {
 
 /* Booking Card & Flight Results */
 .booking-card, .flight-results-card {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   width: 100%;
   background: var(--bg-glass);
-  backdrop-filter: blur(20px); /* Enhanced premium backdrop blur */
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.12); /* Brighter, crisper glass edge border */
   border-radius: var(--radius-md);
   padding: var(--space-xl);
@@ -1855,9 +1860,10 @@ input, textarea, select {
 }
 
 .input-icon {
+  -webkit-user-select: none;
+  user-select: none;
   padding-left: var(--space-md);
   font-size: 16px;
-  user-select: none;
 }
 
 .input-wrapper input {
@@ -1889,6 +1895,8 @@ input, textarea, select {
 }
 
 .select-booking {
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   background: rgba(10, 22, 40, 0.6); /* High contrast dark translucent background */
   border: 1px solid rgba(255, 255, 255, 0.15); /* Crisp shape boundary */
@@ -1898,7 +1906,6 @@ input, textarea, select {
   font-weight: 500;
   color: var(--text-primary);
   cursor: pointer;
-  appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right var(--space-md) center;
@@ -2468,6 +2475,8 @@ input, textarea, select {
 
 /* THY Partner Toggle Button */
 .thy-partners-toggle-btn {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
@@ -2484,7 +2493,6 @@ input, textarea, select {
   align-items: center;
   gap: 8px;
   transition: all var(--transition-base);
-  backdrop-filter: blur(8px);
 }
 
 .thy-partners-toggle-btn:hover {
@@ -2541,6 +2549,8 @@ input, textarea, select {
 }
 
 .trip-card {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   background: var(--bg-glass-light);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -2550,7 +2560,6 @@ input, textarea, select {
   gap: var(--space-sm);
   transition: transform var(--transition-base), background var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
   position: relative;
-  backdrop-filter: blur(8px);
 }
 
 .trip-card:hover {
@@ -2665,13 +2674,13 @@ input, textarea, select {
 
 /* --- Pilot Sync Control Card --- */
 .pilot-sync-card {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   margin-bottom: var(--space-md);
   padding: 12px;
   background: rgba(10, 22, 40, 0.45);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -2778,6 +2787,8 @@ input, textarea, select {
 }
 
 .waypoint-transit-menu {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2789,8 +2800,6 @@ input, textarea, select {
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -2895,6 +2904,8 @@ input, textarea, select {
 
 /* --- Price Alert Widget & Cards --- */
 .price-alert-widget {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   background: rgba(26, 32, 38, 0.65);
   border: 1px solid rgba(200, 169, 81, 0.25);
   border-radius: var(--radius-md);
@@ -2906,8 +2917,6 @@ input, textarea, select {
   gap: var(--space-md);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-base);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .price-alert-widget:hover {
@@ -3189,8 +3198,8 @@ input, textarea, select {
 
 /* Dropdown arrow styles for select */
 .premium-baggage-select {
-  appearance: none;
   -webkit-appearance: none;
+  appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23C5A059' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
   background-position: right 12px center !important;
@@ -3227,13 +3236,13 @@ input, textarea, select {
 
 /* Results Card Styling */
 #baggageResultCard {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   margin-top: var(--space-md);
   padding: var(--space-md);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-subtle);
   background: rgba(10, 22, 40, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   box-shadow: var(--shadow-md);
   animation: fadeInUp var(--transition-base) var(--transition-aerodynamic) forwards;
 }
