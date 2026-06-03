@@ -1564,10 +1564,12 @@ input, textarea, select {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 24px 0 8px 0;
+  filter: drop-shadow(0 4px 24px rgba(227, 24, 55, 0.35));
 }
 
 .landing-logo-img {
-  height: 52px;
+  height: 90px;
   width: auto;
   object-fit: contain;
 }
