@@ -182,8 +182,10 @@ input, textarea, select {
 }
 
 .flight-board__logo {
+  min-width: 160px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   padding: 0 var(--space-lg);
   height: 100%;
   background: transparent;
@@ -191,9 +193,10 @@ input, textarea, select {
 }
 
 .flight-board__logo-img {
-  height: 38px;
+  height: 44px;
   width: auto;
   object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(227,24,55,0.4));
 }
 
 .flight-board__info {
