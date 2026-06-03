@@ -180,7 +180,7 @@ input, textarea, select {
   background-repeat: repeat-x;
   background-position: center bottom;
   background-size: auto 100%;
-  opacity: 0.3;
+  opacity: 0.8;
   z-index: 1;
   pointer-events: none;
 }
