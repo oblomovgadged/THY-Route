@@ -173,7 +173,7 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
     * Giriş ekranındaki (landing page) THY logosunun görünürlüğü ve estetiğini artırmak amacıyla `.landing-logo-img` yüksekliği `52px`'den **`90px`**'e çıkarılmıştır.
     * Logo kapsayıcısına özel dikey boşluklar (`padding: 24px 0 8px 0`) eklenmiş ve kurumsal THY kırmızısı renginde yumuşak bir dış gölge (`filter: drop-shadow(0 4px 24px rgba(227, 24, 55, 0.35))`) verilerek görsel derinlik kazandırılmıştır.
     * Giriş ekranı arka plan görseli olarak `AnaEkran.png` entegre edilmiş, harita belirginliği (opacity) `0.28`'e çıkarılmış, `center center` hizalanmış ve arka plan rengi harita tonlarıyla uyumlu **`#0A1628`** (koyu lacivert) olarak güncellenmiştir.
-    * Uçuş Bilgi Panosu (Flight Board) başlığındaki logonun daha belirgin olması için `.flight-board__logo-img` yüksekliği `38px`'den **`44px`**'e çıkarılmış, dikeyde ortalanıp sola dayalı hizalanmış (`min-width: 160px`), kırmızı THY gölgesi verilmiş ve koyu arka planla uyumlu olması için logo dosyası **`icons/logo-dark.png`** (beyaz logo) olarak güncellenmiştir.
+    * Uçuş Bilgi Panosu (Flight Board) başlığındaki görsel bütünlüğü korumak için arka planı koyu cam panel (`var(--bg-glass)`) ve saydam beyaz panorama silüeti (`filter: brightness(0) invert(1)`) olarak tasarlanmıştır. .flight-board__logo-img yüksekliği 44px olarak korunmuş, dikeyde ortalanıp sola dayalı hizalanmış (min-width: 160px), kırmızı THY gölgesi verilmiş ve koyu arka planla yüksek kontrast sağlaması için logo dosyası **icons/logo.png** (beyaz logo) olarak güncellenmiştir.
 
 ## 🔮 Teknik Entegrasyon & API Yol Haritası (Technical Roadmap)
 
