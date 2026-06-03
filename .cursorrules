@@ -1,0 +1,20 @@
+# Antigravity Assistant Rules for THY Route Project
+
+You are coding in a vanilla web application codebase (HTML5, CSS3, ES6+ JS) integrated with Firebase and Google Maps APIs.
+
+## 🛠️ Stack & Architecture
+- **HTML**: Modular, semantic HTML5 in `index.html`.
+- **CSS**: Strict adherence to variables defined in `css/style.css` (e.g. `--thy-red`, `--bg-primary`, `--transition-aerodynamic`). NEVER write ad-hoc color codes or layout paddings. Always use spacing/radius tokens.
+- **JavaScript**: Modular async ES6+ script structures inside `js/app.js`, `js/map.js`, `js/flights.js`, etc.
+- **Backend/API Security**: Vercel Serverless Functions (`api/*.js`). Use `powershell -ExecutionPolicy Bypass -Command "npx vercel dev"` for local testing.
+
+## 🎨 Visual Quality & Design Rules
+- Keep everything aligned with the **Turkish Airlines Brand Guidelines**.
+- Use fluid transition tokens (`var(--transition-aerodynamic)`) for micro-interactions on cards, tabs, and buttons.
+- Standard card layout must use `var(--bg-card)` or `var(--bg-glass)` (for overlays/popups) with border-radius of `var(--radius-md)` / `var(--radius-lg)`.
+- Use Unsplash MCP (`search_photos`, etc.) to find premium real-world visual assets instead of boring mockups or raw placeholders.
+
+## 📂 Git & Deployment
+- When requested to deploy:
+  1. Add, commit, and push to GitHub remote (`origin master`).
+  2. If Vercel automatic integration is active, pushing to GitHub will auto-trigger a deployment. Otherwise, use `npx vercel --prod` (with powershell bypass if needed) to sync to Vercel production.
