@@ -74,9 +74,27 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /trips/{tripId} {
-      // Rota paylaşımı (collaboration) için belirli bir ID'ye sahip seyahatin okunmasına (get) ve yazılmasına izin ver.
-      // Tüm seyahatleri topluca listelemeyi (list) sızıntı koruması amacıyla yasakla.
-      allow get, write: if request.auth != null;
+      // Rota paylaşımı ve ortak düzenleme (collaboration) için belirli bir ID'ye sahip seyahatin okunmasına (get) ve yazılmasına izin ver.
+      // Ancak tüm seyahatleri topluca listelemeyi (list) güvenlik ve sızıntı koruması amacıyla yasakla.
+      allow get: if request.auth != null;
+      allow create, update: if request.auth != null
+        // Bot saldırılarına ve gereksiz veri şişmelerine karşı sınırlandırmalar:
+        // Rota noktası (waypoint) sayısı en fazla 100 olabilir.
+        && (!('waypoints' in request.resource.data) || (request.resource.data.waypoints is list && request.resource.data.waypoints.size() <= 100))
+        // Katılımcı sayısı en fazla 20 olabilir.
+        && (!('participants' in request.resource.data) || (request.resource.data.participants is list && request.resource.data.participants.size() <= 20))
+        // Uçuş kodu, kalkış, varış ve kapı bilgisi karakter sınırları (maks 10 karakter)
+        && (!('flightCode' in request.resource.data) || (request.resource.data.flightCode is string && request.resource.data.flightCode.size() <= 10))
+        && (!('dep' in request.resource.data) || (request.resource.data.dep is string && request.resource.data.dep.size() <= 10))
+        && (!('arr' in request.resource.data) || (request.resource.data.arr is string && request.resource.data.arr.size() <= 10))
+        && (!('gate' in request.resource.data) || (request.resource.data.gate is string && request.resource.data.gate.size() <= 10))
+        // Durum metni karakter sınırı (maks 30 karakter)
+        && (!('statusText' in request.resource.data) || (request.resource.data.statusText is string && request.resource.data.statusText.size() <= 30))
+        // Maksimum gün sayısı 1 ile 30 arasında olmalı
+        && (!('maxDays' in request.resource.data) || (request.resource.data.maxDays is int && request.resource.data.maxDays >= 1 && request.resource.data.maxDays <= 30))
+        // Sürüm kontrolü
+        && (!('version' in request.resource.data) || request.resource.data.version is int);
+      allow delete: if request.auth != null;
       allow list: if false;
     }
     match /users/{userId} {
@@ -105,6 +123,7 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
 
 2. **Firebase Config ve Firestore Veri Koruması:**
    * Firebase yapılandırma bilgileri istemci tarafında yer alsa da, yukarıda belirtilen **Firestore Security Rules** sayesinde yetkilendirilmemiş kişilerin veritabanı sorguları yapması veya diğer kullanıcıların rotalarını listelemesi tamamen engellenmiştir.
+   * **Boyut ve Karakter Sınırlandırmaları (Bot Koruması):** Veritabanının botlar tarafından şişirilmesini ve spam isteklerle kaynak tüketimini önlemek amacıyla; tek bir seyahatteki rota noktası (waypoint) sayısı **en fazla 100**, katılımcı sayısı **en fazla 20**, gün sayısı **en fazla 30** olarak kısıtlanmıştır. Uçuş detayları ve durum bilgisi gibi metin alanlarına da maksimum karakter uzunluğu limitleri (10 ila 30 karakter) getirilmiştir.
 
 3. **EmailJS Proxy Entegrasyonu (Serverless Backend):**
    * Ön yüzde açıkta duran `serviceId`, `templateId` ve `publicKey` bilgileri kod tabanından tamamen temizlenmiştir.
