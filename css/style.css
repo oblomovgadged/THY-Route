@@ -3,51 +3,52 @@
    Design System & Global Styles
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* --- CSS Custom Properties --- */
 :root {
-  /* --- User Color Variables (Antrasit & Canlı Kırmızı Konsepti) --- */
-  --thy-red: #E11A22;          /* İkonik ve canlı THY Kırmızısı */
-  --thy-red-dark: #A81016;     /* Gradiyent için koyu kırmızı */
-  --thy-red-light: #FF3B45;    /* Canlı kırmızı vurgular */
-  --bg-dark: #12161A;          /* Asil antrasit arka plan */
-  --bg-card-user: #1A2026;     /* Kartların arka planı */
-  --text-main: #FFFFFF;        /* Başlıklar ve ana metin */
-  --text-muted-user: #8E9AA6;  /* Soft gri açıklamalar */
-  --border-color-user: #2D3742;/* İnce kenarlık rengi */
-  --route-glow: rgba(225, 26, 34, 0.4); /* Haritadaki rotanın parlayan gölgesi */
+  /* --- Brand Color Tokens (THY Corporate Brand Identity) --- */
+  --thy-red: #B7312C;            /* Official THY Red (Pantone 7620 C) */
+  --thy-red-dark: #8E211D;       /* Darker Red gradient accent */
+  --thy-red-light: #EF2E1F;      /* Attention Red (Pantone Bright Red C) */
+  --thy-blue: #0053A5;           /* French Blue (Pantone 2145 C) */
+  --thy-navy: #0A1628;           /* Business Class Deep Navy */
+  --thy-navy-light: #132237;     /* Secondary dark navy for elevated layers */
+  --thy-gold: #C5A059;           /* Premium Rose Gold / Gold */
+  --thy-gold-light: #D9BE84;     /* Light gold highlighting */
+  --thy-white: #FFFFFF;
+  --thy-black: #000000;
 
-  /* --- Mapped Brand Tokens (Compatibility Layer) --- */
-  --thy-navy: var(--bg-dark);
-  --thy-navy-light: var(--bg-card-user);
-  --thy-gold: #C8A951;         /* Gold detaylar korunuyor */
-  --thy-gold-light: #E5C96E;
+  /* --- Neutrals & Backgrounds (Business Class Premium Theme) --- */
+  --bg-dark: var(--thy-navy);
+  --bg-primary: var(--thy-navy);
+  --bg-secondary: #050B14;       /* Deepest dark navy */
+  --bg-card: var(--thy-navy-light);
+  --bg-card-user: var(--thy-navy-light);
+  --bg-card-hover: #1B2F4C;      /* Card hover background */
+  --bg-glass: rgba(10, 22, 40, 0.88);
+  --bg-glass-light: rgba(19, 34, 55, 0.7);
 
-  /* --- Neutrals & Backgrounds --- */
-  --bg-primary: var(--bg-dark);
-  --bg-secondary: #0D1013;     /* primary'den daha derin koyu antrasit */
-  --bg-card: var(--bg-card-user);
-  --bg-card-hover: #222931;    /* kartların üzerine gelindiğindeki ton */
-  --bg-glass: rgba(18, 22, 26, 0.85);
-  --bg-glass-light: rgba(26, 32, 38, 0.7);
-
-  /* --- Text & Typo --- */
+  /* --- Text & Typo (Brand Guidelines Compliance) --- */
+  --text-main: #FFFFFF;
   --text-primary: var(--text-main);
-  --text-secondary: #B1BDC9;   /* orta ton gri/mavi metin */
+  --text-secondary: #B2C0D1;     /* Soft slate blue/grey for body content */
+  --text-muted-user: #7A8EAF;    /* Secondary label text color */
   --text-muted: var(--text-muted-user);
   --text-accent: var(--thy-red);
 
-  /* --- Borders & Outlines --- */
+  /* --- Borders & Shadows --- */
+  --border-color-user: #223754;  /* Thin brand borders */
   --border-subtle: var(--border-color-user);
+  --route-glow: rgba(183, 49, 44, 0.4);
   --border-glow: var(--route-glow);
 
   /* --- Shadows --- */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(225, 26, 34, 0.15);
-  --shadow-gold: 0 0 20px rgba(200, 169, 81, 0.15);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(183, 49, 44, 0.2);
+  --shadow-gold: 0 0 20px rgba(197, 160, 89, 0.2);
 
   /* Spacing */
   --space-xs: 4px;
@@ -57,14 +58,14 @@
   --space-xl: 32px;
   --space-2xl: 48px;
 
-  /* Radius */
+  /* Radius (Flow language soft-curves) */
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 26px;
   --radius-full: 9999px;
 
-  /* Transitions */
+  /* Transitions (Flow design fluid animations) */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -92,12 +93,18 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
   overflow: hidden;
   height: 100vh;
   width: 100vw;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 a {
@@ -196,7 +203,7 @@ input, textarea, select {
   height: 44px;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(227,24,55,0.4));
+  filter: drop-shadow(0 2px 8px rgba(183, 49, 44, 0.3));
 }
 
 .flight-board__info {
@@ -1176,8 +1183,8 @@ input, textarea, select {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 12px 24px;
-  border-radius: 50px;
-  border: 1px solid rgba(225, 26, 34, 0.25);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(183, 49, 44, 0.25);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   animation: splashPulse 2s ease-in-out infinite alternate;
 }
@@ -1383,7 +1390,7 @@ input, textarea, select {
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -1568,7 +1575,7 @@ input, textarea, select {
   align-items: center;
   justify-content: center;
   padding: 24px 0 8px 0;
-  filter: drop-shadow(0 4px 24px rgba(227, 24, 55, 0.35));
+  filter: drop-shadow(0 4px 24px rgba(183, 49, 44, 0.25));
 }
 
 .landing-logo-img {
@@ -2254,7 +2261,7 @@ input, textarea, select {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: inherit;
   font-size: 12px;
   font-weight: 700;
   padding: 10px 14px;
@@ -2368,11 +2375,11 @@ input, textarea, select {
   background: var(--thy-red);
   color: white;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 0 6px rgba(227, 24, 55, 0.4);
+  box-shadow: 0 0 6px rgba(183, 49, 44, 0.4);
 }
 
 .trip-card-body {
@@ -2774,6 +2781,30 @@ input, textarea, select {
 
 .hidden {
   display: none !important;
+}
+
+/* ============================================
+   SHIMMER LOADING ANIMATION (Flow Design)
+   ============================================ */
+@keyframes premiumShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-placeholder {
+  background: linear-gradient(
+    90deg,
+    rgba(19, 34, 55, 0.6) 25%,
+    rgba(27, 47, 76, 0.8) 37%,
+    rgba(19, 34, 55, 0.6) 63%
+  );
+  background-size: 200% 100%;
+  animation: premiumShimmer 1.5s infinite linear;
+  border-radius: var(--radius-sm);
 }
 
 
