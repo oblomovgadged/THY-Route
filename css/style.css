@@ -2772,60 +2772,82 @@ input, textarea, select {
   align-items: center;
   margin-left: 27px;
   position: relative;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  gap: 16px;
-  min-height: 32px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  min-height: 16px;
 }
 
 .waypoint-connector-line {
   width: 2px;
   align-self: stretch;
-  min-height: 24px;
+  min-height: 12px;
   border-left: 2px dashed var(--border-subtle);
   background-color: transparent !important;
   opacity: 0.55;
 }
 
-.waypoint-transit-menu {
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+/* Waypoint Card Transit Links (Yöntem 1) */
+.waypoint-card-transit {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin-top: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--bg-glass-light);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-sm);
-  padding: 4px 10px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  box-shadow: var(--shadow-sm);
+  transition: max-height var(--transition-base), opacity var(--transition-base), margin-top var(--transition-base), padding-top var(--transition-base);
+  border-top: 1px dashed rgba(255, 255, 255, 0.05);
+  padding-top: 0;
+  width: 100%;
 }
 
-.transit-title {
+.waypoint-item:hover .waypoint-card-transit,
+.waypoint-item.active-tap .waypoint-card-transit {
+  max-height: 40px;
+  opacity: 1;
+  margin-top: 8px;
+  padding-top: 6px;
+}
+
+.transit-label {
+  font-size: 8px;
+  font-weight: 800;
   color: var(--text-muted);
+  letter-spacing: 0.5px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  text-transform: uppercase;
 }
 
-.transit-option {
+.transit-links {
+  display: flex;
+  gap: 6px;
+}
+
+.transit-link {
+  font-size: 9px;
+  font-weight: 700;
   padding: 2px 8px;
   border-radius: 4px;
-  font-weight: 700;
-  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
-  color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
   background: rgba(255, 255, 255, 0.02);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
 }
 
-.transit-option:hover {
-  color: var(--thy-gold);
-  border-color: var(--thy-gold);
-  background: rgba(197, 160, 89, 0.1);
+.transit-link:hover {
+  color: var(--thy-gold) !important;
+  border-color: var(--thy-gold) !important;
+  background: rgba(197, 160, 89, 0.1) !important;
   transform: translateY(-0.5px);
+}
+
+.transit-link:active {
+  transform: scale(0.95);
 }
 
 /* Waypoint Actions & Notes Styling */

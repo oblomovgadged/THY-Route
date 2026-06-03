@@ -559,7 +559,7 @@ function initMap() {
     activeWaypoints.forEach((wp, i) => {
       const wpColor = THY.dayColors[((wp.day || 1) - 1) % THY.dayColors.length] || '#E31837';
 
-      // Connector and Transit links
+      // Connector lines
       if (i > 0) {
         const prevWp = activeWaypoints[i - 1];
         const connectorRow = document.createElement('div');
@@ -574,22 +574,8 @@ function initMap() {
           }
         }
         
-        // Deep links URLs
-        const gMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${prevWp.lat},${prevWp.lng}&destination=${wp.lat},${wp.lng}&travelmode=transit`;
-        const aMapsUrl = `https://maps.apple.com/?saddr=${prevWp.lat},${prevWp.lng}&daddr=${wp.lat},${wp.lng}&dirflg=r`;
-        const yMapsUrl = `https://yandex.com/maps/?rtext=${prevWp.lat},${prevWp.lng}~${wp.lat},${wp.lng}&rtt=mt`;
-
         connectorRow.innerHTML = `
           <div class="waypoint-connector-line" style="border-left-color: ${connColor}"></div>
-          <div class="waypoint-transit-menu">
-            <span class="transit-title">
-              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px; vertical-align: middle;"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
-              ${isEn ? 'Transit:' : 'Ulaşım:'}
-            </span>
-            <a href="${gMapsUrl}" target="_blank" class="transit-option google" title="Google Maps">Google</a>
-            <a href="${aMapsUrl}" target="_blank" class="transit-option apple" title="Apple Maps">Apple</a>
-            <a href="${yMapsUrl}" target="_blank" class="transit-option yandex" title="Yandex Maps">Yandex</a>
-          </div>
         `;
         list.appendChild(connectorRow);
       }
@@ -601,6 +587,28 @@ function initMap() {
       if (showAll) {
         const contrastColor = getContrastColor(wpColor);
         dayBadgeHtml = `<span style="font-size: 10px; padding: 2px 6px; background: ${wpColor}; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: ${contrastColor}; font-weight: 700; margin-left: 6px; display: inline-block; vertical-align: middle;">${isEn ? `Day ${wp.day}` : `${wp.day}. Gün`}</span>`;
+      }
+
+      let transitHtml = '';
+      if (i > 0) {
+        const prevWp = activeWaypoints[i - 1];
+        const gMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${prevWp.lat},${prevWp.lng}&destination=${wp.lat},${wp.lng}&travelmode=transit`;
+        const aMapsUrl = `https://maps.apple.com/?saddr=${prevWp.lat},${prevWp.lng}&daddr=${wp.lat},${wp.lng}&dirflg=r`;
+        const yMapsUrl = `https://yandex.com/maps/?rtext=${prevWp.lat},${prevWp.lng}~${wp.lat},${wp.lng}&rtt=mt`;
+
+        transitHtml = `
+          <div class="waypoint-card-transit">
+            <span class="transit-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+              ${isEn ? 'NAVIGATE:' : 'ULAŞIM:'}
+            </span>
+            <div class="transit-links">
+              <a href="${gMapsUrl}" target="_blank" class="transit-link google" title="Google Maps">Google</a>
+              <a href="${aMapsUrl}" target="_blank" class="transit-link apple" title="Apple Maps">Apple</a>
+              <a href="${yMapsUrl}" target="_blank" class="transit-link yandex" title="Yandex Maps">Yandex</a>
+            </div>
+          </div>
+        `;
       }
 
       item.innerHTML = `
@@ -616,6 +624,7 @@ function initMap() {
               <span>${wp.note}</span>
             </div>` : ''}
           <div class="waypoint-coords">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</div>
+          ${transitHtml}
         </div>
         <div class="waypoint-actions" style="display: flex; gap: 6px; align-items: center;">
           <button class="waypoint-note-btn" data-index="${wp.originalIndex}" title="${isEn ? 'Add/Edit Note' : 'Not Ekle/Düzenle'}">
@@ -626,6 +635,14 @@ function initMap() {
           </button>
         </div>
       `;
+
+      item.addEventListener('click', (e) => {
+        const isClickOnActionBtn = e.target.closest('.waypoint-note-btn') || e.target.closest('.waypoint-remove') || e.target.closest('.transit-link');
+        if (!isClickOnActionBtn) {
+          item.classList.toggle('active-tap');
+        }
+      });
+
       list.appendChild(item);
     });
 
