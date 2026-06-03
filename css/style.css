@@ -1517,7 +1517,7 @@ input, textarea, select {
   position: fixed;
   inset: 0;
   z-index: 500;
-  background-color: #12161A; /* Match the premium dark theme */
+  background-color: #0A1628; /* Match the premium dark theme */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1530,11 +1530,11 @@ input, textarea, select {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('../icons/splash.png');
+  background-image: url('../icons/AnaEkran.png');
   background-repeat: no-repeat;
-  background-position: center top;
+  background-position: center center;
   background-size: cover;
-  opacity: 0.18; /* Elegant, high-contrast dark map blend */
+  opacity: 0.28; /* Elegant, high-contrast dark map blend */
   pointer-events: none;
   z-index: 0;
 }
