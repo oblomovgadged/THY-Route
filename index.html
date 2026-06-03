@@ -316,7 +316,11 @@
           </button>
           <button class="panel-tab" data-tab="miles-smiles" title="Miles&Smiles Fırsatları">
             <span class="panel-tab__icon">❤️</span>
-            M&S
+            <span id="lblTabMS">M&S</span>
+          </button>
+          <button class="panel-tab" data-tab="baggage-pet" title="Bagaj & Evcil Hayvan">
+            <span class="panel-tab__icon">🧳</span>
+            <span id="lblTabBaggage">Bagaj & Pet</span>
           </button>
           <button id="btnLangToggleMobile" class="lang-toggle-btn lang-toggle-mobile" style="margin-left: 10px; font-size: 11px; padding: 4px 10px;">🌐 EN</button>
           <button class="panel-close-btn" id="btnTogglePanel" title="Paneli Kapat" style="margin-left: auto; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 10px; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: color 0.2s;">
@@ -609,6 +613,72 @@
                 </div>
               </div>
 
+            </div>
+          </div>
+
+          <!-- BAGGAGE & PET CALCULATOR TAB -->
+          <div class="tab-pane" id="tabBaggagePet">
+            <div class="route-header" style="margin-bottom: var(--space-md);">
+              <div class="route-title" id="lblBaggageTitle">
+                <span class="icon">🧳</span>
+                Bagaj & Pet Doğrulama
+              </div>
+            </div>
+
+            <div class="b2b-intro-card" style="padding: 10px; background: rgba(200, 169, 81, 0.1); border: 1px solid rgba(200, 169, 81, 0.2); border-radius: 8px; font-size: 11px; line-height: 1.4; margin-bottom: var(--space-md);">
+              <span id="lblBaggageIntro">Uçuş öncesi kabin içi evcil hayvan, kargo kafesi ve bagaj boyutlarınızı doğrulayın.</span>
+            </div>
+
+            <form id="baggagePetForm" class="booking-form" style="display: flex; flex-direction: column; gap: var(--space-sm); background: var(--bg-card); padding: var(--space-md); border-radius: 12px; border: 1px solid var(--border-subtle);">
+              <!-- Service Type -->
+              <div class="form-group-booking">
+                <label id="lblBaggageType" style="font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: var(--thy-gold);">Hizmet Türü</label>
+                <select id="baggageTypeSelect" class="select-booking" style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+                  <option value="pet_cabin" id="optPetCabin">🐱 Kabin İçi Evcil Hayvan Kafesi</option>
+                  <option value="pet_cargo" id="optPetCargo">🐕 Kargo Bölümü Evcil Hayvan Kafesi</option>
+                  <option value="baggage_checked" id="optBaggageChecked">🧳 Kayıtlı Bagaj (Standart Tek Parça)</option>
+                  <option value="baggage_oversize" id="optBaggageOversize">📦 Büyük (Oversize) Bagaj</option>
+                </select>
+              </div>
+
+              <!-- Dimensions (W x H x D) -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-sm);">
+                <div class="form-group-booking">
+                  <label id="lblBaggageWidth" style="font-size: 9px; font-weight: 700; color: var(--text-muted);">Genişlik (cm)</label>
+                  <input type="number" id="baggageWidth" placeholder="30" min="1" required style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+                </div>
+                <div class="form-group-booking">
+                  <label id="lblBaggageHeight" style="font-size: 9px; font-weight: 700; color: var(--text-muted);">Yükseklik (cm)</label>
+                  <input type="number" id="baggageHeight" placeholder="23" min="1" required style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+                </div>
+                <div class="form-group-booking">
+                  <label id="lblBaggageDepth" style="font-size: 9px; font-weight: 700; color: var(--text-muted);">Derinlik (cm)</label>
+                  <input type="number" id="baggageDepth" placeholder="40" min="1" required style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+                </div>
+              </div>
+
+              <!-- Weight -->
+              <div class="form-group-booking">
+                <label id="lblBaggageWeight" style="font-size: 10px; font-weight: 700; color: var(--text-muted);">Ağırlık (kg)</label>
+                <input type="number" id="baggageWeight" placeholder="8" min="0.1" step="0.1" required style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+              </div>
+
+              <!-- Calculate Button -->
+              <button type="submit" class="btn btn-primary" id="btnBaggageCalculate" style="margin-top: 6px; font-size: 12px; font-weight: 700;">Doğrula ve Hesapla</button>
+            </form>
+
+            <!-- Results Card -->
+            <div id="baggageResultCard" style="display: none; margin-top: var(--space-md); padding: var(--space-md); border-radius: 12px; border: 1px solid var(--border-subtle); background: rgba(255, 255, 255, 0.02); transition: all 0.3s ease;">
+              <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;" id="baggageResultStatusHeader">DOĞRULAMA SONUCU</div>
+              <div id="baggageResultStatus" style="font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: var(--space-xs); margin-bottom: 8px;">
+                <!-- Status icon and text -->
+              </div>
+              <div id="baggageResultDetails" style="font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
+                <!-- Comparison and fee details -->
+              </div>
+              <div id="baggageResultAction" style="font-size: 11px; font-weight: 600; padding: 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.03); display: none;">
+                <!-- Redirect or fee action warning -->
+              </div>
             </div>
           </div>
 

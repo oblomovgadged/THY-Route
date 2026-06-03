@@ -370,7 +370,7 @@ input, textarea, select {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
@@ -749,25 +749,33 @@ input, textarea, select {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--thy-red), var(--thy-red-dark));
+  background: var(--thy-red-light);
   color: white;
-  box-shadow: 0 2px 8px rgba(227, 24, 55, 0.3);
+  padding: 12px 35px;
+  border-radius: 22px;
+  border: 1px solid var(--thy-red-light);
+  box-shadow: 0 2px 8px rgba(239, 46, 31, 0.3);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 4px 16px rgba(227, 24, 55, 0.4);
+  background: #d62016;
+  border-color: #d62016;
+  box-shadow: 0 4px 16px rgba(239, 46, 31, 0.4);
   transform: translateY(-1px);
 }
 
 .btn-secondary {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  background: var(--thy-blue);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--thy-blue);
 }
 
 .btn-secondary:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--text-muted);
+  background: transparent;
+  color: var(--thy-blue);
+  border-color: var(--thy-blue);
 }
 
 .btn-gold {
@@ -787,8 +795,19 @@ input, textarea, select {
 }
 
 .btn-sm {
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-xs) var(--space-sm) !important;
   font-size: 11px;
+  border-radius: 8px !important;
+}
+
+.btn:disabled, .btn.disabled {
+  background: #E4E4E4 !important;
+  color: #848484 !important;
+  border: 1px solid #E4E4E4 !important;
+  opacity: 0.5;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .btn .icon {
@@ -1247,7 +1266,7 @@ input, textarea, select {
   max-width: 500px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   padding: var(--space-xl);
   transform: scale(0.95) translateY(10px);
@@ -1469,7 +1488,7 @@ input, textarea, select {
     right: 0;
     width: 100%;
     height: 50vh;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
     transform: translate3d(0, 0, 10px); /* Push panel in front of WebGL/GPU layers */
   }
 
@@ -1596,7 +1615,7 @@ input, textarea, select {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   padding: var(--space-xl);
   box-shadow: var(--shadow-lg), var(--shadow-glow);
   position: relative;
@@ -1808,7 +1827,7 @@ input, textarea, select {
   padding: var(--space-md);
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 0px;
   transition: var(--transition-base);
 }
 
@@ -2045,7 +2064,7 @@ input, textarea, select {
   display: flex;
   background: var(--bg-card);
   padding: 4px;
-  border-radius: var(--radius-full);
+  border-radius: 12px;
   border: 1px solid var(--border-subtle);
   width: fit-content;
   margin-bottom: var(--space-sm);
@@ -2055,11 +2074,18 @@ input, textarea, select {
   padding: 8px 16px;
   font-size: 11px;
   font-weight: 700;
-  border-radius: var(--radius-full);
   color: var(--text-secondary);
   transition: var(--transition-base);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.trip-type-btn:first-child {
+  border-radius: 12px 0px 0px 12px;
+}
+
+.trip-type-btn:last-child {
+  border-radius: 0px 12px 12px 0px;
 }
 
 .trip-type-btn:hover {
@@ -2067,9 +2093,9 @@ input, textarea, select {
 }
 
 .trip-type-btn.active {
-  background: linear-gradient(135deg, var(--thy-red), var(--thy-red-dark));
+  background: var(--thy-red-light);
   color: white;
-  box-shadow: 0 2px 8px rgba(227, 24, 55, 0.3);
+  box-shadow: 0 2px 8px rgba(239, 46, 31, 0.3);
 }
 
 /* Return Date Group Animation */

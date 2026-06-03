@@ -320,6 +320,19 @@ const thyApiConfig = {
       '#lblMsVip': '🚐 HAVALİMANI VIP TAŞIMACILIK',
       '#lblMsAgencies': '✈️ ACENTALAR VE GEZİ TURLARI',
       '#lblMsActiveAlerts': '🔔 AKTİF FİYAT ALARMLARI',
+      '#lblTabBaggage': 'Bagaj & Pet',
+      '#lblBaggageTitle': '<span class="icon">🧳</span> Bagaj & Pet Doğrulama',
+      '#lblBaggageIntro': 'Uçuş öncesi kabin içi evcil hayvan, kargo kafesi ve bagaj boyutlarınızı doğrulayın.',
+      '#lblBaggageType': 'HİZMET TÜRÜ',
+      '#optPetCabin': '🐱 Kabin İçi Evcil Hayvan Kafesi',
+      '#optPetCargo': '🐕 Kargo Bölümü Evcil Hayvan Kafesi',
+      '#optBaggageChecked': '🧳 Kayıtlı Bagaj (Standart Tek Parça)',
+      '#optBaggageOversize': '📦 Büyük (Oversize) Bagaj',
+      '#lblBaggageWidth': 'Genişlik (cm)',
+      '#lblBaggageHeight': 'Yükseklik (cm)',
+      '#lblBaggageDepth': 'Derinlik (cm)',
+      '#lblBaggageWeight': 'Ağırlık (kg)',
+      '#btnBaggageCalculate': 'Doğrula ve Hesapla',
       '#lblPlacesEmptyTitle': 'Yer Keşfet',
       '#lblPlacesEmptyText': 'Filtrelere tıklayarak veya arama yaparak etraftaki yerleri keşfedin.',
       '#lblRouteEmptyTitle': 'Rota Boş',
@@ -456,7 +469,20 @@ const thyApiConfig = {
       '#btnSearchPlaces .tooltip': 'Search Nearby Places',
       '#confirmModal .modal-title': '⚠️ DELETE TRIP',
       '#priceAlertPrivacyNotice': '* By setting an alert, you consent to the processing of your data under the <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Privacy Policy</a>.',
-      '#emailReportPrivacyNotice': '* By sending reports, you consent to the processing of your data under the <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Privacy Policy</a>.'
+      '#emailReportPrivacyNotice': '* By sending reports, you consent to the processing of your data under the <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Privacy Policy</a>.',
+      '#lblTabBaggage': 'Baggage & Pet',
+      '#lblBaggageTitle': '<span class="icon">🧳</span> Baggage & Pet Validation',
+      '#lblBaggageIntro': 'Verify your in-cabin pet, cargo cage, and baggage dimensions before your flight.',
+      '#lblBaggageType': 'SERVICE TYPE',
+      '#optPetCabin': '🐱 In-Cabin Pet Carrier/Cage',
+      '#optPetCargo': '🐕 Cargo Hold Pet Cage',
+      '#optBaggageChecked': '🧳 Checked Baggage (Standard Single Piece)',
+      '#optBaggageOversize': '📦 Oversize Baggage Limit',
+      '#lblBaggageWidth': 'Width (cm)',
+      '#lblBaggageHeight': 'Height (cm)',
+      '#lblBaggageDepth': 'Depth (cm)',
+      '#lblBaggageWeight': 'Weight (kg)',
+      '#btnBaggageCalculate': 'Validate and Calculate'
     }
   };
 
@@ -951,6 +977,262 @@ const thyApiConfig = {
     // Load active alerts
     if (typeof THY.loadPriceAlerts === 'function') {
       THY.loadPriceAlerts();
+    }
+
+    // ---- BAGGAGE & PET CALCULATOR ----
+    const baggageForm = document.getElementById('baggagePetForm');
+    const baggageTypeSelect = document.getElementById('baggageTypeSelect');
+    const resultCard = document.getElementById('baggageResultCard');
+    const resultStatusHeader = document.getElementById('baggageResultStatusHeader');
+    const resultStatus = document.getElementById('baggageResultStatus');
+    const resultDetails = document.getElementById('baggageResultDetails');
+    const resultAction = document.getElementById('baggageResultAction');
+
+    const widthInput = document.getElementById('baggageWidth');
+    const heightInput = document.getElementById('baggageHeight');
+    const depthInput = document.getElementById('baggageDepth');
+    const weightInput = document.getElementById('baggageWeight');
+
+    if (baggageTypeSelect) {
+      // Set default initial values for "pet_cabin"
+      if (widthInput && heightInput && depthInput && weightInput) {
+        widthInput.value = 30;
+        heightInput.value = 23;
+        depthInput.value = 40;
+        weightInput.value = 8;
+      }
+
+      baggageTypeSelect.addEventListener('change', (e) => {
+        const type = e.target.value;
+        if (!widthInput || !heightInput || !depthInput || !weightInput) return;
+
+        if (type === 'pet_cabin') {
+          widthInput.value = 30;
+          heightInput.value = 23;
+          depthInput.value = 40;
+          weightInput.value = 8;
+        } else if (type === 'pet_cargo') {
+          widthInput.value = 75;
+          heightInput.value = 75;
+          depthInput.value = 125;
+          weightInput.value = 25;
+        } else if (type === 'baggage_checked') {
+          widthInput.value = 50;
+          heightInput.value = 40;
+          depthInput.value = 30;
+          weightInput.value = 23;
+        } else if (type === 'baggage_oversize') {
+          widthInput.value = 80;
+          heightInput.value = 60;
+          depthInput.value = 50;
+          weightInput.value = 28;
+        }
+        
+        if (resultCard) resultCard.style.display = 'none';
+      });
+    }
+
+    if (baggageForm) {
+      baggageForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const type = baggageTypeSelect.value;
+        const width = parseFloat(widthInput?.value) || 0;
+        const height = parseFloat(heightInput?.value) || 0;
+        const depth = parseFloat(depthInput?.value) || 0;
+        const weight = parseFloat(weightInput?.value) || 0;
+
+        const isEn = THY.currentLanguage === 'en';
+        let status = 'success'; // success, warning, error
+        let statusText = '';
+        let detailsText = '';
+        let actionText = '';
+        let actionVisible = false;
+
+        // Sound effect
+        if (typeof THY.playSplitFlapSound === 'function') {
+          THY.playSplitFlapSound(4);
+        }
+
+        if (type === 'pet_cabin') {
+          const wLimit = 30, hLimit = 23, dLimit = 40, wtLimit = 8;
+          const wExceed = width > wLimit;
+          const hExceed = height > hLimit;
+          const dExceed = depth > dLimit;
+          const wtExceed = weight > wtLimit;
+
+          if (wExceed || hExceed || dExceed || wtExceed) {
+            status = 'warning';
+            statusText = isEn ? '⚠️ CABIN LIMIT EXCEEDED' : '⚠️ KABİN LİMİTİ AŞILDI';
+            
+            const exceededParts = [];
+            if (wExceed) exceededParts.push(`${isEn ? 'Width' : 'Genişlik'} (${width} > ${wLimit} cm)`);
+            if (hExceed) exceededParts.push(`${isEn ? 'Height' : 'Yükseklik'} (${height} > ${hLimit} cm)`);
+            if (dExceed) exceededParts.push(`${isEn ? 'Depth' : 'Derinlik'} (${depth} > ${dLimit} cm)`);
+            if (wtExceed) exceededParts.push(`${isEn ? 'Weight' : 'Ağırlık'} (${weight} > ${wtLimit} kg)`);
+
+            detailsText = isEn
+              ? `The following limits were exceeded: ${exceededParts.join(', ')}.`
+              : `Şu limitler aşıldı: ${exceededParts.join(', ')}.`;
+
+            actionText = isEn
+              ? '🐱 Due to cabin safety regulations, this pet cannot be carried in-cabin. You are redirected to the cargo hold compartment.'
+              : '🐱 Kabin güvenlik kuralları gereği bu evcil hayvan kabinde taşınamaz. Kargo bölümü seçeneğine yönlendiriliyorsunuz.';
+            actionVisible = true;
+          } else {
+            status = 'success';
+            statusText = isEn ? '🟢 COMPLIANT' : '🟢 UYGUN';
+            detailsText = isEn
+              ? `Dimensions and weight are within cabin limits (${width}x${height}x${depth} cm, ${weight} kg). Max limit: 30x23x40 cm, 8 kg.`
+              : `Boyutlar ve ağırlık kabin sınırları içerisindedir (${width}x${height}x${depth} cm, ${weight} kg). Maksimum limit: 30x23x40 cm, 8 kg.`;
+          }
+        } else if (type === 'pet_cargo') {
+          const wLimit = 75, hLimit = 75, dLimit = 125, wtLimit = 50;
+          const wExceed = width > wLimit;
+          const hExceed = height > hLimit;
+          const dExceed = depth > dLimit;
+          const wtExceed = weight > wtLimit;
+
+          if (wExceed || hExceed || dExceed || wtExceed) {
+            status = 'error';
+            statusText = isEn ? '❌ CARGO HOLD LIMIT EXCEEDED' : '❌ KARGO LİMİTİ AŞILDI';
+            
+            const exceededParts = [];
+            if (wExceed) exceededParts.push(`${isEn ? 'Width' : 'Genişlik'} (${width} > ${wLimit} cm)`);
+            if (hExceed) exceededParts.push(`${isEn ? 'Height' : 'Yükseklik'} (${height} > ${hLimit} cm)`);
+            if (dExceed) exceededParts.push(`${isEn ? 'Depth' : 'Derinlik'} (${depth} > ${dLimit} cm)`);
+            if (wtExceed) exceededParts.push(`${isEn ? 'Weight' : 'Ağırlık'} (${weight} > ${wtLimit} kg)`);
+
+            detailsText = isEn
+              ? `The following limits were exceeded: ${exceededParts.join(', ')}. Maximum allowed is 75x75x125 cm, 50 kg.`
+              : `Şu limitler aşıldı: ${exceededParts.join(', ')}. İzin verilen maks limitler: 75x75x125 cm, 50 kg.`;
+            
+            actionText = isEn
+              ? '🐕 This cage exceeds the maximum structural limits for aircraft cargo transport. Please split or contact customer services.'
+              : '🐕 Bu kafes uçak kargo bölümü maksimum yapısal limitlerini aşmaktadır. Lütfen bölün veya müşteri hizmetleri ile görüşün.';
+            actionVisible = true;
+          } else {
+            status = 'success';
+            statusText = isEn ? '🟢 COMPLIANT' : '🟢 UYGUN';
+            
+            const baseFee = Math.round(weight * 25 + (width + height + depth) * 5);
+            
+            detailsText = isEn
+              ? `Cage dimensions and weight are compliant. Dynamic "Pet Carriage Fee" calculated for this transport: ${baseFee} TRY.`
+              : `Kafes boyutları ve ağırlık uygundur. Bu taşıma için hesaplanan dinamik "Pet Taşıma Ücreti": ${baseFee} TL.`;
+            
+            actionText = isEn
+              ? `💵 A fee of ${baseFee} TRY has been calculated. It will be added to your payment screen.`
+              : `💵 ${baseFee} TL taşıma ücreti hesaplanmıştır. Ödeme ekranınıza yansıtılacaktır.`;
+            actionVisible = true;
+          }
+        } else if (type === 'baggage_checked') {
+          const totalDim = width + height + depth;
+          const dimLimit = 158;
+          const wtLimit = 32;
+          const dimExceed = totalDim >= dimLimit;
+          const wtExceed = weight > wtLimit;
+
+          if (wtExceed) {
+            status = 'error';
+            statusText = isEn ? '❌ BAGGAGE LIMIT EXCEEDED' : '❌ BAGAJ LİMİTİ AŞILDI';
+            detailsText = isEn
+              ? `Weight exceeds the absolute single-piece limit of ${wtLimit} kg. Entered weight: ${weight} kg.`
+              : `Ağırlık, tek parça için mutlak limit olan ${wtLimit} kg değerini aşmaktadır. Girilen ağırlık: ${weight} kg.`;
+            actionText = isEn
+              ? '📦 Baggage over 32 kg cannot be carried as a single piece. You must split your baggage into multiple pieces.'
+              : '📦 32 kg üzerindeki bagajlar tek parça halinde taşınamaz. Bagajınızı birden fazla parçaya bölmeniz gerekmektedir.';
+            actionVisible = true;
+          } else if (dimExceed) {
+            status = 'warning';
+            statusText = isEn ? '⚠️ OVERSIZE BAGGAGE' : '⚠️ BÜYÜK BOYUTLU BAGAJ';
+            detailsText = isEn
+              ? `Sum of dimensions (${totalDim} cm) exceeds standard limit of 158 cm, but fits within oversize limits (158 - 292 cm).`
+              : `Boyutlar toplamı (${totalDim} cm) standart limit olan 158 cm değerini aşmakta, ancak büyük bagaj sınırları (158 - 292 cm) içerisindedir.`;
+            actionText = isEn
+              ? '📦 Oversize baggage rules apply. A static penalty fee of 1000 TRY (90 USD) will be charged.'
+              : '📦 Büyük bagaj kuralları geçerlidir. Sabit ceza ücreti olan 1000 TL (90 USD) yansıtılacaktır.';
+            actionVisible = true;
+          } else {
+            status = 'success';
+            statusText = isEn ? '🟢 COMPLIANT' : '🟢 UYGUN';
+            detailsText = isEn
+              ? `Standard baggage criteria met. Sum of dimensions: ${totalDim} cm (< 158 cm), Weight: ${weight} kg (<= 32 kg).`
+              : `Standart bagaj kriterleri karşılandı. Boyutlar toplamı: ${totalDim} cm (< 158 cm), Ağırlık: ${weight} kg (<= 32 kg).`;
+          }
+        } else if (type === 'baggage_oversize') {
+          const totalDim = width + height + depth;
+          const minDim = 158;
+          const maxDim = 292;
+          const wtLimit = 32;
+          const dimExceed = totalDim > maxDim;
+          const dimUnder = totalDim < minDim;
+          const wtExceed = weight > wtLimit;
+
+          if (wtExceed) {
+            status = 'error';
+            statusText = isEn ? '❌ WEIGHT LIMIT EXCEEDED' : '❌ AĞIRLIK LİMİTİ AŞILDI';
+            detailsText = isEn
+              ? `Even for oversize baggage, single-piece weight cannot exceed ${wtLimit} kg. Entered: ${weight} kg.`
+              : `Büyük bagaj olsa dahi tek parça ağırlığı ${wtLimit} kg sınırını aşamaz. Girilen: ${weight} kg.`;
+            actionText = isEn
+              ? '📦 Please split your baggage. Pieces above 32 kg are strictly prohibited from aircraft cargo hold.'
+              : '📦 Lütfen bagajınızı bölün. 32 kg üzerindeki parçaların kargoya alınması kesinlikle yasaktır.';
+            actionVisible = true;
+          } else if (dimExceed) {
+            status = 'error';
+            statusText = isEn ? '❌ SIZE LIMIT EXCEEDED' : '❌ BOYUT LİMİTİ AŞILDI';
+            detailsText = isEn
+              ? `Sum of dimensions (${totalDim} cm) exceeds maximum allowed oversize limit of ${maxDim} cm.`
+              : `Boyutlar toplamı (${totalDim} cm) izin verilen maksimum büyük bagaj sınırı olan ${maxDim} cm değerini aşmaktadır.`;
+            actionText = isEn
+              ? '📦 This baggage is too large to carry on commercial flights. Please contact cargo department.'
+              : '📦 Bu bagaj ticari uçuşlarda taşınamayacak kadar büyüktür. Lütfen kargo departmanı ile iletişime geçin.';
+            actionVisible = true;
+          } else if (dimUnder) {
+            status = 'success';
+            statusText = isEn ? '🟢 STANDARD BAGGAGE' : '🟢 STANDART BAGAJ';
+            detailsText = isEn
+              ? `Sum of dimensions (${totalDim} cm) is below 158 cm. This qualifies as standard checked baggage without any extra penalty fee.`
+              : `Boyutlar toplamı (${totalDim} cm) 158 cm sınırının altındadır. Standart kayıtlı bagaj statüsündedir, ek ceza yansıtılmaz.`;
+          } else {
+            status = 'warning';
+            statusText = isEn ? '⚠️ OVERSIZE BAGGAGE PENALTY' : '⚠️ BÜYÜK BAGAJ CEZASI';
+            detailsText = isEn
+              ? `Sum of dimensions is ${totalDim} cm (158 - 292 cm). Weight is ${weight} kg. Static penalty fee of 1000 TRY (90 USD) applies.`
+              : `Boyutlar toplamı: ${totalDim} cm (158 - 292 cm). Ağırlık: ${weight} kg. Sabit ceza ücreti 1000 TL (90 USD) uygulanır.`;
+            actionText = isEn
+              ? '💵 A static surcharge of 1000 TRY (90 USD) will be automatically added to your baggage payment screen.'
+              : '💵 1000 TL (90 USD) sabit ceza ek ücreti bagaj ödeme ekranınıza otomatik olarak yansıtılacaktır.';
+            actionVisible = true;
+          }
+        }
+
+        if (resultCard) {
+          resultCard.style.display = 'block';
+          resultCard.style.borderColor = status === 'success' ? '#22C55E' : (status === 'warning' ? '#F59E0B' : '#EF4444');
+          resultCard.style.background = status === 'success' ? 'rgba(34, 197, 94, 0.05)' : (status === 'warning' ? 'rgba(245, 158, 11, 0.05)' : 'rgba(239, 68, 68, 0.05)');
+        }
+        
+        if (resultStatus) {
+          resultStatus.style.color = status === 'success' ? '#22C55E' : (status === 'warning' ? '#F59E0B' : '#EF4444');
+          resultStatus.textContent = statusText;
+        }
+        if (resultDetails) {
+          resultDetails.textContent = detailsText;
+        }
+
+        if (resultAction) {
+          if (actionVisible) {
+            resultAction.style.display = 'block';
+            resultAction.style.color = status === 'success' ? '#22C55E' : (status === 'warning' ? '#F59E0B' : '#EF4444');
+            resultAction.style.borderColor = status === 'success' ? 'rgba(34, 197, 94, 0.2)' : (status === 'warning' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)');
+            resultAction.textContent = actionText;
+          } else {
+            resultAction.style.display = 'none';
+          }
+        }
+      });
     }
   });
 
@@ -2838,7 +3120,8 @@ const thyApiConfig = {
     places: document.getElementById('tabPlaces'),
     email: document.getElementById('tabEmail'),
     trips: document.getElementById('tabTrips'),
-    'miles-smiles': document.getElementById('tabMilesSmiles')
+    'miles-smiles': document.getElementById('tabMilesSmiles'),
+    'baggage-pet': document.getElementById('tabBaggagePet')
   };
 
   tabs.forEach(tab => {
