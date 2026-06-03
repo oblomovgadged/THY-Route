@@ -593,32 +593,16 @@ input, textarea, select {
 
 .day-tabs {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   overflow-x: auto;
   flex: 1;
   align-items: center;
-  padding-bottom: 4px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(200, 169, 81, 0.35) rgba(255, 255, 255, 0.03);
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
 }
 
 .day-tabs::-webkit-scrollbar {
-  height: 4px;
-  display: block;
-}
-
-.day-tabs::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: var(--radius-sm);
-}
-
-.day-tabs::-webkit-scrollbar-thumb {
-  background: rgba(200, 169, 81, 0.35);
-  border-radius: var(--radius-sm);
-}
-
-.day-tabs::-webkit-scrollbar-thumb:hover {
-  background: rgba(200, 169, 81, 0.6);
+  display: none; /* Hide scrollbar for Chrome/Safari/Opera */
 }
 
 .day-tab-btn {
@@ -668,23 +652,21 @@ input, textarea, select {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
-  background: rgba(200, 169, 81, 0.1);
-  border: 1px dashed rgba(200, 169, 81, 0.4);
-  color: var(--thy-gold-light);
+  background: rgba(197, 160, 89, 0.06);
+  border: 1px dashed rgba(197, 160, 89, 0.4);
+  color: var(--thy-gold);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
   flex-shrink: 0;
 }
 
 .day-add-btn:hover {
-  background: rgba(200, 169, 81, 0.2);
+  background: rgba(197, 160, 89, 0.15);
+  border-style: solid;
   border-color: var(--thy-gold);
-  color: var(--thy-gold);
   transform: scale(1.05);
 }
 
@@ -2578,68 +2560,113 @@ input, textarea, select {
   align-items: center;
   margin-left: 27px;
   position: relative;
-  margin-top: 2px;
-  margin-bottom: 2px;
-  gap: 12px;
-  min-height: 24px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  gap: 16px;
+  min-height: 32px;
 }
 
 .waypoint-connector-line {
   width: 2px;
   align-self: stretch;
-  opacity: 0.3;
-  min-height: 16px;
+  min-height: 24px;
+  border-left: 2px dashed var(--border-subtle);
+  background-color: transparent !important;
+  opacity: 0.55;
 }
 
 .waypoint-transit-menu {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(18, 22, 26, 0.6);
-  border: 1px solid var(--border-subtle);
+  gap: 8px;
+  background: var(--bg-glass-light);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: var(--radius-sm);
-  padding: 3px 8px;
-  font-size: 10px;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  padding: 4px 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
 }
 
 .transit-title {
   color: var(--text-muted);
-  font-weight: 500;
-  margin-right: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .transit-option {
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-weight: 600;
-  transition: all var(--transition-fast);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
   color: var(--text-secondary);
-  border: 1px solid transparent;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .transit-option:hover {
-  color: var(--text-primary);
+  color: var(--thy-gold);
+  border-color: var(--thy-gold);
+  background: rgba(197, 160, 89, 0.1);
   transform: translateY(-0.5px);
 }
 
-.transit-option.google:hover {
-  background: rgba(66, 133, 244, 0.15);
-  border-color: rgba(66, 133, 244, 0.3);
-  color: #4285F4;
+/* Waypoint Actions & Notes Styling */
+.waypoint-note {
+  font-size: 10px;
+  color: var(--thy-gold-light) !important;
+  background: rgba(197, 160, 89, 0.05) !important;
+  border-left: 2px solid var(--thy-gold) !important;
+  padding: 6px 10px !important;
+  margin-top: 6px !important;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  line-height: 1.4 !important;
+  font-style: italic !important;
+  box-shadow: none !important;
+  border-top: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
 }
 
-.transit-option.apple:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #FFFFFF;
+.note-svg-icon {
+  flex-shrink: 0;
+  color: var(--thy-gold);
 }
 
-.transit-option.yandex:hover {
-  background: rgba(255, 204, 0, 0.15);
-  border-color: rgba(255, 204, 0, 0.3);
-  color: #FFCC00;
+.waypoint-note-btn, .waypoint-remove {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--text-muted) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all var(--transition-fast) !important;
+  cursor: pointer !important;
+}
+
+.waypoint-note-btn:hover {
+  background: rgba(197, 160, 89, 0.15) !important;
+  color: var(--thy-gold) !important;
+  border-color: var(--thy-gold) !important;
+  transform: scale(1.05) !important;
+}
+
+.waypoint-remove:hover {
+  background: rgba(239, 46, 31, 0.15) !important;
+  color: var(--thy-red-light) !important;
+  border-color: var(--thy-red) !important;
+  transform: scale(1.05) !important;
 }
 
 /* --- Miles&Smiles Partners Styles --- */

@@ -580,12 +580,15 @@ function initMap() {
         const yMapsUrl = `https://yandex.com/maps/?rtext=${prevWp.lat},${prevWp.lng}~${wp.lat},${wp.lng}&rtt=mt`;
 
         connectorRow.innerHTML = `
-          <div class="waypoint-connector-line" style="background-color: ${connColor}"></div>
+          <div class="waypoint-connector-line" style="border-left-color: ${connColor}"></div>
           <div class="waypoint-transit-menu">
-            <span class="transit-title">${isEn ? '🚇 Transit:' : '🚇 Ulaşım:'}</span>
-            <a href="${gMapsUrl}" target="_blank" class="transit-option google" title="${isEn ? 'Directions with Google Maps (Transit)' : 'Google Haritalar ile Yol Tarifi (Toplu Taşıma)'}">Google</a>
-            <a href="${aMapsUrl}" target="_blank" class="transit-option apple" title="${isEn ? 'Directions with Apple Maps (Transit)' : 'Apple Haritalar ile Yol Tarifi (Transit)'}">Apple</a>
-            <a href="${yMapsUrl}" target="_blank" class="transit-option yandex" title="${isEn ? 'Directions with Yandex Maps (Metro/Bus)' : 'Yandex Haritalar ile Yol Tarifi (Metro/Otobüs)'}">Yandex</a>
+            <span class="transit-title">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px; vertical-align: middle;"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+              ${isEn ? 'Transit:' : 'Ulaşım:'}
+            </span>
+            <a href="${gMapsUrl}" target="_blank" class="transit-option google" title="Google Maps">Google</a>
+            <a href="${aMapsUrl}" target="_blank" class="transit-option apple" title="Apple Maps">Apple</a>
+            <a href="${yMapsUrl}" target="_blank" class="transit-option yandex" title="Yandex Maps">Yandex</a>
           </div>
         `;
         list.appendChild(connectorRow);
@@ -601,15 +604,26 @@ function initMap() {
       }
 
       item.innerHTML = `
-        <div class="waypoint-marker" style="background-color: ${wpColor}">${i + 1}</div>
+        <div class="waypoint-marker" style="background-color: ${wpColor}; box-shadow: 0 0 10px ${wpColor}80">${i + 1}</div>
         <div class="waypoint-info">
-          <div class="waypoint-name">${wp.name} ${dayBadgeHtml}</div>
-          ${wp.note ? `<div class="waypoint-note" style="color: var(--thy-gold-light)">📝 ${isEn ? 'Note' : 'Not'}: ${wp.note}</div>` : ''}
+          <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+            <div class="waypoint-name">${wp.name}</div>
+            ${dayBadgeHtml}
+          </div>
+          ${wp.note ? `
+            <div class="waypoint-note">
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="note-svg-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>${wp.note}</span>
+            </div>` : ''}
           <div class="waypoint-coords">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</div>
         </div>
         <div class="waypoint-actions" style="display: flex; gap: 6px; align-items: center;">
-          <button class="waypoint-note-btn" data-index="${wp.originalIndex}" title="${isEn ? 'Add/Edit Note' : 'Not Ekle/Düzenle'}">📝</button>
-          <button class="waypoint-remove" data-index="${wp.originalIndex}" title="${isEn ? 'Remove' : 'Kaldır'}">✕</button>
+          <button class="waypoint-note-btn" data-index="${wp.originalIndex}" title="${isEn ? 'Add/Edit Note' : 'Not Ekle/Düzenle'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>
+          </button>
+          <button class="waypoint-remove" data-index="${wp.originalIndex}" title="${isEn ? 'Remove' : 'Kaldır'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
         </div>
       `;
       list.appendChild(item);
