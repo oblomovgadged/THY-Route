@@ -924,7 +924,22 @@ function initMap() {
   }
 
   THY.clearPlaces = () => {
-    displayPlaces([]);
+    lastSearchResults = [];
+    placeMarkers.forEach(m => m.setMap(null));
+    placeMarkers = [];
+    const list = document.getElementById('placesList');
+    if (list) {
+      const isEn = (window.THY && window.THY.currentLanguage === 'en') || (localStorage.getItem('thy_lang') || 'tr') === 'en';
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">📌</div>
+          <div class="empty-state__title" id="lblPlacesEmptyTitle">${isEn ? 'Discover Places' : 'Yer Keşfet'}</div>
+          <div class="empty-state__text" id="lblPlacesEmptyText">${isEn ? 'Discover nearby places by clicking filters or searching.' : 'Filtrelere tıklayarak veya arama yaparak etraftaki yerleri keşfedin.'}</div>
+        </div>
+      `;
+    }
+    const filterChips = document.querySelectorAll('.filter-chip');
+    filterChips.forEach(c => c.classList.remove('active'));
   };
 
   THY.searchNearbyPlaces = (type, customCenter = null) => {
@@ -1055,6 +1070,9 @@ function initMap() {
 
   // ---- AUTO ITINERARY RECOMMENDER ----
   THY.planAutoItinerary = (destAp, days) => {
+    if (typeof THY.clearPlaces === 'function') {
+      THY.clearPlaces();
+    }
     if (typeof THY.playSplitFlapSound === 'function') {
       THY.playSplitFlapSound(15);
     }
@@ -1211,8 +1229,10 @@ function initMap() {
       // 2. Automatically update Places tab to search for local places (restaurants) around city center
       setTimeout(() => {
         const activeChip = document.querySelector('.filter-chip.active');
-        const type = activeChip?.dataset?.type || 'restaurant';
-        THY.searchNearbyPlaces(type, destinationCenter);
+        if (activeChip) {
+          const type = activeChip.dataset.type;
+          THY.searchNearbyPlaces(type, destinationCenter);
+        }
       }, 500);
 
     } else {
@@ -1283,8 +1303,10 @@ function initMap() {
           // Automatically update Places tab to search around the new dynamic center
           setTimeout(() => {
             const activeChip = document.querySelector('.filter-chip.active');
-            const type = activeChip?.dataset?.type || 'restaurant';
-            THY.searchNearbyPlaces(type, dynamicCenter);
+            if (activeChip) {
+              const type = activeChip.dataset.type;
+              THY.searchNearbyPlaces(type, dynamicCenter);
+            }
           }, 500);
 
         } else {
@@ -1306,8 +1328,10 @@ function initMap() {
           // Update Places tab around the airport
           setTimeout(() => {
             const activeChip = document.querySelector('.filter-chip.active');
-            const type = activeChip?.dataset?.type || 'restaurant';
-            THY.searchNearbyPlaces(type, { lat: destAp.lat, lng: destAp.lng });
+            if (activeChip) {
+              const type = activeChip.dataset.type;
+              THY.searchNearbyPlaces(type, { lat: destAp.lat, lng: destAp.lng });
+            }
           }, 500);
         }
       }

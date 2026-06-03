@@ -172,6 +172,19 @@ input, textarea, select {
   overflow: hidden;
 }
 
+.flight-board::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../icons/header-panorama.png');
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
+  opacity: 0.25;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .flight-board::before {
   content: '';
   position: absolute;
@@ -197,6 +210,7 @@ input, textarea, select {
   height: 100%;
   background: transparent;
   position: relative;
+  z-index: 2;
 }
 
 .flight-board__logo-img {
@@ -214,6 +228,8 @@ input, textarea, select {
   gap: var(--space-2xl);
   padding: 0 var(--space-xl);
   height: 100%;
+  position: relative;
+  z-index: 2;
 }
 
 .flight-info-item {
@@ -253,6 +269,8 @@ input, textarea, select {
   gap: var(--space-md);
   padding: 0 var(--space-lg);
   height: 100%;
+  position: relative;
+  z-index: 2;
 }
 
 .status-badge {
@@ -299,6 +317,8 @@ input, textarea, select {
   align-items: flex-end;
   padding: 0 var(--space-lg);
   min-width: 120px;
+  position: relative;
+  z-index: 2;
 }
 
 .board-time {
@@ -1424,6 +1444,20 @@ input, textarea, select {
   border-color: var(--thy-gold);
   color: var(--thy-gold);
   background: rgba(199, 168, 80, 0.1);
+}
+
+.flight-board .lang-toggle-btn {
+  background: #0A1628 !important;
+  color: #C5A059 !important;
+  border: 1px solid #C5A059 !important;
+  border-radius: var(--radius-full) !important;
+  box-shadow: 0 2px 6px rgba(10, 22, 40, 0.15);
+}
+
+.flight-board .lang-toggle-btn:hover {
+  background: #C5A059 !important;
+  color: #0A1628 !important;
+  border-color: #0A1628 !important;
 }
 
 .landing-lang-btn {

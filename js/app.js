@@ -210,6 +210,9 @@ const thyApiConfig = {
     if (typeof THY.updateDayTabs === 'function') {
       THY.updateDayTabs();
     }
+    if (typeof THY.clearPlaces === 'function') {
+      THY.clearPlaces();
+    }
   };
 
   // Initialize Trip ID, Versioning (Optimistic Locking) & URL Parsing
