@@ -3307,4 +3307,409 @@ input, textarea, select {
   border-left: 3px solid transparent;
 }
 
+/* ============================================
+   LINTING & CODE QUALITY FIXES
+   ============================================ */
+
+/* Noscript Overlay */
+.noscript-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #12161A;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  font-family: sans-serif;
+}
+.noscript-title {
+  color: #E11A22;
+  margin-bottom: 15px;
+}
+.noscript-text {
+  max-width: 500px;
+  line-height: 1.6;
+  color: #8E9AA6;
+  font-size: 14px;
+}
+
+/* Landing Logo Header */
+.landing-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  padding: 12px 0;
+}
+
+/* Booking Privacy/GDPR link & notices */
+.booking-privacy-box {
+  margin-top: 15px;
+  font-size: 11px;
+  text-align: center;
+}
+.privacy-modal-trigger {
+  color: var(--thy-gold) !important;
+  text-decoration: underline !important;
+}
+#priceAlertPrivacyNotice {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  text-align: left;
+  width: 100%;
+}
+#emailReportPrivacyNotice {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 10px;
+  line-height: 1.4;
+}
+
+/* Price Alert Layout */
+.price-alert-inputs {
+  flex-wrap: wrap;
+}
+
+/* Flight Board Time Layout */
+.flight-board__time {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+}
+.flight-board__time-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Helpers & Shared Flex Containers */
+.flex-column-end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.flex-row-center-gap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+}
+.flex-gap-sm {
+  display: flex;
+  gap: 8px;
+}
+.flex-1 {
+  flex: 1;
+}
+.flex-1-5 {
+  flex: 1.5;
+}
+.width-100 {
+  width: 100% !important;
+}
+.margin-top-sm {
+  margin-top: var(--space-sm) !important;
+}
+
+/* Day Tabs SVGs & Alignments */
+.day-add-btn svg {
+  vertical-align: middle;
+}
+.places-header svg {
+  color: var(--thy-gold);
+}
+.route-header {
+  margin-bottom: var(--space-md);
+}
+.route-header svg {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.route-header-icon {
+  vertical-align: middle;
+  margin-right: 4px;
+  display: inline-block;
+}
+.display-block {
+  display: block;
+}
+
+/* Partner Cards Styling (Miles & Smiles) */
+.miles-smiles-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.b2b-intro-card {
+  padding: 10px;
+  background: rgba(200, 169, 81, 0.1);
+  border: 1px solid rgba(200, 169, 81, 0.2);
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  margin-bottom: var(--space-md);
+}
+.partner-category-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--thy-gold);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.partner-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.partner-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background: var(--bg-card);
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.partner-item-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.partner-icon {
+  color: var(--thy-gold);
+}
+.partner-icon.red {
+  color: var(--thy-red-light);
+}
+.partner-icon.blue {
+  color: var(--thy-blue);
+}
+.partner-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+}
+.partner-offer {
+  font-size: 10px;
+  color: var(--thy-red-light);
+  font-weight: 600;
+}
+.partner-btn {
+  padding: 4px 8px;
+  font-size: 10px;
+  pointer-events: none;
+}
+.miles-smiles-alerts-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--thy-gold);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.miles-smiles-alerts-title svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+#activeAlertsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.empty-alerts-placeholder {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: 12px;
+  border: 1px dashed var(--border-subtle);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+/* Modals Styling */
+.modal.modal-border-red {
+  max-width: 420px;
+  border: 1px solid var(--thy-red);
+}
+.modal.modal-confirm {
+  max-width: 400px;
+  border: 1px solid var(--thy-red);
+}
+.modal.modal-sync {
+  max-width: 400px;
+}
+.modal.modal-privacy {
+  max-width: 550px;
+}
+.modal-title-red {
+  color: var(--thy-red);
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-title-red-sm {
+  color: var(--thy-red);
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-title-gold {
+  color: var(--thy-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal-body-padding {
+  padding: 10px 0;
+}
+.modal-body-padding-lg {
+  padding: 15px 0;
+}
+.modal-body-margin {
+  margin-bottom: var(--space-md);
+}
+.modal-text-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.modal-text-desc-sm {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+.modal-input-label {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: block;
+  color: var(--thy-gold);
+}
+.modal-input-label-sm {
+  font-weight: 600;
+  font-size: 11px;
+  margin-bottom: 6px;
+  display: block;
+  color: var(--thy-gold);
+}
+.modal-text-input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: white;
+  border-radius: 6px;
+}
+.modal-text-input-mono {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: white;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  text-align: center;
+}
+.modal-footer-flex {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+.modal-footer-flex-center {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.modal-footer-flex-between {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.modal-footer-margin {
+  margin-top: 15px;
+}
+.btn-confirm-join {
+  width: 100%;
+  opacity: 0.5;
+}
+.modal-note-textarea {
+  height: 120px;
+  resize: none;
+}
+.btn-delete-note {
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border-color: rgba(239, 68, 68, 0.15);
+}
+.width-40 {
+  width: 40%;
+}
+.width-50 {
+  width: 50%;
+}
+.width-60 {
+  width: 60%;
+  background-color: var(--thy-red);
+  border-color: var(--thy-red);
+}
+.privacy-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.note-modal-target-name {
+  font-size: 13px;
+  color: var(--thy-gold);
+  margin-bottom: var(--space-sm);
+  font-weight: 700;
+}
+
+#statusBadge {
+  border-color: #3B82F6;
+}
+#statusText {
+  color: #3B82F6;
+}
+
+.baggage-dimensions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+#baggageResultCard {
+  display: none;
+}
+
+
+
+
 

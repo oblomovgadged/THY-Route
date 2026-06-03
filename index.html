@@ -53,9 +53,9 @@
 </head>
 <body>
   <noscript>
-    <div style="position: fixed; inset: 0; z-index: 10000; background: #12161A; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; font-family: sans-serif;">
-      <h2 style="color: #E11A22; margin-bottom: 15px;">JavaScript Gerekli / JavaScript Required</h2>
-      <p style="max-width: 500px; line-height: 1.6; color: #8E9AA6; font-size: 14px;">
+    <div class="noscript-overlay">
+      <h2 class="noscript-title">JavaScript Gerekli / JavaScript Required</h2>
+      <p class="noscript-text">
         THY Route uygulamasını kullanabilmek için tarayıcınızda JavaScript'in etkinleştirilmiş olması gerekmektedir. 
         Lütfen tarayıcı ayarlarınızdan JavaScript'i etkinleştirip sayfayı yenileyiniz.
       </p>
@@ -81,7 +81,7 @@
     <div id="landingScreen" class="landing-screen">
       <div class="landing-container">
         <!-- Logo Header -->
-        <div class="landing-logo" style="position: relative; display: flex; align-items: center; justify-content: flex-end; width: 100%; padding: 12px 0;">
+        <div class="landing-logo">
           <button id="btnLangToggleLanding" class="lang-toggle-btn landing-lang-btn">🌐 EN</button>
         </div>
 
@@ -159,8 +159,8 @@
             <button type="button" class="btn btn-gold btn-full btn-large" id="btnSearchFlights">
               <span class="icon">✈️</span> UÇUŞ ARA
             </button>
-            <div style="margin-top: 15px; font-size: 11px; text-align: center;">
-              <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">🛡️ KVKK & Gizlilik Politikası / GDPR & Privacy Policy</a>
+            <div class="booking-privacy-box">
+              <a href="#" class="privacy-modal-trigger">🛡️ KVKK & Gizlilik Politikası / GDPR & Privacy Policy</a>
             </div>
           </div>
         </div>
@@ -201,12 +201,12 @@
                 <div class="price-alert-desc">Seçtiğiniz tarihlerde bilet fiyatı veya mil değeri limitin altına indiğinde e-posta ile haber verelim.</div>
               </div>
             </div>
-            <div class="price-alert-inputs" style="flex-wrap: wrap;">
+            <div class="price-alert-inputs">
               <input type="number" id="alertTargetPrice" placeholder="Hedef Fiyat (TL)" value="12000">
               <input type="email" id="alertEmail" placeholder="E-posta Adresi">
               <button class="btn btn-gold btn-sm" id="btnCreatePriceAlert">Alarm Kur</button>
-              <div id="priceAlertPrivacyNotice" style="font-size: 10px; color: var(--text-muted); margin-top: 6px; text-align: left; width: 100%;">
-                * Alarm kurarak verilerinizin <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Gizlilik Politikası (KVKK)</a> uyarınca işlenmesini kabul etmiş olursunuz.
+              <div id="priceAlertPrivacyNotice">
+                * Alarm kurarak verilerinizin <a href="#" class="privacy-modal-trigger">Gizlilik Politikası (KVKK)</a> uyarınca işlenmesini kabul etmiş olursunuz.
               </div>
             </div>
           </div>
@@ -251,14 +251,14 @@
         </div>
 
         <div class="flight-board__status">
-          <div class="status-badge" id="statusBadge" style="border-color: #3B82F6;">
+          <div class="status-badge" id="statusBadge">
             <span class="status-dot"></span>
-            <span class="status-text" id="statusText" style="color: #3B82F6;">PLANLANIYOR</span>
+            <span class="status-text" id="statusText">PLANLANIYOR</span>
           </div>
         </div>
 
-        <div class="flight-board__time" style="display: flex; flex-direction: row; align-items: center; gap: 15px;">
-          <div style="display: flex; flex-direction: column; align-items: flex-end;">
+        <div class="flight-board__time">
+          <div class="flight-board__time-inner">
             <span class="board-time" id="boardTime">--:--</span>
             <span class="board-date" id="boardDate">--</span>
           </div>
@@ -350,7 +350,7 @@
                 <!-- Dynamic tabs -->
               </div>
               <button class="day-add-btn" id="btnAddingDay" title="Yeni Gün Ekle">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               </button>
             </div>
 
@@ -383,7 +383,7 @@
                   İçe Aktar
                 </button>
               </div>
-              <button class="btn btn-gold btn-full" id="btnReturnToLanding" style="margin-top: var(--space-sm); width: 100%;">
+              <button class="btn btn-gold btn-full margin-top-sm width-100" id="btnReturnToLanding">
                 <span class="icon">🛫</span>
                 Yeni Uçuş Ara / Ana Sayfa
               </button>
@@ -427,7 +427,7 @@
             <div id="placesList">
               <div class="empty-state">
                 <div class="empty-state__icon">
-                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--thy-gold);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="partner-icon"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                 </div>
                 <div class="empty-state__title" id="lblPlacesEmptyTitle">Yer Keşfet</div>
                 <div class="empty-state__text" id="lblPlacesEmptyText">Filtrelere tıklayarak veya arama yaparak etraftaki yerleri keşfedin.</div>
@@ -460,27 +460,27 @@
                 </div>
               </div>
 
-              <div style="display: flex; gap: 8px;">
-                <button type="button" class="btn btn-primary btn-full" id="btnCopyInviteLink" style="flex: 1;">
+              <div class="flex-gap-sm">
+                <button type="button" class="btn btn-primary btn-full flex-1" id="btnCopyInviteLink">
                   <span class="icon">🔗</span>
                   Davet Linkini Kopyala
                 </button>
-                <button type="button" class="btn btn-gold btn-full" id="btnSendEmail" style="flex: 1.5;">
+                <button type="button" class="btn btn-gold btn-full flex-1-5" id="btnSendEmail">
                   <span class="icon">📧</span>
                   Rapor & Davet Gönder
                 </button>
               </div>
-              <div id="emailReportPrivacyNotice" style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 10px; line-height: 1.4;">
-                * Rapor göndererek verilerinizin <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Gizlilik Politikası (KVKK)</a> uyarınca işlenmesini kabul etmiş olursunuz.
+              <div id="emailReportPrivacyNotice">
+                * Rapor göndererek verilerinizin <a href="#" class="privacy-modal-trigger">Gizlilik Politikası (KVKK)</a> uyarınca işlenmesini kabul etmiş olursunuz.
               </div>
             </div>
           </div>
 
           <!-- SEYAHATLER TAB -->
           <div class="tab-pane fade-in-slide" id="tabTrips">
-            <div class="route-header" style="margin-bottom: var(--space-md);">
+            <div class="route-header">
               <div class="route-title" id="lblSavedTripsTitle">
-                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span>
+                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span>
                 Seyahatlerim
               </div>
             </div>
@@ -497,12 +497,12 @@
               <div class="pilot-sync-body">
                 <input type="text" id="pilotIdInput" aria-labelledby="lblSyncCodeTitle" readonly value="Bağlanıyor...">
                 <button class="btn btn-secondary btn-sm" id="btnCopyPilotId" title="Kopyala">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="display-block"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                 </button>
               </div>
               <div class="pilot-sync-actions">
                 <button class="btn btn-gold btn-sm btn-full" id="btnShowSyncModal">
-                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="route-header-icon"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                   Diğer Cihazla Eşitle
                 </button>
               </div>
@@ -515,147 +515,147 @@
 
           <!-- MILES&SMILES TAB -->
           <div class="tab-pane fade-in-slide" id="tabMilesSmiles">
-            <div class="route-header" style="margin-bottom: var(--space-md);">
+            <div class="route-header">
               <div class="route-title" id="lblMsTitle">
-                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
+                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
                 Miles&Smiles Ortakları
               </div>
             </div>
             
-            <div class="miles-smiles-content" style="display: flex; flex-direction: column; gap: var(--space-sm);">
-              <div class="b2b-intro-card" style="padding: 10px; background: rgba(200, 169, 81, 0.1); border: 1px solid rgba(200, 169, 81, 0.2); border-radius: 8px; font-size: 11px; line-height: 1.4; margin-bottom: 8px;">
+            <div class="miles-smiles-content">
+              <div class="b2b-intro-card">
                 <span id="lblMsDesc">💡 Partner logolarına tıklayarak etraftaki şubelerini harita üzerinde anında keşfedebilir ve rotanıza ekleyebilirsiniz!</span>
               </div>
               
               <!-- Category 1: Araç Kiralama -->
-              <div id="lblMsCarRental" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+              <div id="lblMsCarRental" class="partner-category-title">
                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg>
                 ARAÇ KİRALAMA
               </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <div class="partner-item" data-query="Avis" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--thy-red-light);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg></span>
+              <div class="partner-list">
+                <div class="partner-item" data-query="Avis">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon red"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Avis Araç Kiralama</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">%30 İndirim + 500 Mil!</div>
+                      <div class="partner-name">Avis Araç Kiralama</div>
+                      <div class="partner-offer">%30 İndirim + 500 Mil!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
-                <div class="partner-item" data-query="Budget Rent A Car" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--thy-red-light);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg></span>
+                <div class="partner-item" data-query="Budget Rent A Car">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon red"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Budget Rent A Car</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">%25 İndirim + 400 Mil!</div>
+                      <div class="partner-name">Budget Rent A Car</div>
+                      <div class="partner-offer">%25 İndirim + 400 Mil!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
               </div>
 
               <!-- Category 2: Otel & Konaklama -->
-              <div id="lblMsAccommodation" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+              <div id="lblMsAccommodation" class="partner-category-title">
                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg>
                 KONAKLAMA VE OTELLER
               </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <div class="partner-item" data-query="Hilton Hotel" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--thy-gold);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
+              <div class="partner-list">
+                <div class="partner-item" data-query="Hilton Hotel">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Hilton Hotels & Resorts</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Konaklamalarda 3 Kat Mil!</div>
+                      <div class="partner-name">Hilton Hotels & Resorts</div>
+                      <div class="partner-offer">Konaklamalarda 3 Kat Mil!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
-                <div class="partner-item" data-query="Marriott Hotel" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--thy-gold);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
+                <div class="partner-item" data-query="Marriott Hotel">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Marriott Bonvoy</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Her Konaklamada 500 Mil!</div>
+                      <div class="partner-name">Marriott Bonvoy</div>
+                      <div class="partner-offer">Her Konaklamada 500 Mil!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
-                <div class="partner-item" data-query="Rixos Hotel" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--thy-gold);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
+                <div class="partner-item" data-query="Rixos Hotel">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Rixos Hotels</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">%15 İndirim + Çift Mil!</div>
+                      <div class="partner-name">Rixos Hotels</div>
+                      <div class="partner-offer">%15 İndirim + Çift Mil!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
               </div>
 
               <!-- Category 3: VIP Taşımacılık -->
-              <div id="lblMsVip" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+              <div id="lblMsVip" class="partner-category-title">
                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg>
                 HAVALİMANI VIP TAŞIMACILIK
               </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <div class="partner-item" data-query="Airport Transfer Shuttle" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--thy-blue);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg></span>
+              <div class="partner-list">
+                <div class="partner-item" data-query="Airport Transfer Shuttle">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon blue"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Havaş & Havaist Ulaşım</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Bilet Alımlarında %20 Mil İndirimi!</div>
+                      <div class="partner-name">Havaş & Havaist Ulaşım</div>
+                      <div class="partner-offer">Bilet Alımlarında %20 Mil İndirimi!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
-                <div class="partner-item" data-query="Secure Drive Airport Transfer" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--thy-blue);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg></span>
+                <div class="partner-item" data-query="Secure Drive Airport Transfer">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon blue"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Secure Drive VIP Transfer</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Transferde 200 Mil Hediye!</div>
+                      <div class="partner-name">Secure Drive VIP Transfer</div>
+                      <div class="partner-offer">Transferde 200 Mil Hediye!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
               </div>
 
               <!-- Category 4: Acentalar ve Turlar -->
-              <div id="lblMsAgencies" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+              <div id="lblMsAgencies" class="partner-category-title">
                 <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg>
                 ACENTALAR VE GEZİ TURLARI
               </div>
-              <div style="display: flex; flex-direction: column; gap: 6px;">
-                <div class="partner-item" data-query="Setur" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--text-secondary);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg></span>
+              <div class="partner-list">
+                <div class="partner-item" data-query="Setur">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Setur Seyahat Acentası</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Turlarda 2.500 Mil Hediye!</div>
+                      <div class="partner-name">Setur Seyahat Acentası</div>
+                      <div class="partner-offer">Turlarda 2.500 Mil Hediye!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
-                <div class="partner-item" data-query="Jolly Tur" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="partner-icon" style="color: var(--text-secondary);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg></span>
+                <div class="partner-item" data-query="Jolly Tur">
+                  <div class="partner-item-inner">
+                    <span class="partner-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg></span>
                     <div>
-                      <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Jolly Tur</div>
-                      <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">%10 Ek Mil Kazanımı!</div>
+                      <div class="partner-name">Jolly Tur</div>
+                      <div class="partner-offer">%10 Ek Mil Kazanımı!</div>
                     </div>
                   </div>
-                  <button class="btn btn-sm btn-secondary" style="padding: 4px 8px; font-size: 10px; pointer-events: none;">Haritada Bul</button>
+                  <button class="btn btn-sm btn-secondary partner-btn">Haritada Bul</button>
                 </div>
               </div>
 
               <!-- Category 5: Aktif Fiyat Alarmları -->
-              <div id="lblMsActiveAlerts" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              <div id="lblMsActiveAlerts" class="miles-smiles-alerts-title">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
                 AKTİF FİYAT ALARMLARI
               </div>
-              <div id="activeAlertsList" style="display: flex; flex-direction: column; gap: 6px;">
-                <div style="font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 12px; border: 1px dashed var(--border-subtle); border-radius: 6px; background: rgba(255, 255, 255, 0.01);">
+              <div id="activeAlertsList">
+                <div class="empty-alerts-placeholder">
                   Henüz aktif bir fiyat alarmı bulunmuyor.
                 </div>
               </div>
@@ -665,14 +665,14 @@
 
           <!-- BAGGAGE & PET CALCULATOR TAB -->
           <div class="tab-pane fade-in-slide" id="tabBaggagePet">
-            <div class="route-header" style="margin-bottom: var(--space-md);">
+            <div class="route-header">
               <div class="route-title" id="lblBaggageTitle">
-                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg></span>
+                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg></span>
                 Bagaj & Pet Doğrulama
               </div>
             </div>
 
-            <div class="b2b-intro-card" style="padding: 10px; background: rgba(200, 169, 81, 0.1); border: 1px solid rgba(200, 169, 81, 0.2); border-radius: 8px; font-size: 11px; line-height: 1.4; margin-bottom: var(--space-md);">
+            <div class="b2b-intro-card">
               <span id="lblBaggageIntro">Uçuş öncesi kabin içi evcil hayvan, kargo kafesi ve bagaj boyutlarınızı doğrulayın.</span>
             </div>
 
@@ -689,7 +689,7 @@
               </div>
 
               <!-- Dimensions (W x H x D) -->
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-sm);">
+              <div class="baggage-dimensions-grid">
                 <div class="form-group-booking">
                   <label for="baggageWidth" id="lblBaggageWidth">Genişlik (cm)</label>
                   <input type="number" id="baggageWidth" class="premium-baggage-input" placeholder="30" min="1" required>
@@ -715,7 +715,7 @@
             </form>
 
             <!-- Results Card -->
-            <div id="baggageResultCard" style="display: none;">
+            <div id="baggageResultCard">
               <div id="baggageResultStatusHeader">DOĞRULAMA SONUCU</div>
               <div id="baggageResultStatus">
                 <!-- Status icon and text -->
@@ -738,26 +738,26 @@
 
   <!-- JOIN MODAL -->
   <div class="modal-overlay" id="joinModal">
-    <div class="modal" style="max-width: 420px; border: 1px solid var(--thy-red);">
+    <div class="modal modal-border-red">
       <div class="modal-header">
-        <h3 class="modal-title" style="color: var(--thy-red); font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+        <h3 class="modal-title modal-title-red">
           🛫 Rotaya Katıl
         </h3>
       </div>
-      <div class="modal-body" style="padding: 10px 0;">
-        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+      <div class="modal-body modal-body-padding">
+        <p class="modal-text-desc">
           Bir seyahat planına davet edildiniz! Rota üzerinde ortak çalışmak, durakları ve notları düzenlemek için lütfen isminizi girin.
         </p>
         <div class="form-group-booking">
-          <label for="joinUserNameInput" style="font-weight: 600; font-size: 12px; margin-bottom: 8px; display: block; color: var(--thy-gold);">İsminiz</label>
+          <label for="joinUserNameInput" class="modal-input-label">İsminiz</label>
           <div class="input-wrapper">
             <span class="input-icon">👤</span>
-            <input type="text" id="joinUserNameInput" placeholder="Adınızı yazın..." autocomplete="off" style="width: 100%; padding: 12px 12px 12px 40px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); color: white; border-radius: 6px;">
+            <input type="text" id="joinUserNameInput" placeholder="Adınızı yazın..." autocomplete="off" class="modal-text-input">
           </div>
         </div>
       </div>
-      <div class="modal-footer" style="display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end;">
-        <button class="btn btn-gold btn-full" id="btnConfirmJoin" disabled style="width: 100%; opacity: 0.5;">
+      <div class="modal-footer modal-footer-flex">
+        <button class="btn btn-gold btn-full btn-confirm-join" id="btnConfirmJoin" disabled>
           <span class="icon">✈️</span> Rotaya Dahil Ol
         </button>
       </div>
@@ -807,12 +807,12 @@
         <button class="modal-close" id="btnCloseNoteModal">✕</button>
       </div>
       <div class="modal-body">
-        <div id="noteModalTargetName" style="font-size: 13px; color: var(--thy-gold); margin-bottom: var(--space-sm); font-weight: 700;"></div>
-        <textarea class="json-area" id="noteTxt" placeholder="Bu konum için planlarınızı veya notunuzu yazın..." style="height: 120px; resize: none;"></textarea>
+        <div id="noteModalTargetName" class="note-modal-target-name"></div>
+        <textarea class="json-area modal-note-textarea" id="noteTxt" placeholder="Bu konum için planlarınızı veya notunuzu yazın..."></textarea>
       </div>
-      <div class="modal-footer" style="display: flex; justify-content: space-between; width: 100%;">
-        <button class="btn btn-secondary" id="btnDeleteNote" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; border-color: rgba(239, 68, 68, 0.15);">Notu Sil</button>
-        <div style="display: flex; gap: 8px;">
+      <div class="modal-footer modal-footer-flex-between">
+        <button class="btn btn-secondary btn-delete-note" id="btnDeleteNote">Notu Sil</button>
+        <div class="flex-gap-sm">
           <button class="btn btn-secondary" id="btnCancelNote">İptal</button>
           <button class="btn btn-primary" id="btnSaveNote">Kaydet</button>
         </div>
@@ -822,21 +822,21 @@
 
   <!-- CUSTOM CONFIRMATION MODAL -->
   <div class="modal-overlay" id="confirmModal">
-    <div class="modal" style="max-width: 400px; border: 1px solid var(--thy-red);">
+    <div class="modal modal-confirm">
       <div class="modal-header">
-        <h3 class="modal-title" style="color: var(--thy-red); font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+        <h3 class="modal-title modal-title-red-sm">
           ⚠️ Seyahati Sil
         </h3>
         <button class="modal-close" id="btnCloseConfirmModal">✕</button>
       </div>
-      <div class="modal-body" style="padding: 10px 0;">
-        <p id="confirmModalText" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+      <div class="modal-body modal-body-padding">
+        <p id="confirmModalText" class="modal-text-desc">
           Bu seyahat planını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
         </p>
       </div>
-      <div class="modal-footer" style="display: flex; gap: 8px; justify-content: flex-end;">
-        <button class="btn btn-secondary" id="btnConfirmCancel" style="width: 40%;">Vazgeç</button>
-        <button class="btn btn-primary" id="btnConfirmProceed" style="width: 60%; background-color: var(--thy-red); border-color: var(--thy-red);">
+      <div class="modal-footer modal-footer-flex-center">
+        <button class="btn btn-secondary width-40" id="btnConfirmCancel">Vazgeç</button>
+        <button class="btn btn-primary width-60" id="btnConfirmProceed">
           Seyahati Sil
         </button>
       </div>
@@ -845,23 +845,23 @@
 
   <!-- PILOT ID SYNC MODAL -->
   <div class="modal-overlay" id="pilotSyncModal">
-    <div class="modal" style="max-width: 400px;">
+    <div class="modal modal-sync">
       <div class="modal-header">
         <h3 class="modal-title">🔄 Diğer Cihazla Eşitle</h3>
         <button class="modal-close" id="btnCloseSyncModal">✕</button>
       </div>
-      <div class="modal-body" style="padding: 15px 0;">
-        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5;">
+      <div class="modal-body modal-body-padding-lg">
+        <p class="modal-text-desc-sm">
           Diğer cihazınızdaki seyahatlerinizi bu cihaza aktarmak için o cihazın <strong>Cihaz Eşitleme Kodu</strong>'nu girin. Bu işlem iki cihazdaki seyahat listelerini birleştirecektir.
         </p>
         <div class="form-group-booking">
-          <label style="font-weight: 600; font-size: 11px; margin-bottom: 6px; display: block; color: var(--thy-gold);">Diğer Cihazın Eşitleme Kodu</label>
-          <input type="text" id="targetPilotIdInput" placeholder="Örn: a1b2c3d4..." autocomplete="off" style="width: 100%; padding: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); color: white; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: center;">
+          <label class="modal-input-label-sm">Diğer Cihazın Eşitleme Kodu</label>
+          <input type="text" id="targetPilotIdInput" placeholder="Örn: a1b2c3d4..." autocomplete="off" class="modal-text-input-mono">
         </div>
       </div>
-      <div class="modal-footer" style="display: flex; gap: 8px; margin-top: 10px;">
-        <button class="btn btn-secondary btn-full" id="btnCancelSync" style="width: 50%;">İptal</button>
-        <button class="btn btn-primary btn-full" id="btnConfirmSync" style="width: 50%;">
+      <div class="modal-footer modal-footer-margin flex-gap-sm">
+        <button class="btn btn-secondary btn-full width-50" id="btnCancelSync">İptal</button>
+        <button class="btn btn-primary btn-full width-50" id="btnConfirmSync">
           Eşitlemeyi Başlat
         </button>
       </div>
@@ -870,15 +870,15 @@
 
   <!-- PRIVACY MODAL (KVKK & GDPR) -->
   <div class="modal-overlay" id="privacyModal">
-    <div class="modal" style="max-width: 550px;">
-      <div class="modal-header" style="margin-bottom: var(--space-md);">
-        <h3 class="modal-title" style="color: var(--thy-gold); display: flex; align-items: center; gap: 8px;">
+    <div class="modal modal-privacy">
+      <div class="modal-header modal-body-margin">
+        <h3 class="modal-title modal-title-gold">
           🛡️ KVKK & Gizlilik Politikası / Privacy Policy
         </h3>
         <button class="modal-close" id="btnClosePrivacyModal">✕</button>
       </div>
-      <div class="modal-body" style="margin-bottom: var(--space-md);">
-        <div class="privacy-tabs" style="display: flex; gap: 8px; margin-bottom: 12px;">
+      <div class="modal-body modal-body-margin">
+        <div class="privacy-tabs">
           <button type="button" class="privacy-tab-btn active" id="btnPrivacyTr">Türkçe</button>
           <button type="button" class="privacy-tab-btn" id="btnPrivacyEn">English</button>
         </div>
@@ -955,8 +955,8 @@
           <p>You have the right to access, rectify, or request the erasure of your personal data stored in our database. You can manage and delete your local data at any time by clearing your browser cache/local storage or using the "Delete" buttons in the app.</p>
         </div>
       </div>
-      <div class="modal-footer" style="margin-top: 15px;">
-        <button class="btn btn-gold btn-full" id="btnAcceptPrivacy" style="width: 100%;">Anladım / Close</button>
+      <div class="modal-footer modal-footer-margin">
+        <button class="btn btn-gold btn-full width-100" id="btnAcceptPrivacy">Anladım / Close</button>
       </div>
     </div>
   </div>
