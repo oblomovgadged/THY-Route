@@ -1860,6 +1860,8 @@ input, textarea, select {
   gap: var(--space-sm);
   max-height: 380px;
   overflow-y: auto;
+  padding-top: 12px;
+  padding-bottom: 4px;
   padding-right: 4px;
 }
 
