@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="THY Route">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
@@ -119,14 +120,14 @@
             <!-- Dates -->
             <div class="form-row-booking">
               <div class="form-group-booking">
-                <label id="lblDepDate">Gidiş Tarihi</label>
+                <label for="flightDepartureDate" id="lblDepDate">Gidiş Tarihi</label>
                 <div class="input-wrapper">
                   <span class="input-icon">📅</span>
                   <input type="date" id="flightDepartureDate">
                 </div>
               </div>
               <div class="form-group-booking" id="returnDateGroup">
-                <label id="lblRetDate">Dönüş Tarihi (Kaç Gün Kalacaksınız?)</label>
+                <label for="flightReturnDate" id="lblRetDate">Dönüş Tarihi (Kaç Gün Kalacaksınız?)</label>
                 <div class="input-wrapper">
                   <span class="input-icon">📅</span>
                   <input type="date" id="flightReturnDate">
@@ -137,7 +138,7 @@
             <!-- Passengers & Class -->
             <div class="form-row-booking">
               <div class="form-group-booking">
-                <label id="lblPassengers">Yolcu</label>
+                <label for="flightPassengers" id="lblPassengers">Yolcu</label>
                 <select id="flightPassengers" class="select-booking">
                   <option value="1">1 Yolcu</option>
                   <option value="2">2 Yolcu</option>
@@ -146,7 +147,7 @@
                 </select>
               </div>
               <div class="form-group-booking">
-                <label id="lblCabinClass">Kabin Sınıfı</label>
+                <label for="flightCabinClass" id="lblCabinClass">Kabin Sınıfı</label>
                 <select id="flightCabinClass" class="select-booking">
                   <option value="economy">Economy Class</option>
                   <option value="business">Business Class</option>
@@ -494,7 +495,7 @@
                 </span>
               </div>
               <div class="pilot-sync-body">
-                <input type="text" id="pilotIdInput" readonly value="Bağlanıyor...">
+                <input type="text" id="pilotIdInput" aria-labelledby="lblSyncCodeTitle" readonly value="Bağlanıyor...">
                 <button class="btn btn-secondary btn-sm" id="btnCopyPilotId" title="Kopyala">
                   <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                 </button>
@@ -678,7 +679,7 @@
             <form id="baggagePetForm" class="booking-form premium-baggage-form">
               <!-- Service Type -->
               <div class="form-group-booking">
-                <label id="lblBaggageType">Hizmet Türü</label>
+                <label for="baggageTypeSelect" id="lblBaggageType">Hizmet Türü</label>
                 <select id="baggageTypeSelect" class="select-booking premium-baggage-select">
                   <option value="pet_cabin" id="optPetCabin">Kabin İçi Evcil Hayvan Kafesi</option>
                   <option value="pet_cargo" id="optPetCargo">Kargo Bölümü Evcil Hayvan Kafesi</option>
@@ -690,22 +691,22 @@
               <!-- Dimensions (W x H x D) -->
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-sm);">
                 <div class="form-group-booking">
-                  <label id="lblBaggageWidth">Genişlik (cm)</label>
+                  <label for="baggageWidth" id="lblBaggageWidth">Genişlik (cm)</label>
                   <input type="number" id="baggageWidth" class="premium-baggage-input" placeholder="30" min="1" required>
                 </div>
                 <div class="form-group-booking">
-                  <label id="lblBaggageHeight">Yükseklik (cm)</label>
+                  <label for="baggageHeight" id="lblBaggageHeight">Yükseklik (cm)</label>
                   <input type="number" id="baggageHeight" class="premium-baggage-input" placeholder="23" min="1" required>
                 </div>
                 <div class="form-group-booking">
-                  <label id="lblBaggageDepth">Derinlik (cm)</label>
+                  <label for="baggageDepth" id="lblBaggageDepth">Derinlik (cm)</label>
                   <input type="number" id="baggageDepth" class="premium-baggage-input" placeholder="40" min="1" required>
                 </div>
               </div>
 
               <!-- Weight -->
               <div class="form-group-booking">
-                <label id="lblBaggageWeight">Ağırlık (kg)</label>
+                <label for="baggageWeight" id="lblBaggageWeight">Ağırlık (kg)</label>
                 <input type="number" id="baggageWeight" class="premium-baggage-input" placeholder="8" min="0.1" step="0.1" required>
               </div>
 
@@ -748,7 +749,7 @@
           Bir seyahat planına davet edildiniz! Rota üzerinde ortak çalışmak, durakları ve notları düzenlemek için lütfen isminizi girin.
         </p>
         <div class="form-group-booking">
-          <label style="font-weight: 600; font-size: 12px; margin-bottom: 8px; display: block; color: var(--thy-gold);">İsminiz</label>
+          <label for="joinUserNameInput" style="font-weight: 600; font-size: 12px; margin-bottom: 8px; display: block; color: var(--thy-gold);">İsminiz</label>
           <div class="input-wrapper">
             <span class="input-icon">👤</span>
             <input type="text" id="joinUserNameInput" placeholder="Adınızı yazın..." autocomplete="off" style="width: 100%; padding: 12px 12px 12px 40px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); color: white; border-radius: 6px;">
@@ -771,7 +772,7 @@
         <button class="modal-close" id="btnCloseImportModal">✕</button>
       </div>
       <div class="modal-body">
-        <textarea class="json-area" id="importJsonArea" placeholder='JSON verisini buraya yapıştırın...'></textarea>
+        <textarea class="json-area" id="importJsonArea" aria-label="İçe Aktarılacak JSON Verisi" placeholder='JSON verisini buraya yapıştırın...'></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="btnCancelImport">İptal</button>
@@ -788,7 +789,7 @@
         <button class="modal-close" id="btnCloseExportModal">✕</button>
       </div>
       <div class="modal-body">
-        <textarea class="json-area" id="exportJsonArea" readonly></textarea>
+        <textarea class="json-area" id="exportJsonArea" aria-label="Dışa Aktarılacak JSON Verisi" readonly></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="btnCloseExport">Kapat</button>
