@@ -298,27 +298,27 @@
         <!-- Tabs -->
         <div class="panel-tabs">
           <button class="panel-tab active" data-tab="route">
-            <span class="panel-tab__icon">🗺️</span>
+            <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg></span>
             Rota
           </button>
           <button class="panel-tab" data-tab="places">
-            <span class="panel-tab__icon">📌</span>
+            <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
             Yerler
           </button>
           <button class="panel-tab" data-tab="email">
-            <span class="panel-tab__icon">✉️</span>
+            <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span>
             Rapor
           </button>
           <button class="panel-tab" data-tab="trips">
-            <span class="panel-tab__icon">💼</span>
+            <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span>
             Seyahatler
           </button>
           <button class="panel-tab" data-tab="miles-smiles" title="Miles&Smiles Fırsatları">
-            <span class="panel-tab__icon">❤️</span>
+            <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
             <span id="lblTabMS">M&S</span>
           </button>
           <button class="panel-tab" data-tab="baggage-pet" title="Bagaj & Evcil Hayvan">
-            <span class="panel-tab__icon">🧳</span>
+            <span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg></span>
             <span id="lblTabBaggage">Bagaj & Pet</span>
           </button>
           <button id="btnLangToggleMobile" class="lang-toggle-btn lang-toggle-mobile" style="margin-left: 10px; font-size: 11px; padding: 4px 10px;">🌐 EN</button>
@@ -389,19 +389,41 @@
           <div class="tab-pane fade-in-slide" id="tabPlaces">
             <div class="places-search">
               <input type="text" class="search-input" id="placesSearchInput" placeholder="Yer ara... (ör. Ramen, Hotel)">
-              <button class="btn btn-primary" id="btnPlacesSearch">🔍</button>
+              <button class="btn btn-primary" id="btnPlacesSearch" title="Ara">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </button>
             </div>
             <div class="places-filters">
-              <button class="filter-chip" data-type="restaurant">🍜 Restoranlar</button>
-              <button class="filter-chip" data-type="lodging">🏨 Oteller</button>
-              <button class="filter-chip" data-type="tourist_attraction">🏯 Turistik</button>
-              <button class="filter-chip" data-type="cafe">☕ Kafeler</button>
-              <button class="filter-chip" data-type="shopping_mall">🛍️ Alışveriş</button>
-              <button class="filter-chip" data-type="local">🏠 Yerel Halk (Local)</button>
+              <button class="filter-chip" data-type="restaurant">
+                <svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v7c0 2.2 1.8 4 4 4v9h2v-9c2.2 0 4-1.8 4-4V2M6 2v4M8 2v4M18 2c-2.2 0-4 1.8-4 4v16h2V12h2v10h2V6c0-2.2-1.8-4-4-4z"></path></svg>
+                Restoranlar
+              </button>
+              <button class="filter-chip" data-type="lodging">
+                <svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16M2 11h20M22 4v16M18 11v8M12 11v8M6 11V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4"></path></svg>
+                Oteller
+              </button>
+              <button class="filter-chip" data-type="tourist_attraction">
+                <svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                Turistik
+              </button>
+              <button class="filter-chip" data-type="cafe">
+                <svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"></path></svg>
+                Kafeler
+              </button>
+              <button class="filter-chip" data-type="shopping_mall">
+                <svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"></path></svg>
+                Alışveriş
+              </button>
+              <button class="filter-chip" data-type="local">
+                <svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                Yerel Halk (Local)
+              </button>
             </div>
             <div id="placesList">
               <div class="empty-state">
-                <div class="empty-state__icon">📌</div>
+                <div class="empty-state__icon">
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--thy-gold);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
                 <div class="empty-state__title" id="lblPlacesEmptyTitle">Yer Keşfet</div>
                 <div class="empty-state__text" id="lblPlacesEmptyText">Filtrelere tıklayarak veya arama yaparak etraftaki yerleri keşfedin.</div>
               </div>
@@ -453,26 +475,30 @@
           <div class="tab-pane fade-in-slide" id="tabTrips">
             <div class="route-header" style="margin-bottom: var(--space-md);">
               <div class="route-title" id="lblSavedTripsTitle">
-                <span class="icon">💼</span>
+                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span>
                 Seyahatlerim
               </div>
             </div>
 
             <!-- Pilot Sync Control Card -->
-            <div class="pilot-sync-card" id="pilotSyncCard" style="margin-bottom: var(--space-md); padding: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 8px;">
-              <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; letter-spacing: 0.5px;">
+            <div class="pilot-sync-card" id="pilotSyncCard">
+              <div class="pilot-sync-header">
                 <span id="lblSyncCodeTitle">Cihaz Eşitleme Kodu</span>
-                <span id="syncStatus" style="color: #10B981; font-weight: bold; display: flex; align-items: center; gap: 4px;">
-                  <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10B981;"></span> Eşitlendi
+                <span id="syncStatus">
+                  <span class="sync-status-dot"></span>
+                  <span class="sync-status-text">Eşitlendi</span>
                 </span>
               </div>
-              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-                <input type="text" id="pilotIdInput" readonly style="flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 8px; border: 1px solid var(--border-subtle); border-radius: 4px; background: rgba(0, 0, 0, 0.2); color: #C8A951; text-align: center; font-weight: 500;" value="Bağlanıyor...">
-                <button class="btn btn-secondary btn-sm" id="btnCopyPilotId" title="Kopyala" style="padding: 0 10px; min-width: unset; height: auto;">📋</button>
+              <div class="pilot-sync-body">
+                <input type="text" id="pilotIdInput" readonly value="Bağlanıyor...">
+                <button class="btn btn-secondary btn-sm" id="btnCopyPilotId" title="Kopyala">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                </button>
               </div>
-              <div style="display: flex; gap: 6px;">
-                <button class="btn btn-gold btn-sm btn-full" id="btnShowSyncModal" style="font-size: 10px; padding: 6px 12px; width: 100%; border-radius: 4px;">
-                  🔄 Diğer Cihazla Eşitle
+              <div class="pilot-sync-actions">
+                <button class="btn btn-gold btn-sm btn-full" id="btnShowSyncModal">
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                  Diğer Cihazla Eşitle
                 </button>
               </div>
             </div>
@@ -486,7 +512,7 @@
           <div class="tab-pane fade-in-slide" id="tabMilesSmiles">
             <div class="route-header" style="margin-bottom: var(--space-md);">
               <div class="route-title" id="lblMsTitle">
-                <span class="icon">❤️</span>
+                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span>
                 Miles&Smiles Ortakları
               </div>
             </div>
@@ -497,11 +523,14 @@
               </div>
               
               <!-- Category 1: Araç Kiralama -->
-              <div id="lblMsCarRental" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; margin-bottom: 2px;">🚗 ARAÇ KİRALAMA</div>
+              <div id="lblMsCarRental" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg>
+                ARAÇ KİRALAMA
+              </div>
               <div style="display: flex; flex-direction: column; gap: 6px;">
                 <div class="partner-item" data-query="Avis" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🚗</span>
+                    <span class="partner-icon" style="color: var(--thy-red-light);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Avis Araç Kiralama</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">%30 İndirim + 500 Mil!</div>
@@ -511,7 +540,7 @@
                 </div>
                 <div class="partner-item" data-query="Budget Rent A Car" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🚘</span>
+                    <span class="partner-icon" style="color: var(--thy-red-light);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Budget Rent A Car</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">%25 İndirim + 400 Mil!</div>
@@ -522,11 +551,14 @@
               </div>
 
               <!-- Category 2: Otel & Konaklama -->
-              <div id="lblMsAccommodation" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px;">🏨 KONAKLAMA VE OTELLER</div>
+              <div id="lblMsAccommodation" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg>
+                KONAKLAMA VE OTELLER
+              </div>
               <div style="display: flex; flex-direction: column; gap: 6px;">
                 <div class="partner-item" data-query="Hilton Hotel" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🏨</span>
+                    <span class="partner-icon" style="color: var(--thy-gold);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Hilton Hotels & Resorts</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Konaklamalarda 3 Kat Mil!</div>
@@ -536,7 +568,7 @@
                 </div>
                 <div class="partner-item" data-query="Marriott Hotel" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🏨</span>
+                    <span class="partner-icon" style="color: var(--thy-gold);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Marriott Bonvoy</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Her Konaklamada 500 Mil!</div>
@@ -546,7 +578,7 @@
                 </div>
                 <div class="partner-item" data-query="Rixos Hotel" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🏰</span>
+                    <span class="partner-icon" style="color: var(--thy-gold);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Rixos Hotels</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">%15 İndirim + Çift Mil!</div>
@@ -557,11 +589,14 @@
               </div>
 
               <!-- Category 3: VIP Taşımacılık -->
-              <div id="lblMsVip" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px;">🚐 HAVALİMANI VIP TAŞIMACILIK</div>
+              <div id="lblMsVip" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg>
+                HAVALİMANI VIP TAŞIMACILIK
+              </div>
               <div style="display: flex; flex-direction: column; gap: 6px;">
                 <div class="partner-item" data-query="Airport Transfer Shuttle" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🚌</span>
+                    <span class="partner-icon" style="color: var(--thy-blue);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Havaş & Havaist Ulaşım</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Bilet Alımlarında %20 Mil İndirimi!</div>
@@ -571,7 +606,7 @@
                 </div>
                 <div class="partner-item" data-query="Secure Drive Airport Transfer" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🚐</span>
+                    <span class="partner-icon" style="color: var(--thy-blue);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Secure Drive VIP Transfer</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Transferde 200 Mil Hediye!</div>
@@ -582,11 +617,14 @@
               </div>
 
               <!-- Category 4: Acentalar ve Turlar -->
-              <div id="lblMsAgencies" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px;">✈️ ACENTALAR VE GEZİ TURLARI</div>
+              <div id="lblMsAgencies" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; margin-bottom: 2px; display: flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg>
+                ACENTALAR VE GEZİ TURLARI
+              </div>
               <div style="display: flex; flex-direction: column; gap: 6px;">
                 <div class="partner-item" data-query="Setur" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">✈️</span>
+                    <span class="partner-icon" style="color: var(--text-secondary);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Setur Seyahat Acentası</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">Turlarda 2.500 Mil Hediye!</div>
@@ -596,7 +634,7 @@
                 </div>
                 <div class="partner-item" data-query="Jolly Tur" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle); cursor: pointer; transition: all 0.2s;">
                   <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;">🎟️</span>
+                    <span class="partner-icon" style="color: var(--text-secondary);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg></span>
                     <div>
                       <div class="partner-name" style="font-size: 12px; font-weight: 700; color: white;">Jolly Tur</div>
                       <div class="partner-offer" style="font-size: 10px; color: var(--thy-red-light); font-weight: 600;">%10 Ek Mil Kazanımı!</div>
@@ -607,7 +645,10 @@
               </div>
 
               <!-- Category 5: Aktif Fiyat Alarmları -->
-              <div id="lblMsActiveAlerts" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 12px; margin-bottom: 4px;">🔔 AKTİF FİYAT ALARMLARI</div>
+              <div id="lblMsActiveAlerts" style="font-size: 10px; font-weight: 800; color: var(--thy-gold); letter-spacing: 1px; text-transform: uppercase; margin-top: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                AKTİF FİYAT ALARMLARI
+              </div>
               <div id="activeAlertsList" style="display: flex; flex-direction: column; gap: 6px;">
                 <div style="font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center; padding: 12px; border: 1px dashed var(--border-subtle); border-radius: 6px; background: rgba(255, 255, 255, 0.01);">
                   Henüz aktif bir fiyat alarmı bulunmuyor.
@@ -621,7 +662,7 @@
           <div class="tab-pane fade-in-slide" id="tabBaggagePet">
             <div class="route-header" style="margin-bottom: var(--space-md);">
               <div class="route-title" id="lblBaggageTitle">
-                <span class="icon">🧳</span>
+                <span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg></span>
                 Bagaj & Pet Doğrulama
               </div>
             </div>
@@ -630,54 +671,54 @@
               <span id="lblBaggageIntro">Uçuş öncesi kabin içi evcil hayvan, kargo kafesi ve bagaj boyutlarınızı doğrulayın.</span>
             </div>
 
-            <form id="baggagePetForm" class="booking-form" style="display: flex; flex-direction: column; gap: var(--space-sm); background: var(--bg-card); padding: var(--space-md); border-radius: 12px; border: 1px solid var(--border-subtle);">
+            <form id="baggagePetForm" class="booking-form premium-baggage-form">
               <!-- Service Type -->
               <div class="form-group-booking">
-                <label id="lblBaggageType" style="font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: var(--thy-gold);">Hizmet Türü</label>
-                <select id="baggageTypeSelect" class="select-booking" style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
-                  <option value="pet_cabin" id="optPetCabin">🐱 Kabin İçi Evcil Hayvan Kafesi</option>
-                  <option value="pet_cargo" id="optPetCargo">🐕 Kargo Bölümü Evcil Hayvan Kafesi</option>
-                  <option value="baggage_checked" id="optBaggageChecked">🧳 Kayıtlı Bagaj (Standart Tek Parça)</option>
-                  <option value="baggage_oversize" id="optBaggageOversize">📦 Büyük (Oversize) Bagaj</option>
+                <label id="lblBaggageType">Hizmet Türü</label>
+                <select id="baggageTypeSelect" class="select-booking premium-baggage-select">
+                  <option value="pet_cabin" id="optPetCabin">Kabin İçi Evcil Hayvan Kafesi</option>
+                  <option value="pet_cargo" id="optPetCargo">Kargo Bölümü Evcil Hayvan Kafesi</option>
+                  <option value="baggage_checked" id="optBaggageChecked">Kayıtlı Bagaj (Standart Tek Parça)</option>
+                  <option value="baggage_oversize" id="optBaggageOversize">Büyük (Oversize) Bagaj</option>
                 </select>
               </div>
 
               <!-- Dimensions (W x H x D) -->
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-sm);">
                 <div class="form-group-booking">
-                  <label id="lblBaggageWidth" style="font-size: 9px; font-weight: 700; color: var(--text-muted);">Genişlik (cm)</label>
-                  <input type="number" id="baggageWidth" placeholder="30" min="1" required style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+                  <label id="lblBaggageWidth">Genişlik (cm)</label>
+                  <input type="number" id="baggageWidth" class="premium-baggage-input" placeholder="30" min="1" required>
                 </div>
                 <div class="form-group-booking">
-                  <label id="lblBaggageHeight" style="font-size: 9px; font-weight: 700; color: var(--text-muted);">Yükseklik (cm)</label>
-                  <input type="number" id="baggageHeight" placeholder="23" min="1" required style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+                  <label id="lblBaggageHeight">Yükseklik (cm)</label>
+                  <input type="number" id="baggageHeight" class="premium-baggage-input" placeholder="23" min="1" required>
                 </div>
                 <div class="form-group-booking">
-                  <label id="lblBaggageDepth" style="font-size: 9px; font-weight: 700; color: var(--text-muted);">Derinlik (cm)</label>
-                  <input type="number" id="baggageDepth" placeholder="40" min="1" required style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+                  <label id="lblBaggageDepth">Derinlik (cm)</label>
+                  <input type="number" id="baggageDepth" class="premium-baggage-input" placeholder="40" min="1" required>
                 </div>
               </div>
 
               <!-- Weight -->
               <div class="form-group-booking">
-                <label id="lblBaggageWeight" style="font-size: 10px; font-weight: 700; color: var(--text-muted);">Ağırlık (kg)</label>
-                <input type="number" id="baggageWeight" placeholder="8" min="0.1" step="0.1" required style="background: rgba(10, 22, 40, 0.6); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-subtle); color: white; width: 100%; font-size: 12px;">
+                <label id="lblBaggageWeight">Ağırlık (kg)</label>
+                <input type="number" id="baggageWeight" class="premium-baggage-input" placeholder="8" min="0.1" step="0.1" required>
               </div>
 
               <!-- Calculate Button -->
-              <button type="submit" class="btn btn-primary" id="btnBaggageCalculate" style="margin-top: 6px; font-size: 12px; font-weight: 700;">Doğrula ve Hesapla</button>
+              <button type="submit" class="btn btn-primary" id="btnBaggageCalculate">Doğrula ve Hesapla</button>
             </form>
 
             <!-- Results Card -->
-            <div id="baggageResultCard" style="display: none; margin-top: var(--space-md); padding: var(--space-md); border-radius: 12px; border: 1px solid var(--border-subtle); background: rgba(255, 255, 255, 0.02); transition: all 0.3s ease;">
-              <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;" id="baggageResultStatusHeader">DOĞRULAMA SONUCU</div>
-              <div id="baggageResultStatus" style="font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: var(--space-xs); margin-bottom: 8px;">
+            <div id="baggageResultCard" style="display: none;">
+              <div id="baggageResultStatusHeader">DOĞRULAMA SONUCU</div>
+              <div id="baggageResultStatus">
                 <!-- Status icon and text -->
               </div>
-              <div id="baggageResultDetails" style="font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
+              <div id="baggageResultDetails">
                 <!-- Comparison and fee details -->
               </div>
-              <div id="baggageResultAction" style="font-size: 11px; font-weight: 600; padding: 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.03); display: none;">
+              <div id="baggageResultAction">
                 <!-- Redirect or fee action warning -->
               </div>
             </div>

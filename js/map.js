@@ -788,11 +788,43 @@ function initMap() {
     return '📍';
   }
 
+  function getPlaceSVG(types) {
+    if (!types) return '<svg class="place-svg default-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--thy-red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>';
+    if (types.includes('restaurant') || types.includes('food')) {
+      return '<svg class="place-svg restaurant-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--thy-red-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v7c0 2.2 1.8 4 4 4v9h2v-9c2.2 0 4-1.8 4-4V2M6 2v4M8 2v4M18 2c-2.2 0-4 1.8-4 4v16h2V12h2v10h2V6c0-2.2-1.8-4-4-4z"></path></svg>';
+    }
+    if (types.includes('lodging')) {
+      return '<svg class="place-svg lodging-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--thy-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16M2 11h20M22 4v16M18 11v8M12 11v8M6 11V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4"></path></svg>';
+    }
+    if (types.includes('tourist_attraction') || types.includes('museum') || types.includes('temple') || types.includes('place_of_worship')) {
+      return '<svg class="place-svg tourist-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--thy-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>';
+    }
+    if (types.includes('cafe')) {
+      return '<svg class="place-svg cafe-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--thy-gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"></path></svg>';
+    }
+    if (types.includes('shopping_mall') || types.includes('store')) {
+      return '<svg class="place-svg shopping-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"></path></svg>';
+    }
+    return '<svg class="place-svg default-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--thy-red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>';
+  }
+
   function renderStars(rating) {
     if (!rating) return '';
     const full = Math.floor(rating);
     const half = rating % 1 >= 0.5 ? 1 : 0;
-    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half);
+    
+    let starsHtml = '<div class="star-rating-row" style="display: inline-flex; gap: 2px; align-items: center; vertical-align: middle;">';
+    for (let i = 0; i < 5; i++) {
+      if (i < full) {
+        starsHtml += `<svg viewBox="0 0 24 24" width="10" height="10" fill="var(--thy-gold)" stroke="var(--thy-gold)" stroke-width="1" style="display: block;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+      } else if (i === full && half) {
+        starsHtml += `<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="var(--thy-gold)" stroke-width="1.5" style="display: block;"><defs><linearGradient id="halfGrad"><stop offset="50%" stop-color="var(--thy-gold)"/><stop offset="50%" stop-color="transparent" stop-opacity="1"/></linearGradient></defs><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="url(#halfGrad)"></polygon></svg>`;
+      } else {
+        starsHtml += `<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="var(--border-subtle)" stroke-width="1.5" style="display: block;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+      }
+    }
+    starsHtml += '</div>';
+    return starsHtml;
   }
 
   THY.reRenderPlaceMarkers = () => {
@@ -811,7 +843,9 @@ function initMap() {
     if (!places || places.length === 0) {
       list.innerHTML = `
         <div class="empty-state">
-          <div class="empty-state__icon">😔</div>
+          <div class="empty-state__icon">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
           <div class="empty-state__title">Sonuç Bulunamadı</div>
           <div class="empty-state__text">Farklı bir filtre veya arama terimi deneyin.</div>
         </div>
@@ -823,6 +857,7 @@ function initMap() {
 
     places.forEach((place) => {
       const emoji = getPlaceEmoji(place.types);
+      const svgIcon = getPlaceSVG(place.types);
       const lat = place.geometry.location.lat();
       const lng = place.geometry.location.lng();
 
@@ -842,7 +877,7 @@ function initMap() {
         card.style = cardStyle;
       }
       card.innerHTML = `
-        <div class="place-icon">${emoji}</div>
+        <div class="place-icon">${svgIcon}</div>
         <div class="place-info">
           <div class="place-name">${place.name} ${partnerBadge}</div>
           <div class="place-address">${place.vicinity || place.formatted_address || ''}</div>

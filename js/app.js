@@ -272,11 +272,11 @@ const thyApiConfig = {
       '#lblBoardDep': 'Kalkış',
       '#lblBoardArr': 'Varış',
       '#lblBoardGate': 'Kapı',
-      '[data-tab="route"]': '<span class="panel-tab__icon">🗺️</span> Rota',
-      '[data-tab="places"]': '<span class="panel-tab__icon">📌</span> Yerler',
-      '[data-tab="email"]': '<span class="panel-tab__icon">✉️</span> Rapor',
-      '[data-tab="trips"]': '<span class="panel-tab__icon">💼</span> Seyahatler',
-      '[data-tab="miles-smiles"]': '<span class="panel-tab__icon">❤️</span> M&S',
+      '[data-tab="route"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg></span> Rota',
+      '[data-tab="places"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Yerler',
+      '[data-tab="email"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span> Rapor',
+      '[data-tab="trips"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span> Seyahatler',
+      '[data-tab="miles-smiles"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span> M&S',
       '#tabRoute .route-title': '<span class="icon">✈️</span> <span id="lblRouteTitle">Seyahat Rotası</span>',
       '#btnAddingDay': { title: 'Yeni Gün Ekle' },
       '#joinModal .modal-title': '🛫 Rotaya Katıl',
@@ -292,8 +292,8 @@ const thyApiConfig = {
       '#exportModal p': 'Bu seyahat planını başkalarıyla paylaşarak aynı rota üzerinde gerçek zamanlı olarak birlikte çalışabilirsiniz.',
       '#lblCaptainCode': 'Kaptan Eşitleme Kodu (Sizin Kodunuz)',
       '#lblCoPilotCode': 'Yardımcı Pilot Eşitleme Kodu (Davet Ettiğiniz Kişi)',
-      '#btnCopyInviteLink': '<span class="icon">🔗</span> Davet Linkini Kopyala',
-      '#btnShareByEmail': '✉️ Raporu E-posta ile Gönder',
+      '#btnCopyInviteLink': '<span class="icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Davet Linkini Kopyala',
+      '#btnShareByEmail': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Raporu E-posta ile Gönder',
       '#btnCloseExport': 'Kapat',
       '#btnCopyExport': '📋 Kopyala',
       '#btnDownloadExport': '⬇️ İndir',
@@ -309,28 +309,28 @@ const thyApiConfig = {
       '#emailFrom': { placeholder: 'Gezgin Adı' },
       '#lblEmailNote': 'Ek Not',
       '#emailNote': { placeholder: 'Seyahat hakkında notlarınız...' },
-      '#lblEmailPreviewHeader': '✈️ THY Route — Seyahat Raporu',
-      '#btnSendEmail': '<span class="icon">📧</span> Rapor & Davet Gönder',
+      '#lblEmailPreviewHeader': '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg> THY Route — Seyahat Raporu',
+      '#btnSendEmail': '<span class="icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></span> Rapor & Davet Gönder',
       '#lblSavedTripsTitle': '<span class="icon">💼</span> Seyahatlerim',
       '#lblSyncCodeTitle': 'Cihaz Eşitleme Kodu',
       '#syncStatus': '<span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10B981;"></span> Eşitlendi',
       '#pilotIdInput': { value: 'Bağlanıyor...' },
-      '#btnShowSyncModal': '🔄 Diğer Cihazla Eşitle',
-      '#lblMsTitle': '<span class="icon">❤️</span> Miles&Smiles Ortakları',
-      '#lblMsDesc': '💡 Partner logolarına tıklayarak etraftaki şubelerini harita üzerinde anında keşfedebilir ve rotanıza ekleyebilirsiniz!',
-      '#lblMsCarRental': '🚗 ARAÇ KİRALAMA',
-      '#lblMsAccommodation': '🏨 KONAKLAMA VE OTELLER',
-      '#lblMsVip': '🚐 HAVALİMANI VIP TAŞIMACILIK',
-      '#lblMsAgencies': '✈️ ACENTALAR VE GEZİ TURLARI',
-      '#lblMsActiveAlerts': '🔔 AKTİF FİYAT ALARMLARI',
+      '#btnShowSyncModal': '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Diğer Cihazla Eşitle',
+      '#lblMsTitle': '<span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span> Miles&Smiles Ortakları',
+      '#lblMsDesc': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block; color: var(--thy-gold);"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .6 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"></path></svg> Partner logolarına tıklayarak etraftaki şubelerini harita üzerinde anında keşfedebilir ve rotanıza ekleyebilirsiniz!',
+      '#lblMsCarRental': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg> ARAÇ KİRALAMA',
+      '#lblMsAccommodation': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg> KONAKLAMA VE OTELLER',
+      '#lblMsVip': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg> HAVALİMANI VIP TAŞIMACILIK',
+      '#lblMsAgencies': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg> ACENTALAR VE GEZİ TURLARI',
+      '#lblMsActiveAlerts': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"></path></svg> AKTİF FİYAT ALARMLARI',
       '#lblTabBaggage': 'Bagaj & Pet',
-      '#lblBaggageTitle': '<span class="icon">🧳</span> Bagaj & Pet Doğrulama',
+      '#lblBaggageTitle': '<span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg></span> Bagaj & Pet Doğrulama',
       '#lblBaggageIntro': 'Uçuş öncesi kabin içi evcil hayvan, kargo kafesi ve bagaj boyutlarınızı doğrulayın.',
       '#lblBaggageType': 'HİZMET TÜRÜ',
-      '#optPetCabin': '🐱 Kabin İçi Evcil Hayvan Kafesi',
-      '#optPetCargo': '🐕 Kargo Bölümü Evcil Hayvan Kafesi',
-      '#optBaggageChecked': '🧳 Kayıtlı Bagaj (Standart Tek Parça)',
-      '#optBaggageOversize': '📦 Büyük (Oversize) Bagaj',
+      '#optPetCabin': 'Kabin İçi Evcil Hayvan Kafesi',
+      '#optPetCargo': 'Kargo Bölümü Evcil Hayvan Kafesi',
+      '#optBaggageChecked': 'Kayıtlı Bagaj (Standart Tek Parça)',
+      '#optBaggageOversize': 'Büyük (Oversize) Bagaj',
       '#lblBaggageWidth': 'Genişlik (cm)',
       '#lblBaggageHeight': 'Yükseklik (cm)',
       '#lblBaggageDepth': 'Derinlik (cm)',
@@ -393,11 +393,11 @@ const thyApiConfig = {
       '#lblBoardDep': 'DEPARTURE',
       '#lblBoardArr': 'ARRIVAL',
       '#lblBoardGate': 'GATE',
-      '[data-tab="route"]': '<span class="panel-tab__icon">🗺️</span> ROUTE',
-      '[data-tab="places"]': '<span class="panel-tab__icon">📌</span> PLACES',
-      '[data-tab="email"]': '<span class="panel-tab__icon">✉️</span> REPORT',
-      '[data-tab="trips"]': '<span class="panel-tab__icon">💼</span> TRIPS',
-      '[data-tab="miles-smiles"]': '<span class="panel-tab__icon">❤️</span> M&S',
+      '[data-tab="route"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg></span> ROUTE',
+      '[data-tab="places"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> PLACES',
+      '[data-tab="email"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></span> REPORT',
+      '[data-tab="trips"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></span> TRIPS',
+      '[data-tab="miles-smiles"]': '<span class="panel-tab__icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span> M&S',
       '#tabRoute .route-title': '<span class="icon">✈️</span> <span id="lblRouteTitle">TRAVEL ROUTE</span>',
       '#btnAddingDay': { title: 'Add New Day' },
       '#joinModal .modal-title': '🛫 JOIN ROUTE',
@@ -413,8 +413,8 @@ const thyApiConfig = {
       '#exportModal p': 'Share this trip plan with others to collaborate on the same route in real-time.',
       '#lblCaptainCode': 'Captain Sync Code (Your Code)',
       '#lblCoPilotCode': 'Co-Pilot Sync Code (The Person You Invite)',
-      '#btnCopyInviteLink': '<span class="icon">🔗</span> Copy Invite Link',
-      '#btnShareByEmail': '✉️ Send Report by Email',
+      '#btnCopyInviteLink': '<span class="icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></span> Copy Invite Link',
+      '#btnShareByEmail': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Send Report by Email',
       '#btnCloseExport': 'Close',
       '#btnCopyExport': '📋 Copy',
       '#btnDownloadExport': '⬇️ Download',
@@ -430,20 +430,20 @@ const thyApiConfig = {
       '#emailFrom': { placeholder: 'Traveler Name' },
       '#lblEmailNote': 'Additional Note',
       '#emailNote': { placeholder: 'Your travel notes...' },
-      '#lblEmailPreviewHeader': '✈️ THY Route — Travel Report',
-      '#btnSendEmail': '<span class="icon">📧</span> Send Report & Invite',
+      '#lblEmailPreviewHeader': '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg> THY Route — Travel Report',
+      '#btnSendEmail': '<span class="icon"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></span> Send Report & Invite',
       '#lblSavedTripsTitle': '<span class="icon">💼</span> MY TRIPS',
       '#lblSyncCodeTitle': 'DEVICE SYNC CODE',
       '#syncStatus': '<span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background-color: #10B981;"></span> SYNCED',
       '#pilotIdInput': { value: 'Connecting...' },
-      '#btnShowSyncModal': '🔄 SYNC WITH OTHER DEVICE',
-      '#lblMsTitle': '<span class="icon">❤️</span> MILES&SMILES PARTNERS',
-      '#lblMsDesc': '💡 Click on partner logos to instantly discover their nearby branches on the map and add them to your route!',
-      '#lblMsCarRental': '🚗 CAR RENTAL',
-      '#lblMsAccommodation': '🏨 ACCOMMODATION & HOTELS',
-      '#lblMsVip': '🚐 AIRPORT VIP TRANSPORTATION',
-      '#lblMsAgencies': '✈️ AGENCIES & TOURS',
-      '#lblMsActiveAlerts': '🔔 ACTIVE PRICE ALERTS',
+      '#btnShowSyncModal': '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> SYNC WITH OTHER DEVICE',
+      '#lblMsTitle': '<span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></span> MILES&SMILES PARTNERS',
+      '#lblMsDesc': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block; color: var(--thy-gold);"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .6 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"></path></svg> Click on partner logos to instantly discover their nearby branches on the map and add them to your route!',
+      '#lblMsCarRental': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2a3 3 0 0 0 6 0h2a3 3 0 0 0 6 0z"></path><circle cx="8" cy="17" r="2"></circle><circle cx="16" cy="17" r="2"></circle></svg> CAR RENTAL',
+      '#lblMsAccommodation': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7M4 21V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v17M9 14h6v7H9v-7z"></path></svg> ACCOMMODATION & HOTELS',
+      '#lblMsVip': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><rect x="2" y="4" width="20" height="12" rx="2"></rect><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle><path d="M2 12h20M6 4v4M18 4v4"></path></svg> AIRPORT VIP TRANSPORTATION',
+      '#lblMsAgencies': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"></path></svg> AGENCIES & TOURS',
+      '#lblMsActiveAlerts': '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; display: inline-block;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"></path></svg> ACTIVE PRICE ALERTS',
       '#lblPlacesEmptyTitle': 'EXPLORE PLACES',
       '#lblPlacesEmptyText': 'Discover nearby places by clicking filters or searching.',
       '#lblRouteEmptyTitle': 'ROUTE IS EMPTY',
@@ -474,13 +474,13 @@ const thyApiConfig = {
       '#priceAlertPrivacyNotice': '* By setting an alert, you consent to the processing of your data under the <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Privacy Policy</a>.',
       '#emailReportPrivacyNotice': '* By sending reports, you consent to the processing of your data under the <a href="#" class="privacy-modal-trigger" style="color: var(--thy-gold); text-decoration: underline;">Privacy Policy</a>.',
       '#lblTabBaggage': 'Baggage & Pet',
-      '#lblBaggageTitle': '<span class="icon">🧳</span> Baggage & Pet Validation',
+      '#lblBaggageTitle': '<span class="icon"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="6" width="18" height="15" rx="2"></rect><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg></span> Baggage & Pet Validation',
       '#lblBaggageIntro': 'Verify your in-cabin pet, cargo cage, and baggage dimensions before your flight.',
       '#lblBaggageType': 'SERVICE TYPE',
-      '#optPetCabin': '🐱 In-Cabin Pet Carrier/Cage',
-      '#optPetCargo': '🐕 Cargo Hold Pet Cage',
-      '#optBaggageChecked': '🧳 Checked Baggage (Standard Single Piece)',
-      '#optBaggageOversize': '📦 Oversize Baggage Limit',
+      '#optPetCabin': 'In-Cabin Pet Carrier/Cage',
+      '#optPetCargo': 'Cargo Hold Pet Cage',
+      '#optBaggageChecked': 'Checked Baggage (Standard Single Piece)',
+      '#optBaggageOversize': 'Oversize Baggage Limit',
       '#lblBaggageWidth': 'Width (cm)',
       '#lblBaggageHeight': 'Height (cm)',
       '#lblBaggageDepth': 'Depth (cm)',
@@ -635,23 +635,23 @@ const thyApiConfig = {
     const chips = document.querySelectorAll('.filter-chip');
     if (chips.length >= 6) {
       const chipLabels = lang === 'en' ? [
-        '🍜 Restaurants',
-        '🏨 Hotels',
-        '🏯 Attractions',
-        '☕ Cafes',
-        '🛍️ Shopping',
-        '🏠 Locals\' Choice'
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v7c0 2.2 1.8 4 4 4v9h2v-9c2.2 0 4-1.8 4-4V2M6 2v4M8 2v4M18 2c-2.2 0-4 1.8-4 4v16h2V12h2v10h2V6c0-2.2-1.8-4-4-4z"></path></svg> Restaurants',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16M2 11h20M22 4v16M18 11v8M12 11v8M6 11V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4"></path></svg> Hotels',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg> Attractions',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"></path></svg> Cafes',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"></path></svg> Shopping',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Locals\' Choice'
       ] : [
-        '🍜 Restoranlar',
-        '🏨 Oteller',
-        '🏯 Turistik',
-        '☕ Kafeler',
-        '🛍️ Alışveriş',
-        '🏠 Yerel Halk (Local)'
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v7c0 2.2 1.8 4 4 4v9h2v-9c2.2 0 4-1.8 4-4V2M6 2v4M8 2v4M18 2c-2.2 0-4 1.8-4 4v16h2V12h2v10h2V6c0-2.2-1.8-4-4-4z"></path></svg> Restoranlar',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16M2 11h20M22 4v16M18 11v8M12 11v8M6 11V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4"></path></svg> Oteller',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg> Turistik',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"></path></svg> Kafeler',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"></path></svg> Alışveriş',
+        '<svg class="chip-svg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Yerel Halk (Local)'
       ];
       chips.forEach((chip, i) => {
         if (chipLabels[i]) {
-          chip.textContent = chipLabels[i];
+          chip.innerHTML = chipLabels[i];
         }
       });
     }
@@ -3555,8 +3555,9 @@ ${inviteLink}
       const dayColor = THY.dayColors[(dayNum - 1) % THY.dayColors.length] || '#E31837';
       const dayLabel = isEn ? `DAY ${dayNum} ROUTE` : `${dayNum}. GÜN ROTASI`;
       routeHtml += `
-        <div style="margin-top: 16px; margin-bottom: 8px; font-weight: 800; font-size: 12px; color: ${dayColor}; letter-spacing: 1px; text-transform: uppercase;">
-          📅 ${dayLabel}
+        <div style="margin-top: 16px; margin-bottom: 8px; font-weight: 800; font-size: 12px; color: ${dayColor}; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 4px;">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          ${dayLabel}
         </div>
         <div style="border-left: 2px solid ${dayColor}; padding-left: 12px; margin-left: 4px; margin-bottom: 16px;">
       `;
@@ -3578,8 +3579,9 @@ ${inviteLink}
               COORD: ${wp.lat.toFixed(5)}°N, ${wp.lng.toFixed(5)}°E
             </div>
             ${wp.note ? `
-              <div style="margin-top: 4px; padding: 6px 10px; background: rgba(255, 255, 255, 0.02); border-left: 2px solid var(--thy-gold); font-size: 11px; color: var(--text-secondary); font-style: italic; border-radius: 0 4px 4px 0;">
-                📝 ${noteLabel}: "${wp.note}"
+              <div style="margin-top: 4px; padding: 6px 10px; background: rgba(255, 255, 255, 0.02); border-left: 2px solid var(--thy-gold); font-size: 11px; color: var(--text-secondary); font-style: italic; border-radius: 0 4px 4px 0; display: flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                ${noteLabel}: "${wp.note}"
               </div>
             ` : ''}
           </div>
@@ -3605,7 +3607,10 @@ ${inviteLink}
         <!-- Header Banner -->
         <div style="text-align: center; border-bottom: 2px double rgba(200, 169, 81, 0.3); padding-bottom: 12px; margin-bottom: 16px;">
           <div style="font-size: 9px; font-weight: 800; color: var(--thy-gold); letter-spacing: 3px; text-transform: uppercase;">Turkish Airlines | Flight Log</div>
-          <h4 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 4px 0; letter-spacing: 1px;">📋 ${isEn ? "CAPTAIN'S TRAVEL LOGBOOK" : "KAPTAN PİLOTUN SEYİR DEFTERİ"}</h4>
+          <h4 style="font-size: 15px; font-weight: 800; color: var(--text-primary); margin: 4px 0; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            ${isEn ? "CAPTAIN'S TRAVEL LOGBOOK" : "KAPTAN PİLOTUN SEYİR DEFTERİ"}
+          </h4>
           <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted);">${THY.currentTripId}</div>
         </div>
 
@@ -3886,8 +3891,8 @@ ${inviteLink}
             <span class="flight-code">${trip.flightCode || '---'}</span>
           </div>
           <div class="trip-card-meta">
-            <span>📅 ${trip.maxDays || 1} ${isEn ? (trip.maxDays === 1 ? 'Day' : 'Days') : 'Gün'}</span>
-            <span>📍 ${trip.waypointsCount || 0} ${isEn ? (trip.waypointsCount === 1 ? 'Stop' : 'Stops') : 'Durak'}</span>
+            <span style="display: inline-flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ${trip.maxDays || 1} ${isEn ? (trip.maxDays === 1 ? 'Day' : 'Days') : 'Gün'}</span>
+            <span style="display: inline-flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> ${trip.waypointsCount || 0} ${isEn ? (trip.waypointsCount === 1 ? 'Stop' : 'Stops') : 'Durak'}</span>
           </div>
         </div>
         <div class="trip-card-actions">
