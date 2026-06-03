@@ -1593,11 +1593,11 @@ input, textarea, select {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('../icons/AnaEkran.png');
+  background-image: linear-gradient(rgba(10, 22, 40, 0.45), rgba(10, 22, 40, 0.88)), url('../icons/AnaEkran.png');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
-  opacity: 0.28; /* Elegant, high-contrast dark map blend */
+  opacity: 0.55; /* Higher opacity map lines for sharp network visibility, darkened at the edges */
   pointer-events: none;
   z-index: 0;
 }
@@ -1646,12 +1646,12 @@ input, textarea, select {
 .booking-card, .flight-results-card {
   width: 100%;
   background: var(--bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px); /* Enhanced premium backdrop blur */
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12); /* Brighter, crisper glass edge border */
   border-radius: var(--radius-md);
   padding: var(--space-xl);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  box-shadow: var(--shadow-lg), var(--shadow-glow), inset 0 1px 0 0 rgba(255, 255, 255, 0.05); /* Added sharp inner edge highlight */
   position: relative;
   transition: opacity var(--transition-base), transform var(--transition-base);
   transform: translate3d(0, 0, 0);
@@ -1698,15 +1698,20 @@ input, textarea, select {
   position: relative;
   display: flex;
   align-items: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  background: rgba(10, 22, 40, 0.6); /* High contrast dark translucent background */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Sharper border to pop out of card */
   border-radius: var(--radius-md);
   transition: var(--transition-base);
 }
 
+.input-wrapper:hover {
+  border-color: rgba(255, 255, 255, 0.28); /* Crisp feedback hover */
+}
+
 .input-wrapper:focus-within {
-  border-color: var(--thy-red);
-  box-shadow: 0 0 12px rgba(227, 24, 55, 0.2);
+  border-color: var(--thy-red); /* Official THY Red */
+  box-shadow: 0 0 14px rgba(183, 49, 44, 0.35); /* Solid high contrast official red glow */
+  background: rgba(5, 11, 20, 0.85); /* Slightly darker focus background for readability */
 }
 
 .input-icon {
@@ -1745,8 +1750,8 @@ input, textarea, select {
 
 .select-booking {
   width: 100%;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  background: rgba(10, 22, 40, 0.6); /* High contrast dark translucent background */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Crisp shape boundary */
   border-radius: var(--radius-md);
   padding: 12px var(--space-md);
   font-size: 13px;
@@ -1761,9 +1766,14 @@ input, textarea, select {
   transition: var(--transition-base);
 }
 
+.select-booking:hover {
+  border-color: rgba(255, 255, 255, 0.28); /* Feedback hover */
+}
+
 .select-booking:focus {
-  border-color: var(--thy-red);
-  box-shadow: 0 0 12px rgba(227, 24, 55, 0.2);
+  border-color: var(--thy-red); /* Official THY Red */
+  box-shadow: 0 0 14px rgba(183, 49, 44, 0.35); /* Solid glow */
+  background: rgba(5, 11, 20, 0.85);
 }
 
 .form-row-booking {
