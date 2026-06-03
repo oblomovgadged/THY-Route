@@ -178,9 +178,9 @@ input, textarea, select {
   inset: 0;
   background-image: url('../icons/header-panorama.png');
   background-repeat: no-repeat;
-  background-position: center bottom;
+  background-position: center center;
   background-size: cover;
-  opacity: 0.25;
+  opacity: 0.35;
   z-index: 1;
   pointer-events: none;
 }
