@@ -22,7 +22,8 @@ Uygulamanın görsel kalitesini ve responsive yapısını en üst düzeye çıka
 
 * **`icons/favicon.png` (128x128):** Orijinal turnalı dairesel amblemin tam koordinatlarından şeffaf olarak kırpılmış, deformasyonsuz sekme ikonu.
 * **`icons/logo.png` & `icons/logo-dark.png` (h=150px):** Soluk arka plan filigranından arındırılmış, sırasıyla koyu ve açık temalar için beyaz/siyah yazılı, yüksek DPI ekranlar için keskinleştirilmiş horizontal logolar.
-* **`icons/splash.png` (1024x558):** THY uçuş ağını gösteren, responsive tasarıma uygun ve hiçbir ekran boyutunda üst logosu kırpılmayacak şekilde `center top` hizalanmış arka plan görseli.
+* **`icons/splash.png` (1024x558):** Yükleme ekranında (loading/splash screen) kullanılan, responsive tasarıma uygun ve üst logosu kırpılmayacak şekilde `center top` hizalanmış arka plan görseli.
+* **`icons/AnaEkran.png` (1024x558):** Giriş ekranı (landing page) için entegre edilen, `center center` konumlandırmalı, responsive THY uçuş ağı harita arka planı.
 
 ---
 
@@ -171,6 +172,7 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
 13. **Görsel Düzenlemeler ve Kurumsal Kimlik Entegrasyonu:**
     * Giriş ekranındaki (landing page) THY logosunun görünürlüğü ve estetiğini artırmak amacıyla `.landing-logo-img` yüksekliği `52px`'den **`90px`**'e çıkarılmıştır.
     * Logo kapsayıcısına özel dikey boşluklar (`padding: 24px 0 8px 0`) eklenmiş ve kurumsal THY kırmızısı renginde yumuşak bir dış gölge (`filter: drop-shadow(0 4px 24px rgba(227, 24, 55, 0.35))`) verilerek görsel derinlik kazandırılmıştır.
+    * Giriş ekranı arka plan görseli olarak `AnaEkran.png` entegre edilmiş, harita belirginliği (opacity) `0.28`'e çıkarılmış, `center center` hizalanmış ve arka plan rengi harita tonlarıyla uyumlu **`#0A1628`** (koyu lacivert) olarak güncellenmiştir.
 
 ## 🔮 Teknik Entegrasyon & API Yol Haritası (Technical Roadmap)
 
