@@ -1938,7 +1938,6 @@ input, textarea, select {
   width: 100%;
   background: #FFFFFF;
   border-radius: 8px;
-  border-top-left-radius: 0; /* Align with the active tab */
   padding: 24px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   position: relative;

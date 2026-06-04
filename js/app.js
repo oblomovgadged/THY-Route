@@ -247,8 +247,6 @@ const thyApiConfig = {
   const UI_TRANSLATIONS = {
     tr: {
       '#bookingCard .booking-card-title': 'Nereye uçmak istersiniz?',
-      '#btnRoundTrip': 'Gidiş-Dönüş',
-      '#btnOneWay': 'Tek Yön',
       '#lblDeparture': 'Nereden',
       '#flightDepartureInput': { placeholder: 'Şehir veya Havalimanı ara...' },
       '#lblDestination': 'Nereye',
@@ -388,8 +386,6 @@ const thyApiConfig = {
     },
     en: {
       '#bookingCard .booking-card-title': 'Where would you like to fly?',
-      '#btnRoundTrip': 'Round Trip',
-      '#btnOneWay': 'One Way',
       '#lblDeparture': 'From',
       '#flightDepartureInput': { placeholder: 'Search city or airport...' },
       '#lblDestination': 'To',
@@ -524,8 +520,9 @@ const thyApiConfig = {
       '#lblBaggageWidth': 'Width (cm)',
       '#lblBaggageHeight': 'Height (cm)',
       '#lblBaggageDepth': 'Depth (cm)',
-      '#lblBaggageWeight': 'Weight (kg)',
       '#btnBaggageCalculate': 'Validate and Calculate'
+    }
+  };
 
   THY.currentLanguage = localStorage.getItem('thy_lang') || (navigator.language.startsWith('tr') ? 'tr' : 'en');
 
@@ -1832,7 +1829,7 @@ const thyApiConfig = {
     { code: "ESB", city: "Ankara", name: "Esenboğa Havalimanı", country: "Türkiye", lat: 40.128, lng: 32.995 },
     { code: "ADB", city: "İzmir", name: "Adnan Menderes Havalimanı", country: "Türkiye", lat: 38.292, lng: 27.156 },
     { code: "AYT", city: "Antalya", name: "Antalya Havalimanı", country: "Türkiye", lat: 36.900, lng: 30.792 },
-    { code: "ADA", city: "Adana", name: "Adana Şakirpaşa Havalimanı", country: "Türkiye", lat: 36.982, lng: 35.280 },
+    { code: "ADA", city: "Adana", name: "Adana Havalimanı", country: "Türkiye", lat: 36.982, lng: 35.280 },
     { code: "TZX", city: "Trabzon", name: "Trabzon Havalimanı", country: "Türkiye", lat: 40.995, lng: 39.789 },
     { code: "BJV", city: "Muğla Bodrum", name: "Milas-Bodrum Havalimanı", country: "Türkiye", lat: 37.250, lng: 27.664 },
     { code: "DLM", city: "Muğla Dalaman", name: "Dalaman Havalimanı", country: "Türkiye", lat: 36.713, lng: 28.792 },
@@ -1848,6 +1845,15 @@ const thyApiConfig = {
     { code: "VAS", city: "Sivas", name: "Nuri Demirağ Havalimanı", country: "Türkiye", lat: 39.813, lng: 36.903 },
     { code: "OGU", city: "Ordu-Giresun", name: "Ordu-Giresun Havalimanı", country: "Türkiye", lat: 40.967, lng: 37.878 },
     { code: "GNY", city: "Şanlıurfa", name: "GAP Havalimanı", country: "Türkiye", lat: 37.449, lng: 38.908 },
+    { code: "KSY", city: "Kars", name: "Harakani Havalimanı", country: "Türkiye", lat: 40.562, lng: 43.115 },
+    { code: "MQM", city: "Mardin", name: "Mardin Prof. Dr. Aziz Sancar Havalimanı", country: "Türkiye", lat: 37.224, lng: 40.638 },
+    { code: "BAL", city: "Batman", name: "Batman Havalimanı", country: "Türkiye", lat: 37.929, lng: 41.116 },
+    { code: "DNZ", city: "Denizli", name: "Çardak Havalimanı", country: "Türkiye", lat: 37.785, lng: 29.701 },
+    { code: "MLX", city: "Malatya", name: "Erhaç Havalimanı", country: "Türkiye", lat: 38.435, lng: 38.090 },
+    { code: "ERC", city: "Erzincan", name: "Yıldırım Akbulut Havalimanı", country: "Türkiye", lat: 39.715, lng: 39.529 },
+    { code: "EZS", city: "Elazığ", name: "Elazığ Havalimanı", country: "Türkiye", lat: 38.606, lng: 39.291 },
+    { code: "NAV", city: "Nevşehir", name: "Kapadokya Havalimanı", country: "Türkiye", lat: 38.771, lng: 34.526 },
+    { code: "EDO", city: "Balıkesir Koca Seyit", name: "Koca Seyit Havalimanı", country: "Türkiye", lat: 39.554, lng: 27.014 },
 
     // Europe
     { code: "FCO", city: "Roma", name: "Fiumicino Leonardo da Vinci", country: "İtalya", lat: 41.800, lng: 12.238 },
@@ -1861,20 +1867,26 @@ const thyApiConfig = {
     { code: "LHR", city: "Londra", name: "Heathrow Havalimanı", country: "İngiltere", lat: 51.470, lng: -0.454 },
     { code: "LGW", city: "Londra", name: "Gatwick Havalimanı", country: "İngiltere", lat: 51.148, lng: -0.190 },
     { code: "MAN", city: "Manchester", name: "Manchester Havalimanı", country: "İngiltere", lat: 53.353, lng: -2.275 },
+    { code: "EDI", city: "Edinburgh", name: "Edinburgh Havalimanı", country: "İskoçya", lat: 55.950, lng: -3.372 },
+    { code: "BHX", city: "Birmingham", name: "Birmingham Havalimanı", country: "İngiltere", lat: 52.453, lng: -1.748 },
     { code: "AMS", city: "Amsterdam", name: "Schiphol Havalimanı", country: "Hollanda", lat: 52.313, lng: 4.764 },
     { code: "MAD", city: "Madrid", name: "Barajas Havalimanı", country: "İspanya", lat: 40.490, lng: -3.567 },
     { code: "BCN", city: "Barselona", name: "Barselona Havalimanı", country: "İspanya", lat: 41.297, lng: 2.078 },
     { code: "LIS", city: "Lizbon", name: "Humberto Delgado Havalimanı", country: "Portekiz", lat: 38.774, lng: -9.135 },
+    { code: "OPO", city: "Porto", name: "Francisco Sa Carneiro Havalimanı", country: "Portekiz", lat: 41.248, lng: -8.681 },
     { code: "ATH", city: "Atina", name: "Elefterios Venizelos", country: "Yunanistan", lat: 37.936, lng: 23.944 },
     { code: "MUC", city: "Münih", name: "Münih Havalimanı", country: "Almanya", lat: 48.353, lng: 11.786 },
     { code: "FRA", city: "Frankfurt", name: "Frankfurt Havalimanı", country: "Almanya", lat: 50.033, lng: 8.570 },
     { code: "BER", city: "Berlin", name: "Brandenburg Havalimanı", country: "Almanya", lat: 52.362, lng: 13.501 },
     { code: "DUS", city: "Düsseldorf", name: "Düsseldorf Havalimanı", country: "Almanya", lat: 51.289, lng: 6.766 },
-    { code: "VIE", city: "Viyana", name: "Viyana Uluslararası Havalimanı", country: "Avusturya", lat: 48.110, lng: 16.569 },
+    { code: "HAM", city: "Hamburg", name: "Hamburg Havalimanı", country: "Almanya", lat: 53.630, lng: 9.988 },
+    { code: "CGN", city: "Köln", name: "Köln Bonn Havalimanı", country: "Almanya", lat: 50.865, lng: 7.142 },
+    { code: "VIE", city: "Viyana", name: "Viyana Havalimanı", country: "Avusturya", lat: 48.110, lng: 16.569 },
     { code: "ZRH", city: "Zürih", name: "Zürih Havalimanı", country: "İsviçre", lat: 47.458, lng: 8.548 },
     { code: "GVA", city: "Cenevre", name: "Cenevre Havalimanı", country: "İsviçre", lat: 46.238, lng: 6.109 },
+    { code: "BSL", city: "Basel", name: "EuroAirport Basel-Mulhouse-Freiburg", country: "İsviçre", lat: 47.590, lng: 7.529 },
     { code: "BRU", city: "Brüksel", name: "Brüksel Havalimanı", country: "Belçika", lat: 50.901, lng: 4.484 },
-    { code: "BUD", city: "Budapeşte", name: "Ferenc Liszt", country: "Macaristan", lat: 47.439, lng: 19.261 },
+    { code: "BUD", city: "Budapeşte", name: "Ferenc Liszt Havalimanı", country: "Macaristan", lat: 47.439, lng: 19.261 },
     { code: "PRG", city: "Prag", name: "Vaclav Havel", country: "Çekya", lat: 50.100, lng: 14.260 },
     { code: "WAW", city: "Varşova", name: "Chopin Havalimanı", country: "Polonya", lat: 52.165, lng: 20.967 },
     { code: "OTP", city: "Bükreş", name: "Henri Coanda", country: "Romanya", lat: 44.572, lng: 26.084 },
@@ -1884,25 +1896,31 @@ const thyApiConfig = {
     { code: "DUB", city: "Dublin", name: "Dublin Havalimanı", country: "İrlanda", lat: 53.421, lng: -6.270 },
     { code: "VKO", city: "Moskova", name: "Vnukovo Havalimanı", country: "Rusya", lat: 55.591, lng: 37.261 },
     { code: "LED", city: "St. Petersburg", name: "Pulkovo Havalimanı", country: "Rusya", lat: 59.800, lng: 30.262 },
+    { code: "SOF", city: "Sofya", name: "Sofya Havalimanı", country: "Bulgaristan", lat: 42.695, lng: 23.406 },
+    { code: "BEG", city: "Belgrad", name: "Nikola Tesla Havalimanı", country: "Sırbistan", lat: 44.818, lng: 20.309 },
+    { code: "SJJ", city: "Saraybosna", name: "Saraybosna Havalimanı", country: "Bosna Hersek", lat: 43.824, lng: 18.331 },
 
     // Americas
     { code: "JFK", city: "New York", name: "John F. Kennedy Havalimanı", country: "ABD", lat: 40.641, lng: -73.778 },
     { code: "ORD", city: "Şikago", name: "O'Hare Havalimanı", country: "ABD", lat: 41.974, lng: -87.907 },
     { code: "LAX", city: "Los Angeles", name: "Los Angeles Havalimanı", country: "ABD", lat: 33.941, lng: -118.408 },
     { code: "SFO", city: "San Francisco", name: "San Francisco Havalimanı", country: "ABD", lat: 37.621, lng: -122.378 },
-    { code: "MIA", city: "Miami", name: "Miami Uluslararası Havalimanı", country: "ABD", lat: 25.795, lng: -80.287 },
+    { code: "MIA", city: "Miami", name: "Miami Havalimanı", country: "ABD", lat: 25.795, lng: -80.287 },
     { code: "BOS", city: "Boston", name: "Logan Havalimanı", country: "ABD", lat: 42.365, lng: -71.009 },
     { code: "IAD", city: "Washington", name: "Dulles Havalimanı", country: "ABD", lat: 38.944, lng: -77.456 },
     { code: "IAH", city: "Houston", name: "George Bush Havalimanı", country: "ABD", lat: 29.980, lng: -95.339 },
     { code: "ATL", city: "Atlanta", name: "Hartsfield-Jackson", country: "ABD", lat: 33.640, lng: -84.427 },
+    { code: "DFW", city: "Dallas", name: "Dallas/Fort Worth Havalimanı", country: "ABD", lat: 32.899, lng: -97.040 },
+    { code: "SEA", city: "Seattle", name: "Seattle-Tacoma Havalimanı", country: "ABD", lat: 47.450, lng: -122.308 },
     { code: "YYZ", city: "Toronto", name: "Pearson Havalimanı", country: "Kanada", lat: 43.677, lng: -79.624 },
     { code: "YUL", city: "Montreal", name: "Trudeau Havalimanı", country: "Kanada", lat: 45.470, lng: -73.740 },
     { code: "MEX", city: "Meksika", name: "Benito Juarez", country: "Meksika", lat: 19.436, lng: -99.072 },
     { code: "GRU", city: "Sao Paulo", name: "Guarulhos Havalimanı", country: "Brezilya", lat: -23.435, lng: -46.473 },
     { code: "EZE", city: "Buenos Aires", name: "Ezeiza Havalimanı", country: "Arjantin", lat: -34.822, lng: -58.535 },
+    { code: "BOG", city: "Bogota", name: "El Dorado Havalimanı", country: "Kolombiya", lat: 4.701, lng: -74.146 },
 
     // Middle East, Africa & Asia-Pacific
-    { code: "DXB", city: "Dubai", name: "Dubai Uluslararası Havalimanı", country: "BAE", lat: 25.253, lng: 55.364 },
+    { code: "DXB", city: "Dubai", name: "Dubai Havalimanı", country: "BAE", lat: 25.253, lng: 55.364 },
     { code: "GYD", city: "Bakü", name: "Haydar Aliyev Havalimanı", country: "Azerbaycan", lat: 40.467, lng: 50.432 },
     { code: "TAS", city: "Taşkent", name: "Taşkent Havalimanı", country: "Özbekistan", lat: 41.257, lng: 69.281 },
     { code: "ALA", city: "Almati", name: "Almati Havalimanı", country: "Kazakistan", lat: 43.352, lng: 77.040 },
@@ -1911,7 +1929,7 @@ const thyApiConfig = {
     { code: "JED", city: "Cidde", name: "Kral Abdülaziz Havalimanı", country: "Suudi Arabistan", lat: 21.679, lng: 39.156 },
     { code: "MED", city: "Medine", name: "Prens Muhammed Havalimanı", country: "Suudi Arabistan", lat: 24.553, lng: 39.705 },
     { code: "DOH", city: "Doha", name: "Hamad Havalimanı", country: "Katar", lat: 25.273, lng: 51.608 },
-    { code: "MCT", city: "Maskat", name: "Maskat Uluslararası Havalimanı", country: "Umman", lat: 23.593, lng: 58.281 },
+    { code: "MCT", city: "Maskat", name: "Maskat Havalimanı", country: "Umman", lat: 23.593, lng: 58.281 },
     { code: "BOM", city: "Mumbai", name: "Chhatrapati Shivaji", country: "Hindistan", lat: 19.089, lng: 72.868 },
     { code: "DEL", city: "Yeni Delhi", name: "Indira Gandhi", country: "Hindistan", lat: 28.566, lng: 77.103 },
     { code: "BKK", city: "Bangkok", name: "Suvarnabhumi Havalimanı", country: "Tayland", lat: 13.690, lng: 100.750 },
@@ -1921,7 +1939,7 @@ const thyApiConfig = {
     { code: "CGK", city: "Cakarta", name: "Soekarno-Hatta", country: "Endonezya", lat: -6.125, lng: 106.655 },
     { code: "DPS", city: "Bali", name: "Ngurah Rai Havalimanı", country: "Endonezya", lat: -8.748, lng: 115.167 },
     { code: "MNL", city: "Manila", name: "Ninoy Aquino", country: "Filipinler", lat: 14.508, lng: 121.019 },
-    { code: "NRT", city: "Tokyo Narita", name: "Narita Uluslararası Havalimanı", country: "Japonya", lat: 35.772, lng: 140.392 },
+    { code: "NRT", city: "Tokyo Narita", name: "Narita Havalimanı", country: "Japonya", lat: 35.772, lng: 140.392 },
     { code: "HND", city: "Tokyo Haneda", name: "Haneda Havalimanı", country: "Japonya", lat: 35.549, lng: 139.779 },
     { code: "ICN", city: "Seul", name: "Incheon Havalimanı", country: "Güney Kore", lat: 37.460, lng: 126.440 },
     { code: "PEK", city: "Pekin", name: "Pekin Başkent Havalimanı", country: "Çin", lat: 40.080, lng: 116.584 },
@@ -1929,14 +1947,17 @@ const thyApiConfig = {
     { code: "CAN", city: "Guangzhou", name: "Guangzhou Baiyun", country: "Çin", lat: 23.392, lng: 113.299 },
     { code: "HKG", city: "Hong Kong", name: "Hong Kong Havalimanı", country: "Hong Kong", lat: 22.308, lng: 113.914 },
     { code: "TPE", city: "Taipei", name: "Taoyuan Havalimanı", country: "Tayvan", lat: 25.079, lng: 121.234 },
+    { code: "SYD", city: "Sidney", name: "Kingsford Smith Havalimanı", country: "Avustralya", lat: -33.946, lng: 151.177 },
+    { code: "MEL", city: "Melbourne", name: "Melbourne Havalimanı", country: "Avustralya", lat: -37.673, lng: 144.843 },
 
-    { code: "CAI", city: "Kahire", name: "Kahire Uluslararası Havalimanı", country: "Mısır", lat: 30.121, lng: 31.405 },
+    { code: "CAI", city: "Kahire", name: "Kahire Havalimanı", country: "Mısır", lat: 30.121, lng: 31.405 },
     { code: "JNB", city: "Johannesburg", name: "O.R. Tambo Havalimanı", country: "Güney Afrika", lat: -26.139, lng: 28.246 },
     { code: "CPT", city: "Cape Town", name: "Cape Town Havalimanı", country: "Güney Afrika", lat: -33.978, lng: 18.601 },
     { code: "CMN", city: "Kazablanka", name: "Mohammed V Havalimanı", country: "Fas", lat: 33.367, lng: -7.589 },
     { code: "TUN", city: "Tunus", name: "Tunus-Kartaca Havalimanı", country: "Tunus", lat: 36.851, lng: 10.227 },
     { code: "ALG", city: "Cezayir", name: "Houari Boumediene", country: "Cezayir", lat: 36.691, lng: 3.215 },
-    { code: "NBO", city: "Nairobi", name: "Jomo Kenyatta", country: "Kenya", lat: -1.319, lng: 36.927 }
+    { code: "NBO", city: "Nairobi", name: "Jomo Kenyatta", country: "Kenya", lat: -1.319, lng: 36.927 },
+    { code: "ADD", city: "Addis Ababa", name: "Bole Havalimanı", country: "Etiyopya", lat: 8.977, lng: 38.799 }
   ];
 
   // Haversine formula to compute distance between two lat/lng points
@@ -2214,35 +2235,41 @@ const thyApiConfig = {
   let currentTripType = 'round-trip';
   const btnRoundTrip = document.getElementById('btnRoundTrip');
   const btnOneWay = document.getElementById('btnOneWay');
+  const radioRoundTrip = document.getElementById('radioRoundTrip');
+  const radioOneWay = document.getElementById('radioOneWay');
   const returnDateGroup = document.getElementById('returnDateGroup');
 
-  if (btnRoundTrip && btnOneWay) {
-    btnRoundTrip.addEventListener('click', () => {
-      currentTripType = 'round-trip';
-      btnRoundTrip.classList.add('active');
-      btnOneWay.classList.remove('active');
-      returnDateGroup?.classList.remove('hidden-date');
-      if (retDateInput) {
-        retDateInput.removeAttribute('disabled');
-        const defaultRet = new Date();
-        if (depDateInput && depDateInput.value) {
-          const parts = depDateInput.value.split('-');
-          const depD = new Date(parts[0], parts[1] - 1, parts[2]);
-          defaultRet.setTime(depD.getTime());
+  if (radioRoundTrip && radioOneWay) {
+    radioRoundTrip.addEventListener('change', () => {
+      if (radioRoundTrip.checked) {
+        currentTripType = 'round-trip';
+        btnRoundTrip?.classList.add('active');
+        btnOneWay?.classList.remove('active');
+        returnDateGroup?.classList.remove('hidden-date');
+        if (retDateInput) {
+          retDateInput.removeAttribute('disabled');
+          const defaultRet = new Date();
+          if (depDateInput && depDateInput.value) {
+            const parts = depDateInput.value.split('-');
+            const depD = new Date(parts[0], parts[1] - 1, parts[2]);
+            defaultRet.setTime(depD.getTime());
+          }
+          defaultRet.setDate(defaultRet.getDate() + 4);
+          retDateInput.value = formatDateLocal(defaultRet);
         }
-        defaultRet.setDate(defaultRet.getDate() + 4);
-        retDateInput.value = formatDateLocal(defaultRet);
       }
     });
 
-    btnOneWay.addEventListener('click', () => {
-      currentTripType = 'one-way';
-      btnOneWay.classList.add('active');
-      btnRoundTrip.classList.remove('active');
-      returnDateGroup?.classList.add('hidden-date');
-      if (retDateInput) {
-        retDateInput.setAttribute('disabled', 'true');
-        retDateInput.value = '';
+    radioOneWay.addEventListener('change', () => {
+      if (radioOneWay.checked) {
+        currentTripType = 'one-way';
+        btnOneWay?.classList.add('active');
+        btnRoundTrip?.classList.remove('active');
+        returnDateGroup?.classList.add('hidden-date');
+        if (retDateInput) {
+          retDateInput.setAttribute('disabled', 'true');
+          retDateInput.value = '';
+        }
       }
     });
   }
@@ -2262,8 +2289,6 @@ const thyApiConfig = {
 
   // Kalkış ve Varış yerlerini yer değiştirme (Swap Locations)
   const btnSwapLocations = document.getElementById('btnSwapLocations');
-  const depInput = document.getElementById('flightDepartureInput');
-  const destInput = document.getElementById('flightDestinationInput');
 
   if (btnSwapLocations && depInput && destInput) {
     btnSwapLocations.addEventListener('click', () => {

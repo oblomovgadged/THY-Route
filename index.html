@@ -83,7 +83,7 @@
       <header class="landing-header">
         <div class="landing-header-inner">
           <div class="landing-header-logo">
-            <img src="icons/logo.png" alt="Turkish Airlines Logo" class="landing-header-logo-img">
+            <img src="icons/logo-badge.png" alt="Turkish Airlines Logo" class="landing-header-logo-img">
             <span class="landing-header-logo-text">TURKISH AIRLINES</span>
           </div>
           <nav class="landing-header-nav">
@@ -107,25 +107,6 @@
           <button class="hero-cta-btn" id="lblHeroCta">Keşfet</button>
         </div>
 
-        <!-- Booking Portal Category Tabs -->
-        <div class="booking-tabs fade-in-slide">
-          <button class="booking-tab active" id="lblTabFlightTicket">
-            <span class="tab-icon">🛫</span> <span id="txtTabFlightTicket">Uçuş bileti</span>
-          </button>
-          <button class="booking-tab" id="lblTabFlightHotel">
-            <span class="tab-icon">🏨</span> <span id="txtTabFlightHotel">Uçak bileti + Otel</span>
-          </button>
-          <button class="booking-tab" id="lblTabCheckin">
-            <span class="tab-icon">📋</span> <span id="txtTabCheckin">Check-in</span>
-          </button>
-          <button class="booking-tab" id="lblTabManage">
-            <span class="tab-icon">🎫</span> <span id="txtTabManage">Bilet yönetimi</span>
-          </button>
-          <button class="booking-tab" id="lblTabFlightStatus">
-            <span class="tab-icon">📡</span> <span id="txtTabFlightStatus">Uçuş durumu</span>
-          </button>
-        </div>
-
         <!-- Booking Form Card -->
         <div class="booking-card fade-in-slide" id="bookingCard">
           <div class="booking-form">
@@ -133,22 +114,22 @@
             <div class="trip-type-selector-row">
               <div class="trip-type-radios">
                 <label class="trip-type-btn custom-radio-label" id="btnRoundTrip">
-                  <input type="radio" name="tripType" checked>
+                  <input type="radio" name="tripType" id="radioRoundTrip" checked>
                   <span class="radio-circle"></span>
                   <span id="lblRadioRoundTrip">Gidiş - Dönüş</span>
                 </label>
                 <label class="trip-type-btn custom-radio-label" id="btnOneWay">
-                  <input type="radio" name="tripType">
+                  <input type="radio" name="tripType" id="radioOneWay">
                   <span class="radio-circle"></span>
                   <span id="lblRadioOneWay">Tek yön</span>
                 </label>
                 <label class="trip-type-btn custom-radio-label" id="btnStopover">
-                  <input type="radio" name="tripType">
+                  <input type="radio" name="tripType" id="radioStopover">
                   <span class="radio-circle"></span>
                   <span>İstanbul'da Stopover</span>
                 </label>
                 <label class="trip-type-btn custom-radio-label" id="btnMultiCity">
-                  <input type="radio" name="tripType">
+                  <input type="radio" name="tripType" id="radioMultiCity">
                   <span class="radio-circle"></span>
                   <span>Çoklu uçuş</span>
                 </label>
@@ -316,7 +297,7 @@
     <div id="mapScreen" class="map-screen hidden">
       <header class="flight-board" id="flightBoard">
         <div class="flight-board__logo">
-          <img src="icons/logo.png" alt="THY Route Logo" class="flight-board__logo-img">
+          <img src="icons/logo-badge.png" alt="THY Route Logo" class="flight-board__logo-img">
         </div>
 
         <div class="flight-board__info">
