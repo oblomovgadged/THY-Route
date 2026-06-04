@@ -79,88 +79,176 @@
          LANDING SCREEN (THY Booking Portal)
          ============================================ -->
     <div id="landingScreen" class="landing-screen">
+      <!-- Landing Header -->
+      <header class="landing-header">
+        <div class="landing-header-inner">
+          <div class="landing-header-logo">
+            <img src="icons/logo.png" alt="Turkish Airlines Logo" class="landing-header-logo-img">
+            <span class="landing-header-logo-text">TURKISH AIRLINES</span>
+          </div>
+          <nav class="landing-header-nav">
+            <a href="#" class="active" id="lblNavFlight">Uçuş Bileti</a>
+            <a href="#" id="lblNavExplore">Keşfet</a>
+            <a href="#" id="lblNavExperience">Seyahat Deneyimi</a>
+            <a href="#" id="lblNavMiles">Miles&Smiles</a>
+          </nav>
+          <div class="landing-header-actions">
+            <button id="btnLangToggleLanding" class="lang-toggle-btn landing-lang-btn">🌐 EN</button>
+            <button class="landing-login-btn" id="lblLandingLogin">Giriş Yap</button>
+          </div>
+        </div>
+      </header>
+
       <div class="landing-container">
-        <!-- Logo Header -->
-        <div class="landing-logo">
-          <button id="btnLangToggleLanding" class="lang-toggle-btn landing-lang-btn">🌐 EN</button>
+        <!-- Hero Text overlaying background -->
+        <div class="landing-hero-text fade-in-slide">
+          <h1 id="lblHeroTitle">Yazı Avrupa'nın en iyisiyle keşfedin</h1>
+          <p id="lblHeroSubtitle">Seyahat planınızı oluşturun veya uçuş arayarak hemen biletinizi alın.</p>
+          <button class="hero-cta-btn" id="lblHeroCta">Keşfet</button>
+        </div>
+
+        <!-- Booking Portal Category Tabs -->
+        <div class="booking-tabs fade-in-slide">
+          <button class="booking-tab active" id="lblTabFlightTicket">
+            <span class="tab-icon">🛫</span> <span id="txtTabFlightTicket">Uçuş bileti</span>
+          </button>
+          <button class="booking-tab" id="lblTabFlightHotel">
+            <span class="tab-icon">🏨</span> <span id="txtTabFlightHotel">Uçak bileti + Otel</span>
+          </button>
+          <button class="booking-tab" id="lblTabCheckin">
+            <span class="tab-icon">📋</span> <span id="txtTabCheckin">Check-in</span>
+          </button>
+          <button class="booking-tab" id="lblTabManage">
+            <span class="tab-icon">🎫</span> <span id="txtTabManage">Bilet yönetimi</span>
+          </button>
+          <button class="booking-tab" id="lblTabFlightStatus">
+            <span class="tab-icon">📡</span> <span id="txtTabFlightStatus">Uçuş durumu</span>
+          </button>
         </div>
 
         <!-- Booking Form Card -->
         <div class="booking-card fade-in-slide" id="bookingCard">
-          <h2 class="booking-card-title">Nereye uçmak istersiniz?</h2>
-          
           <div class="booking-form">
-            <!-- Trip Type Selector -->
-            <div class="trip-type-selector">
-              <button type="button" class="trip-type-btn active" id="btnRoundTrip" data-type="round-trip">Gidiş-Dönüş</button>
-              <button type="button" class="trip-type-btn" id="btnOneWay" data-type="one-way">Tek Yön</button>
+            <!-- Trip Type Selector Row -->
+            <div class="trip-type-selector-row">
+              <div class="trip-type-radios">
+                <label class="trip-type-btn custom-radio-label" id="btnRoundTrip">
+                  <input type="radio" name="tripType" checked>
+                  <span class="radio-circle"></span>
+                  <span id="lblRadioRoundTrip">Gidiş - Dönüş</span>
+                </label>
+                <label class="trip-type-btn custom-radio-label" id="btnOneWay">
+                  <input type="radio" name="tripType">
+                  <span class="radio-circle"></span>
+                  <span id="lblRadioOneWay">Tek yön</span>
+                </label>
+                <label class="trip-type-btn custom-radio-label" id="btnStopover">
+                  <input type="radio" name="tripType">
+                  <span class="radio-circle"></span>
+                  <span>İstanbul'da Stopover</span>
+                </label>
+                <label class="trip-type-btn custom-radio-label" id="btnMultiCity">
+                  <input type="radio" name="tripType">
+                  <span class="radio-circle"></span>
+                  <span>Çoklu uçuş</span>
+                </label>
+              </div>
+
+              <div class="miles-booking-checkbox">
+                <label class="custom-checkbox">
+                  <input type="checkbox" id="chkMilesBooking">
+                  <span class="checkbox-mark"></span>
+                  <span id="lblMilesBooking">Ödül bilet - Millerinizle bilet alın</span>
+                </label>
+              </div>
             </div>
 
-            <!-- Departure (Autocomplete) -->
-            <div class="form-group-booking">
-              <label id="lblDeparture">Kalkış Noktası</label>
-              <div class="input-wrapper">
-                <span class="input-icon">🛫</span>
-                <input type="text" id="flightDepartureInput" placeholder="Şehir veya Havalimanı ara..." autocomplete="off">
+            <!-- Horizontal Inline Form Grid -->
+            <div class="booking-inline-grid">
+              <!-- Departure Cell -->
+              <div class="booking-field-cell" id="cellDeparture">
+                <span class="cell-label" id="lblDeparture">Nereden</span>
+                <div class="cell-input-wrapper">
+                  <input type="text" id="flightDepartureInput" placeholder="Şehir veya Havalimanı ara..." autocomplete="off">
+                  <span class="cell-subtext" id="subDeparture">İstanbul (Tümü)</span>
+                </div>
                 <button type="button" class="geo-detect-btn" id="btnDetectLocation" title="En Yakın Havalimanını Bul">📍</button>
+                <div class="autocomplete-suggestions" id="depSuggestions"></div>
               </div>
-              <div class="autocomplete-suggestions" id="depSuggestions"></div>
-            </div>
 
-            <!-- Destination (Autocomplete) -->
-            <div class="form-group-booking">
-              <label id="lblDestination">Varış Noktası</label>
-              <div class="input-wrapper">
-                <span class="input-icon">🛬</span>
-                <input type="text" id="flightDestinationInput" placeholder="Nereye gitmek istersiniz?" autocomplete="off">
+              <!-- Swap Button Space -->
+              <div class="swap-btn-container">
+                <button type="button" class="swap-locations-btn" id="btnSwapLocations" title="Kalkış ve Varış Noktalarını Değiştir">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 3L21 7L17 11M21 7H9M7 21L3 17L7 13M3 17H15" />
+                  </svg>
+                </button>
               </div>
-              <div class="autocomplete-suggestions" id="destSuggestions"></div>
-            </div>
 
-            <!-- Dates -->
-            <div class="form-row-booking">
-              <div class="form-group-booking">
-                <label for="flightDepartureDate" id="lblDepDate">Gidiş Tarihi</label>
-                <div class="input-wrapper">
-                  <span class="input-icon">📅</span>
-                  <input type="date" id="flightDepartureDate">
+              <!-- Destination Cell -->
+              <div class="booking-field-cell" id="cellDestination">
+                <span class="cell-label" id="lblDestination">Nereye</span>
+                <div class="cell-input-wrapper">
+                  <input type="text" id="flightDestinationInput" placeholder="Nereye gitmek istersiniz?" autocomplete="off">
+                  <span class="cell-subtext" id="subDestination">Gideceğiniz şehir</span>
+                </div>
+                <div class="autocomplete-suggestions" id="destSuggestions"></div>
+              </div>
+
+              <!-- Date Selection Cell -->
+              <div class="booking-field-cell" id="cellDates">
+                <span class="cell-label" id="lblCellDates">Tarih</span>
+                <div class="date-inputs-wrapper">
+                  <div class="date-input-block" id="depDateBlock">
+                    <span class="date-block-label" id="lblDepDate">Gidiş Tarihi</span>
+                    <input type="date" id="flightDepartureDate">
+                  </div>
+                  <div class="date-input-block" id="returnDateGroup">
+                    <span class="date-block-label" id="lblRetDate">Dönüş Tarihi</span>
+                    <input type="date" id="flightReturnDate">
+                  </div>
                 </div>
               </div>
-              <div class="form-group-booking" id="returnDateGroup">
-                <label for="flightReturnDate" id="lblRetDate">Dönüş Tarihi (Kaç Gün Kalacaksınız?)</label>
-                <div class="input-wrapper">
-                  <span class="input-icon">📅</span>
-                  <input type="date" id="flightReturnDate">
+
+              <!-- Passengers & Class Cell -->
+              <div class="booking-field-cell" id="cellPassengers">
+                <span class="cell-label" id="lblCellPassengers">Yolcu / Kabin Sınıfı</span>
+                <div class="select-inputs-wrapper">
+                  <div class="select-block">
+                    <select id="flightPassengers" class="cell-select">
+                      <option value="1">1 Yolcu</option>
+                      <option value="2">2 Yolcu</option>
+                      <option value="3">3 Yolcu</option>
+                      <option value="4">4 Yolcu</option>
+                    </select>
+                  </div>
+                  <span class="select-divider">/</span>
+                  <div class="select-block">
+                    <select id="flightCabinClass" class="cell-select">
+                      <option value="economy">ECO</option>
+                      <option value="business">BUS</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Passengers & Class -->
-            <div class="form-row-booking">
-              <div class="form-group-booking">
-                <label for="flightPassengers" id="lblPassengers">Yolcu</label>
-                <select id="flightPassengers" class="select-booking">
-                  <option value="1">1 Yolcu</option>
-                  <option value="2">2 Yolcu</option>
-                  <option value="3">3 Yolcu</option>
-                  <option value="4">4 Yolcu</option>
-                </select>
-              </div>
-              <div class="form-group-booking">
-                <label for="flightCabinClass" id="lblCabinClass">Kabin Sınıfı</label>
-                <select id="flightCabinClass" class="select-booking">
-                  <option value="economy">Economy Class</option>
-                  <option value="business">Business Class</option>
-                </select>
+              <!-- Search Button Cell -->
+              <div class="search-btn-container">
+                <button type="button" class="btn btn-full btn-large btn-search-flights" id="btnSearchFlights">
+                  Uçuş ara →
+                </button>
               </div>
             </div>
 
-            <!-- Search Button -->
-            <button type="button" class="btn btn-gold btn-full btn-large" id="btnSearchFlights">
-              <span class="icon">✈️</span> UÇUŞ ARA
-            </button>
-            <div class="booking-privacy-box">
-              <a href="#" class="privacy-modal-trigger">🛡️ KVKK & Gizlilik Politikası / GDPR & Privacy Policy</a>
+            <!-- Bottom helper links & Privacy warning -->
+            <div class="booking-bottom-row">
+              <div class="booking-helper-links">
+                <a href="#" id="lblAllFlightPoints">🌐 Tüm uçuş noktalarını gör</a>
+                <a href="#" id="lblPreviousSearches">🔍 Önceki aramalarım</a>
+              </div>
+              <div class="booking-privacy-box">
+                <a href="#" class="privacy-modal-trigger">🛡️ KVKK & Gizlilik Politikası / GDPR & Privacy Policy</a>
+              </div>
             </div>
           </div>
         </div>

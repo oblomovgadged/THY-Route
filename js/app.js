@@ -249,15 +249,34 @@ const thyApiConfig = {
       '#bookingCard .booking-card-title': 'Nereye uçmak istersiniz?',
       '#btnRoundTrip': 'Gidiş-Dönüş',
       '#btnOneWay': 'Tek Yön',
-      '#lblDeparture': 'Kalkış Noktası',
+      '#lblDeparture': 'Nereden',
       '#flightDepartureInput': { placeholder: 'Şehir veya Havalimanı ara...' },
-      '#lblDestination': 'Varış Noktası',
+      '#lblDestination': 'Nereye',
       '#flightDestinationInput': { placeholder: 'Nereye gitmek istersiniz?' },
       '#lblDepDate': 'Gidiş Tarihi',
-      '#lblRetDate': 'Dönüş Tarihi (Kaç Gün Kalacaksınız?)',
-      '#lblPassengers': 'Yolcu',
-      '#lblCabinClass': 'Kabin Sınıfı',
-      '#btnSearchFlights': '<span class="icon">✈️</span> UÇUŞ ARA',
+      '#lblRetDate': 'Dönüş Tarihi',
+      '#lblCellDates': 'Tarih',
+      '#lblCellPassengers': 'Yolcu / Kabin Sınıfı',
+      '#lblRadioRoundTrip': 'Gidiş - Dönüş',
+      '#lblRadioOneWay': 'Tek yön',
+      '#lblMilesBooking': 'Ödül bilet - Millerinizle bilet alın',
+      '#txtTabFlightTicket': 'Uçuş bileti',
+      '#txtTabFlightHotel': 'Uçak bileti + Otel',
+      '#txtTabCheckin': 'Check-in',
+      '#txtTabManage': 'Bilet yönetimi',
+      '#txtTabFlightStatus': 'Uçuş durumu',
+      '#lblNavFlight': 'Uçuş Bileti',
+      '#lblNavExplore': 'Keşfet',
+      '#lblNavExperience': 'Seyahat Deneyimi',
+      '#lblNavMiles': 'Miles&Smiles',
+      '#lblLandingLogin': 'Giriş Yap',
+      '#lblHeroTitle': 'Yazı Avrupa\'nın en iyisiyle keşfedin',
+      '#lblHeroSubtitle': 'Seyahat planınızı oluşturun veya uçuş arayarak hemen biletinizi alın.',
+      '#lblHeroCta': 'Keşfet',
+      '#btnSearchFlights': 'Uçuş ara →',
+      '#lblAllFlightPoints': '🌐 Tüm uçuş noktalarını gör',
+      '#lblPreviousSearches': '🔍 Önceki aramalarım',
+      '#subDestination': 'Gideceğiniz şehir',
       '#btnBackToSearch': '← Aramayı Düzenle',
       '#resultsRouteBanner': '🛫 UÇUŞ SEÇİN',
       '#lblAvailableFlightsTitle': 'Uygun Uçuşlar',
@@ -371,15 +390,34 @@ const thyApiConfig = {
       '#bookingCard .booking-card-title': 'Where would you like to fly?',
       '#btnRoundTrip': 'Round Trip',
       '#btnOneWay': 'One Way',
-      '#lblDeparture': 'Departure Point',
+      '#lblDeparture': 'From',
       '#flightDepartureInput': { placeholder: 'Search city or airport...' },
-      '#lblDestination': 'Destination Point',
+      '#lblDestination': 'To',
       '#flightDestinationInput': { placeholder: 'Where would you like to go?' },
       '#lblDepDate': 'Departure Date',
-      '#lblRetDate': 'Return Date (Duration)',
-      '#lblPassengers': 'Passengers',
-      '#lblCabinClass': 'Cabin Class',
-      '#btnSearchFlights': '<span class="icon">✈️</span> SEARCH FLIGHTS',
+      '#lblRetDate': 'Return Date',
+      '#lblCellDates': 'Dates',
+      '#lblCellPassengers': 'Passengers / Cabin Class',
+      '#lblRadioRoundTrip': 'Round trip',
+      '#lblRadioOneWay': 'One way',
+      '#lblMilesBooking': 'Award ticket - Buy ticket with miles',
+      '#txtTabFlightTicket': 'Flight ticket',
+      '#txtTabFlightHotel': 'Flight + Hotel',
+      '#txtTabCheckin': 'Check-in',
+      '#txtTabManage': 'Manage booking',
+      '#txtTabFlightStatus': 'Flight status',
+      '#lblNavFlight': 'Flight Ticket',
+      '#lblNavExplore': 'Explore',
+      '#lblNavExperience': 'Experience',
+      '#lblNavMiles': 'Miles&Smiles',
+      '#lblLandingLogin': 'Sign In',
+      '#lblHeroTitle': 'Discover Summer with Europe\'s Best',
+      '#lblHeroSubtitle': 'Plan your next trip or search for flights and book your ticket now.',
+      '#lblHeroCta': 'Discover',
+      '#btnSearchFlights': 'Search flights →',
+      '#lblAllFlightPoints': '🌐 View all flight destinations',
+      '#lblPreviousSearches': '🔍 My previous searches',
+      '#subDestination': 'Destination city',
       '#btnBackToSearch': '← Edit Search',
       '#resultsRouteBanner': '🛫 SELECT FLIGHT',
       '#lblAvailableFlightsTitle': 'Available Flights',
@@ -488,8 +526,6 @@ const thyApiConfig = {
       '#lblBaggageDepth': 'Depth (cm)',
       '#lblBaggageWeight': 'Weight (kg)',
       '#btnBaggageCalculate': 'Validate and Calculate'
-    }
-  };
 
   THY.currentLanguage = localStorage.getItem('thy_lang') || (navigator.language.startsWith('tr') ? 'tr' : 'en');
 
@@ -1995,6 +2031,7 @@ const thyApiConfig = {
             input.dataset.code = '';
             suggestions.innerHTML = '';
             suggestions.classList.remove('active');
+            input.dispatchEvent(new Event('input'));
             
             // Automatically click search
             setTimeout(() => {
@@ -2045,6 +2082,7 @@ const thyApiConfig = {
           });
           suggestions.innerHTML = '';
           suggestions.classList.remove('active');
+          input.dispatchEvent(new Event('input'));
         });
         suggestions.appendChild(div);
         suggestions.classList.add('active');
@@ -2065,6 +2103,7 @@ const thyApiConfig = {
           input.dataset.lng = ap.lng;
           suggestions.innerHTML = '';
           suggestions.classList.remove('active');
+          input.dispatchEvent(new Event('input'));
         });
         suggestions.appendChild(div);
       });
@@ -2220,6 +2259,79 @@ const thyApiConfig = {
       }
     });
   }
+
+  // Kalkış ve Varış yerlerini yer değiştirme (Swap Locations)
+  const btnSwapLocations = document.getElementById('btnSwapLocations');
+  const depInput = document.getElementById('flightDepartureInput');
+  const destInput = document.getElementById('flightDestinationInput');
+
+  if (btnSwapLocations && depInput && destInput) {
+    btnSwapLocations.addEventListener('click', () => {
+      const tempVal = depInput.value;
+      const tempCode = depInput.dataset.code || '';
+      const tempLat = depInput.dataset.lat || '';
+      const tempLng = depInput.dataset.lng || '';
+      
+      depInput.value = destInput.value;
+      depInput.dataset.code = destInput.dataset.code || '';
+      depInput.dataset.lat = destInput.dataset.lat || '';
+      depInput.dataset.lng = destInput.dataset.lng || '';
+      
+      destInput.value = tempVal;
+      destInput.dataset.code = tempCode;
+      destInput.dataset.lat = tempLat;
+      destInput.dataset.lng = tempLng;
+      
+      // Kalkış ve varış metinlerini ve alt metinlerini güncelle
+      const subDep = document.getElementById('subDeparture');
+      const subDest = document.getElementById('subDestination');
+      
+      if (subDep) {
+        subDep.textContent = depInput.value ? (depInput.value.includes('(') ? depInput.value : depInput.value + ' Havalimanı') : 'İstanbul (Tümü)';
+      }
+      if (subDest) {
+        subDest.textContent = destInput.value ? (destInput.value.includes('(') ? destInput.value : destInput.value + ' Havalimanı') : 'Gideceğiniz şehir';
+      }
+      
+      // Tetikleyici olayları çalıştır (Change event)
+      depInput.dispatchEvent(new Event('input'));
+      destInput.dispatchEvent(new Event('input'));
+      depInput.dispatchEvent(new Event('change'));
+      destInput.dispatchEvent(new Event('change'));
+      
+      THY.toast ? THY.toast(THY.currentLanguage === 'en' ? 'Locations swapped' : 'Kalkış ve varış noktaları değiştirildi.', 'info') : console.log('Swapped destinations');
+    });
+  }
+
+  // Update sub-text dynamically
+  const updateInputSubtext = (inputEl, subtextElId, defaultText) => {
+    if (!inputEl) return;
+    const subtextEl = document.getElementById(subtextElId);
+    if (!subtextEl) return;
+    
+    const update = () => {
+      const val = inputEl.value;
+      if (!val) {
+        subtextEl.textContent = defaultText;
+      } else {
+        const code = inputEl.dataset.code;
+        if (code) {
+          const ap = AIRPORTS.find(x => x.code === code);
+          subtextEl.textContent = ap ? ap.name : val;
+        } else {
+          subtextEl.textContent = val;
+        }
+      }
+    };
+    
+    inputEl.addEventListener('input', update);
+    inputEl.addEventListener('change', update);
+    // Initial call
+    update();
+  };
+
+  updateInputSubtext(document.getElementById('flightDepartureInput'), 'subDeparture', 'İstanbul (Tümü)');
+  updateInputSubtext(document.getElementById('flightDestinationInput'), 'subDestination', 'Gideceğiniz şehir');
 
   // ---- TURKISH AIRLINES LIVE API INTEGRATION ----
   async function fetchThyLiveFlights(fromCode, toCode, date, cabin) {
