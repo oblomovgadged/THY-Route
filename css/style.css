@@ -2583,12 +2583,12 @@ input, textarea, select {
 .flight-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  max-height: 380px;
+  gap: 0;
+  max-height: none;
   overflow-y: auto;
-  padding-top: 12px;
+  padding-top: 4px;
   padding-bottom: 4px;
-  padding-right: 4px;
+  padding-right: 0;
 }
 
 .flight-item {
@@ -2803,342 +2803,9 @@ input, textarea, select {
 .fare-brand-BF, .fare-brand-businessfly   { --fare-color: #BA7655; } /* BusinessFly */
 .fare-brand-BL, .fare-brand-businessprime { --fare-color: #794C37; } /* BusinessPrime */
 
-/* THY Fare Price Box (used in flight results) */
-.fare-price-box {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 8px 10px;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  background: var(--bg-card);
-  min-width: 130px;
-  position: relative;
-}
+/* THY Fare Price Box — old dark-theme definitions removed; see section 6 below */
 
-.fare-price-box:hover {
-  border-color: var(--thy-red);
-  background: var(--bg-card-hover);
-}
-
-.fare-price-box.active {
-  border-color: var(--thy-red);
-  background: rgba(239, 46, 31, 0.08);
-  box-shadow: 0 0 8px rgba(239, 46, 31, 0.15);
-}
-
-.fare-box-header {
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.fare-box-body {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.radio-indicator {
-  width: 14px;
-  height: 14px;
-  border: 2px solid #94A3B8;
-  border-radius: 50%;
-  flex-shrink: 0;
-  position: relative;
-  transition: all var(--transition-fast);
-}
-
-.fare-price-box.active .radio-indicator {
-  border-color: var(--thy-red-light);
-}
-
-.fare-price-box.active .radio-indicator::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  background: var(--thy-red-light);
-  border-radius: 50%;
-}
-
-.price-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.price-lbl {
-  font-size: 9px;
-  color: var(--text-muted);
-}
-
-.price-value {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--thy-gold);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.fare-badge {
-  position: absolute;
-  top: -8px;
-  right: 8px;
-  font-size: 8px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  background: #22C55E;
-  color: white;
-  letter-spacing: 0.5px;
-}
-
-.fare-badge.warning {
-  background: #F59E0B;
-  color: var(--thy-navy);
-}
-
-/* THY Flight Row (new card style) */
-.thy-flight-row {
-  margin-bottom: var(--space-sm);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-subtle);
-  overflow: hidden;
-  transition: all var(--transition-base);
-  background: var(--bg-card);
-}
-
-.thy-flight-row:hover {
-  border-color: rgba(239, 46, 31, 0.3);
-  box-shadow: var(--shadow-sm);
-}
-
-.thy-flight-main-card {
-  display: flex;
-  align-items: stretch;
-  gap: var(--space-md);
-  padding: var(--space-md);
-}
-
-.flight-info-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--space-sm);
-}
-
-.flight-times-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.time-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 50px;
-}
-
-.time-block .time {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.time-block .airport-code {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--thy-gold);
-}
-
-.time-block .city {
-  font-size: 9px;
-  color: var(--text-muted);
-  max-width: 80px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.path-block {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.path-type {
-  font-size: 10px;
-  color: var(--text-muted);
-}
-
-.path-line {
-  width: 100%;
-  height: 2px;
-  background: var(--border-subtle);
-  position: relative;
-}
-
-.path-line::before {
-  content: '✈';
-  position: absolute;
-  top: -8px;
-  left: calc(50% - 6px);
-  font-size: 12px;
-}
-
-.flight-details-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.details-divider {
-  color: var(--border-subtle);
-}
-
-.btn-toggle-flight-details {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--thy-blue);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: color var(--transition-fast);
-}
-
-.btn-toggle-flight-details:hover {
-  color: var(--thy-red-light);
-}
-
-.flight-prices-col {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: stretch;
-}
-
-.fare-details-expansion {
-  padding: 0 var(--space-md) var(--space-md);
-  animation: fadeInUp var(--transition-slow) ease;
-}
-
-.fare-details-expansion.hidden {
-  display: none;
-}
-
-/* THY fare subclass cards in expansion */
-.thy-fare-subclass-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--space-sm);
-}
-
-.thy-fare-subclass-card {
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-sm);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  background: rgba(255, 255, 255, 0.02);
-  position: relative;
-}
-
-.thy-fare-subclass-card:hover {
-  border-color: var(--fare-color, var(--thy-blue));
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.thy-fare-subclass-card.selected {
-  border-color: var(--fare-color, var(--thy-red));
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 8px rgba(var(--fare-color, 239), 0.2);
-}
-
-.thy-fare-subclass-card .fare-name {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--fare-color, var(--thy-blue));
-  border-bottom: 2px solid var(--fare-color, var(--thy-blue));
-  padding-bottom: 4px;
-  margin-bottom: 6px;
-}
-
-.thy-fare-subclass-card .fare-price {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 6px;
-}
-
-.thy-fare-subclass-card .fare-features {
-  font-size: 9px;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-.thy-fare-subclass-card .fare-features .feature-check {
-  color: #22C55E;
-}
-
-.thy-fare-subclass-card .fare-features .feature-cross {
-  color: var(--thy-red-light);
-}
-
-.thy-fare-subclass-card .recommended-badge {
-  position: absolute;
-  top: -6px;
-  right: 6px;
-  font-size: 7px;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: var(--radius-full);
-  background: var(--thy-gold);
-  color: var(--thy-navy);
-  letter-spacing: 0.5px;
-}
-
-.thy-fare-subclass-card .select-fare-btn {
-  margin-top: 8px;
-  width: 100%;
-  padding: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: var(--radius-xl);
-  background: var(--thy-red-light);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.thy-fare-subclass-card .select-fare-btn:hover {
-  background: #d62016;
-  transform: translateY(-1px);
-}
-
-/* THY Results Panorama */
-.thy-results-panorama-container {
-  text-align: center;
-  padding: var(--space-lg) 0 var(--space-sm);
-  opacity: 0.5;
-}
-
-.thy-results-panorama-img {
-  max-width: 100%;
-  height: auto;
-  max-height: 60px;
-}
+/* THY Flight Row — initial definitions removed; see section 6 below for active styles */
 
 /* Map Screen Structure */
 .map-screen {
@@ -5195,81 +4862,120 @@ input, textarea, select {
   color: var(--thy-navy);
 }
 
-/* 6. Redesigned Flight Rows & Expandable subclasses */
+/* ============================================================================
+   6. THY FLIGHT RESULTS — Redesigned to match turkishairlines.com
+   ============================================================================ */
+
+/* --- Flight Results Card (container) --- */
+.flight-results-card {
+  background: #FFFFFF !important;
+  color: var(--thy-navy) !important;
+}
+
+/* Override scrollbar inside light-themed results */
+.flight-results-card ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+}
+
+/* --- THY Flight Row (each flight card) --- */
 .thy-flight-row {
   border: 1px solid #E2E8F0;
-  border-radius: 8px;
+  border-radius: 4px;
   background: #FFFFFF;
-  margin-bottom: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(15, 44, 89, 0.04);
-  transition: box-shadow var(--transition-fast);
+  margin-bottom: 14px;
+  overflow: visible;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
 }
 
 .thy-flight-row:hover {
-  box-shadow: 0 4px 12px rgba(15, 44, 89, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-color: #CBD5E1;
 }
 
+/* --- Main Card Row (times + prices) --- */
 .thy-flight-main-card {
   display: flex;
   flex-wrap: wrap;
+  min-height: 0;
 }
 
+/* --- Left: Flight Info Column --- */
 .flight-info-col {
-  flex: 1;
-  padding: 16px 20px;
+  flex: 1 1 340px;
+  padding: 18px 24px 14px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-width: 280px;
+  gap: 10px;
+  min-width: 0;
 }
 
+/* --- Times Row (departure - path - arrival) --- */
 .flight-times-row {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 4px;
 }
 
+/* --- Time Block (departure or arrival) --- */
 .time-block {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  min-width: 56px;
 }
 
 .time-block .time {
   font-family: 'Outfit', sans-serif;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--thy-navy);
-  line-height: 1.1;
+  color: #0A1628;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
 }
 
 .time-block .airport-code {
   font-family: 'Outfit', sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
-  color: var(--thy-navy);
+  color: #0A1628;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
 }
 
 .time-block .city {
-  font-size: 9px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
   color: #64748B;
+  margin-top: 1px;
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* --- Path Block (line between dep and arr) --- */
 .path-block {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  max-width: 120px;
-  min-width: 70px;
+  max-width: 160px;
+  min-width: 80px;
+  padding-top: 4px;
 }
 
 .path-type {
-  font-size: 9px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
   color: #64748B;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .path-line {
@@ -5277,53 +4983,76 @@ input, textarea, select {
   height: 2px;
   background: #CBD5E1;
   position: relative;
+  margin-top: 2px;
+}
+
+/* Endpoint dots on the flight path line */
+.path-line::before,
+.path-line::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.path-line::before {
+  left: -1px;
+  background: #94A3B8;
 }
 
 .path-line::after {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--thy-red);
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translate(0, -50%);
+  right: -1px;
+  background: #E31837;
 }
 
+/* --- Flight Details Row (aircraft + details link) --- */
 .flight-details-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 9px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
   color: #64748B;
 }
 
 .details-divider {
   color: #CBD5E1;
+  font-weight: 400;
 }
 
 .btn-toggle-flight-details {
   background: none;
   border: none;
   color: #0066CC;
+  font-family: 'Outfit', sans-serif;
   font-weight: 700;
-  font-size: 9px;
+  font-size: 10px;
   cursor: pointer;
   padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.15s ease;
 }
 
 .btn-toggle-flight-details:hover {
+  color: #004999;
   text-decoration: underline;
 }
 
+/* --- Right: Fare Price Columns --- */
 .flight-prices-col {
   display: flex;
-  gap: 10px;
-  padding: 16px;
-  background: #F8FAFC;
+  gap: 0;
+  padding: 0;
+  background: transparent;
   border-left: 1px solid #E2E8F0;
-  min-width: 320px;
+  min-width: 310px;
+  align-items: stretch;
 }
 
 @media (max-width: 768px) {
@@ -5331,119 +5060,150 @@ input, textarea, select {
     width: 100%;
     border-left: none;
     border-top: 1px solid #E2E8F0;
+    min-width: 0;
   }
 }
 
+/* --- Fare Price Box (Economy / Business) --- */
 .fare-price-box {
   flex: 1;
   background: #FFFFFF;
-  border: 1px solid #CBD5E1;
-  border-radius: 6px;
+  border-right: 1px solid #E2E8F0;
   cursor: pointer;
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  overflow: visible;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid #E2E8F0;
+}
+
+.fare-price-box:last-child {
+  border-right: none;
 }
 
 .fare-price-box:hover {
-  border-color: #94A3B8;
+  background: #F8FAFC;
 }
 
 .fare-price-box.active {
-  border-color: var(--thy-red);
-  box-shadow: 0 0 0 1px var(--thy-red);
+  background: #FEF2F2;
+  box-shadow: inset 0 0 0 2px #E31837;
 }
 
+/* --- Fare Box Header (Economy / Business label) --- */
 .fare-box-header {
   background: #F1F5F9;
   text-align: center;
-  padding: 4px 0;
+  padding: 8px 8px 6px;
   font-family: 'Outfit', sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
-  color: var(--thy-navy);
+  color: #0A1628;
+  letter-spacing: 0.5px;
   border-bottom: 1px solid #E2E8F0;
 }
 
 .fare-price-box.active .fare-box-header {
-  background: #FFF5F5;
-  color: var(--thy-red);
-  border-bottom-color: rgba(239, 46, 31, 0.2);
+  background: #FEF2F2;
+  color: #C81A28;
+  border-bottom-color: rgba(200, 26, 40, 0.15);
 }
 
+/* --- Fare Box Body (radio + price) --- */
 .fare-box-body {
-  padding: 10px 8px;
+  padding: 12px 12px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
-  min-height: 48px;
+  min-height: 56px;
 }
 
+/* --- Radio Indicator --- */
 .fare-price-box .radio-indicator {
-  width: 14px;
-  height: 14px;
-  border: 1.5px solid #94A3B8;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #94A3B8;
   border-radius: 50%;
   position: relative;
   flex-shrink: 0;
+  transition: border-color 0.15s ease;
+}
+
+.fare-price-box:hover .radio-indicator {
+  border-color: #64748B;
 }
 
 .fare-price-box.active .radio-indicator {
-  border-color: var(--thy-red);
+  border-color: #E31837;
 }
 
 .fare-price-box.active .radio-indicator::after {
   content: '';
   position: absolute;
   inset: 3px;
-  background: var(--thy-red);
+  background: #E31837;
   border-radius: 50%;
 }
 
+/* --- Price Info --- */
 .price-info {
   display: flex;
   flex-direction: column;
+  gap: 1px;
 }
 
 .price-lbl {
-  font-size: 8px;
-  color: #64748B;
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  color: #94A3B8;
   line-height: 1;
-  margin-bottom: 2px;
 }
 
 .price-value {
   font-family: 'Outfit', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
-  color: var(--thy-navy);
-  line-height: 1.1;
+  color: #0A1628;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
 }
 
 .fare-price-box.active .price-value {
-  color: var(--thy-red);
+  color: #C81A28;
+}
+
+/* --- Fare Badge (Best Price, Limited Seats) --- */
+.fare-badge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-bottom-left-radius: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  line-height: 1;
+  z-index: 2;
 }
 
 .fare-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: var(--thy-red);
+  background: #16A34A;
   color: #FFFFFF;
-  font-size: 7px;
-  font-weight: 700;
-  padding: 1px 4px;
-  border-bottom-left-radius: 4px;
-  line-height: 1;
 }
 
 .fare-badge.warning {
-  background: #FF8C00;
+  background: #F59E0B;
+  color: #0A1628;
 }
 
+/* --- Sold Out (Dolu) State --- */
 .fare-price-box.dolu-box {
   background: #F1F5F9;
   border-color: #E2E8F0;
@@ -5453,196 +5213,294 @@ input, textarea, select {
 
 .dolu-text {
   font-family: 'Outfit', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
-  color: #64748B;
+  color: #94A3B8;
   text-align: center;
   width: 100%;
 }
 
-/* 7. Sub-class expansion layouts */
+
+/* ============================================================================
+   7. FARE FAMILY EXPANSION TABLE — THY Comparison Table Style
+   ============================================================================ */
+
 .fare-details-expansion {
   background: #F8FAFC;
-  border-top: 1px solid #E2E8F0;
-  padding: 20px;
-  animation: slideDownFade 0.25s ease;
+  border-top: 2px solid #E2E8F0;
+  padding: 24px 20px 20px;
+  animation: slideDownFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.fare-details-expansion.hidden {
+  display: none;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Package Table Layout --- */
 .fare-package-table {
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 
+/* --- Left Checklist (feature labels) --- */
 .fare-package-left-checklist {
-  width: 170px;
+  width: 160px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-top: 134px; /* Align with sub-class headers */
+  gap: 0;
+  padding-top: 112px; /* Align with subclass card feature rows */
+  background: #F8FAFC;
 }
 
 @media (max-width: 768px) {
   .fare-package-left-checklist {
-    display: none; /* Hide on mobile to stack cards */
+    display: none;
   }
 }
 
 .checklist-row-lbl {
-  font-size: 9px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
   font-weight: 700;
-  color: var(--thy-navy);
-  min-height: 20px;
+  color: #334155;
+  height: 32px;
   display: flex;
   align-items: center;
+  padding: 0 8px 0 0;
+  border-bottom: 1px solid #F1F5F9;
 }
 
+/* --- Fare Package Columns Container --- */
 .fare-package-cols {
   flex: 1;
   display: flex;
-  gap: 10px;
+  gap: 0;
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
 }
 
+/* --- Individual Fare Subclass Card (EcoFly, ExtraFly, etc.) --- */
 .fare-subclass-card {
   flex: 1;
-  min-width: 130px;
+  min-width: 140px;
+  max-width: 200px;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
-  border-radius: 6px;
-  padding: 12px;
+  border-radius: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  margin-left: -1px; /* Collapse borders */
 }
 
+.fare-subclass-card:first-child {
+  margin-left: 0;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.fare-subclass-card:last-of-type {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.fare-subclass-card:hover {
+  border-color: #94A3B8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 2;
+}
+
+/* --- Recommended Border (FlexFly) --- */
 .fare-subclass-card.recommend-border {
-  border-color: #00B050; /* Green border for FlexFly */
+  border: 2px solid #16A34A;
+  z-index: 3;
+  box-shadow: 0 2px 12px rgba(22, 163, 74, 0.12);
 }
 
 .fare-subclass-card.recommend-border::after {
-  content: 'Önerilen';
+  content: 'Onerilen';
   position: absolute;
-  top: -9px;
-  background: #00B050;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #16A34A;
   color: #FFFFFF;
-  font-size: 7px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 8px;
   font-weight: 800;
-  padding: 2px 6px;
+  padding: 2px 10px;
   border-radius: 10px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
+/* --- Subclass Header (name + description + price) --- */
 .subclass-header {
   text-align: center;
   width: 100%;
-  border-bottom: 1px solid #F1F5F9;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  min-height: 110px;
+  padding: 14px 10px 10px;
+  margin-bottom: 0;
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border-bottom: 1px solid #E2E8F0;
+  position: relative;
 }
+
+/* Colored top accent bar per fare family */
+.fare-subclass-card:nth-child(1) .subclass-header { border-top: 4px solid #4CA7BB; }
+.fare-subclass-card:nth-child(2) .subclass-header { border-top: 4px solid #316C79; }
+.fare-subclass-card:nth-child(3) .subclass-header { border-top: 4px solid #144A93; }
+.fare-subclass-card:nth-child(4) .subclass-header { border-top: 4px solid #0B284F; }
 
 .subclass-name {
   font-family: 'Outfit', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
-  color: var(--thy-navy);
+  color: #0A1628;
+  display: block;
 }
 
 .subclass-desc {
-  font-size: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
   color: #64748B;
   margin-top: 4px;
+  line-height: 1.35;
+  display: block;
 }
 
+/* Price inside subclass header */
+.subclass-header .price-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0A1628;
+  margin-top: 8px;
+  display: block;
+}
+
+/* --- Feature Tick List --- */
 .subclass-features-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 0;
+  padding: 0;
 }
 
 .feature-item-tick {
-  min-height: 20px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 12px;
+  border-bottom: 1px solid #F1F5F9;
+  padding: 0 8px;
 }
 
 .tick-yes {
-  color: #22C55E; /* Green Tick */
+  color: #16A34A;
+  font-weight: 700;
 }
 
 .tick-no {
-  color: #EF2E1F; /* Red Cross */
+  color: #EF4444;
+  font-weight: 700;
 }
 
 .tick-info-text {
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--thy-navy);
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #0A1628;
 }
 
+/* --- Select Button (red pill at bottom) --- */
 .btn-subclass-select {
-  width: 100%;
-  background: var(--thy-red);
+  width: calc(100% - 16px);
+  background: #E31837;
   color: #FFFFFF;
   border: none;
   border-radius: 4px;
-  padding: 8px 4px;
+  padding: 10px 8px;
   font-family: 'Outfit', sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
   text-align: center;
-  transition: background-color var(--transition-fast);
-  margin-top: auto;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  margin: 12px 8px;
+  letter-spacing: 0.3px;
 }
 
 .btn-subclass-select:hover {
   background: #C81A28;
+  transform: translateY(-1px);
 }
 
-/* Business Class luxury sidebar panel */
+.btn-subclass-select:active {
+  transform: translateY(0);
+}
+
+/* --- Business Class Privilege Sidebar Card --- */
 .privilege-card {
-  width: 220px;
-  background: #001C46;
+  width: 200px;
+  background: linear-gradient(180deg, #001C46 0%, #0A1628 100%);
   color: #FFFFFF;
-  border-radius: 6px;
-  padding: 16px;
+  border-radius: 8px;
+  padding: 18px 14px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  margin-left: 8px;
 }
 
 @media (max-width: 991px) {
   .privilege-card {
-    width: 100%; /* Expand on mobile and tablet */
+    width: 100%;
+    margin-left: 0;
+    margin-top: 12px;
   }
 }
 
 .privilege-card-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
-  color: var(--thy-gold);
+  color: #C5A059;
   margin-bottom: 8px;
+  letter-spacing: 0.3px;
 }
 
 .privilege-card-desc {
-  font-size: 9px;
-  color: #E2E8F0;
-  line-height: 1.4;
-  margin-bottom: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: #CBD5E1;
+  line-height: 1.45;
+  margin-bottom: 14px;
 }
 
 .privilege-items-grid {
@@ -5657,39 +5515,114 @@ input, textarea, select {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  padding: 8px 4px;
+  border-radius: 6px;
+  padding: 10px 4px;
+  transition: background 0.15s ease;
+}
+
+.privilege-item:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .privilege-item-icon {
-  font-size: 14px;
+  font-size: 16px;
   margin-bottom: 4px;
 }
 
 .privilege-item-lbl {
+  font-family: 'Outfit', sans-serif;
   font-size: 8px;
   font-weight: 700;
+  color: #E2E8F0;
+  letter-spacing: 0.3px;
 }
 
-/* 8. Sketch Panorama image layout */
+/* ============================================================================
+   8. PANORAMA SKETCH & LIGHT-THEME OVERRIDES
+   ============================================================================ */
+
 .thy-results-panorama-container {
   display: flex;
   justify-content: center;
   width: 100%;
   margin: 30px auto 10px;
   overflow: hidden;
-  max-height: 110px;
+  max-height: 100px;
 }
 
 .thy-results-panorama-img {
   width: auto;
-  max-width: 60%;
+  max-width: 55%;
   height: auto;
-  opacity: 0.35;
+  opacity: 0.25;
   filter: grayscale(1);
   pointer-events: none;
+}
+
+/* --- Flight Results Light Theme Overrides --- */
+.flight-results-card .results-header {
+  color: #0A1628;
+}
+
+.flight-results-card .flight-list {
+  max-height: 520px;
+  padding-right: 6px;
+}
+
+.flight-results-card .flight-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.flight-results-card .flight-list::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 10px;
+}
+
+.flight-results-card .flight-list::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 10px;
+}
+
+.flight-results-card .flight-list::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Price alert widget light override inside results card */
+.flight-results-card .price-alert-widget {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.flight-results-card .price-alert-widget:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.flight-results-card .price-alert-title {
+  color: #0A1628;
+}
+
+.flight-results-card .price-alert-desc {
+  color: #64748B;
+}
+
+.flight-results-card .price-alert-inputs input {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+  color: #0A1628;
+}
+
+.flight-results-card .price-alert-inputs input:focus {
+  border-color: #0066CC;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
+}
+
+.flight-results-card #priceAlertPrivacyNotice {
+  color: #94A3B8;
 }
 
 
