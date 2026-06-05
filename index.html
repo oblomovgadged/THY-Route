@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://maps.googleapis.com https://*.gstatic.com https://www.gstatic.com https://cdn.jsdelivr.net https://*.googletagmanager.com https://www.googletagmanager.com https://*.google-analytics.com https://*.kaspersky-labs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com https://*.googleusercontent.com https://*.googletagmanager.com https://www.googletagmanager.com; connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://api.emailjs.com https://*.gstatic.com https://www.gstatic.com https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com https://*.kaspersky-labs.com wss://*.kaspersky-labs.com; frame-src 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://maps.googleapis.com https://*.gstatic.com https://www.gstatic.com https://cdn.jsdelivr.net https://*.googletagmanager.com https://www.googletagmanager.com https://*.google-analytics.com https://*.kaspersky-labs.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.google.com https://*.googleusercontent.com https://*.googletagmanager.com https://www.googletagmanager.com https://cdn.turkishairlines.com; connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://api.emailjs.com https://*.gstatic.com https://www.gstatic.com https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com https://*.kaspersky-labs.com wss://*.kaspersky-labs.com https://api.turkishairlines.com https://*.turkishairlines.com; frame-src 'self' https://www.turkishairlines.com;">
   <meta name="description" content="THY Route - Interactive travel journal with route planning, Google Maps, and flight-inspired design.">
   <meta name="theme-color" content="#E31837">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -179,14 +179,57 @@
               <!-- Date Selection Cell -->
               <div class="booking-field-cell" id="cellDates">
                 <span class="cell-label" id="lblCellDates">Tarih</span>
-                <div class="date-inputs-wrapper">
+                <div class="date-inputs-wrapper" style="pointer-events: none;">
                   <div class="date-input-block" id="depDateBlock">
                     <span class="date-block-label" id="lblDepDate">Gidiş Tarihi</span>
-                    <input type="date" id="flightDepartureDate">
+                    <input type="date" id="flightDepartureDate" readonly>
                   </div>
                   <div class="date-input-block" id="returnDateGroup">
                     <span class="date-block-label" id="lblRetDate">Dönüş Tarihi</span>
-                    <input type="date" id="flightReturnDate">
+                    <input type="date" id="flightReturnDate" readonly>
+                  </div>
+                </div>
+                
+                <!-- Custom Double Month Calendar Picker -->
+                <div class="datepicker-modal hidden" id="customDatePickerModal">
+                  <div class="datepicker-container">
+                    <div class="datepicker-header">
+                      <div class="datepicker-checkboxes">
+                        <label class="custom-checkbox-lbl"><input type="checkbox" id="chkFlexibleDates"> Esnek tarihler</label>
+                        <label class="custom-checkbox-lbl"><input type="checkbox" id="chkDirectFlights"> Direkt uçuşlar</label>
+                      </div>
+                      <button type="button" class="datepicker-close-btn" id="btnCloseDatePicker">✕</button>
+                    </div>
+                    <div class="datepicker-calendars">
+                      <!-- Calendar 1 -->
+                      <div class="datepicker-month" id="calendarMonth1">
+                        <div class="month-header">
+                          <button type="button" class="month-nav-btn prev-month" id="btnPrevMonth">‹</button>
+                          <span class="month-title" id="monthTitle1">Haziran 2026</span>
+                          <span></span> <!-- placeholder -->
+                        </div>
+                        <div class="weekday-header">
+                          <span>Pt</span><span>Sa</span><span>Ça</span><span>Pe</span><span>Cu</span><span>Ct</span><span>Pz</span>
+                        </div>
+                        <div class="days-grid" id="daysGrid1"></div>
+                      </div>
+                      <!-- Calendar 2 -->
+                      <div class="datepicker-month" id="calendarMonth2">
+                        <div class="month-header">
+                          <span></span> <!-- placeholder -->
+                          <span class="month-title" id="monthTitle2">Temmuz 2026</span>
+                          <button type="button" class="month-nav-btn next-month" id="btnNextMonth">›</button>
+                        </div>
+                        <div class="weekday-header">
+                          <span>Pt</span><span>Sa</span><span>Ça</span><span>Pe</span><span>Cu</span><span>Ct</span><span>Pz</span>
+                        </div>
+                        <div class="days-grid" id="daysGrid2"></div>
+                      </div>
+                    </div>
+                    <div class="datepicker-footer">
+                      <button type="button" class="datepicker-clear-btn" id="btnDateClear">Seçimi temizle</button>
+                      <button type="button" class="datepicker-confirm-btn" id="btnDateConfirm">Tamam</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -194,21 +237,83 @@
               <!-- Passengers & Class Cell -->
               <div class="booking-field-cell" id="cellPassengers">
                 <span class="cell-label" id="lblCellPassengers">Yolcu / Kabin Sınıfı</span>
-                <div class="select-inputs-wrapper">
-                  <div class="select-block">
-                    <select id="flightPassengers" class="cell-select">
-                      <option value="1">1 Yolcu</option>
-                      <option value="2">2 Yolcu</option>
-                      <option value="3">3 Yolcu</option>
-                      <option value="4">4 Yolcu</option>
-                    </select>
+                <div class="custom-passenger-display" id="passengerDisplay">
+                  <span id="passengerDisplayText">1 Yolcu / ECO</span>
+                  <span class="dropdown-chevron">▼</span>
+                </div>
+                <div class="select-inputs-wrapper" style="display: none;">
+                  <select id="flightPassengers" class="cell-select">
+                    <option value="1" selected>1 Yolcu</option>
+                    <option value="2">2 Yolcu</option>
+                    <option value="3">3 Yolcu</option>
+                    <option value="4">4 Yolcu</option>
+                    <option value="5">5 Yolcu</option>
+                    <option value="6">6 Yolcu</option>
+                    <option value="7">7 Yolcu</option>
+                    <option value="8">8 Yolcu</option>
+                    <option value="9">9 Yolcu</option>
+                  </select>
+                  <select id="flightCabinClass" class="cell-select">
+                    <option value="economy" selected>ECO</option>
+                    <option value="business">BUS</option>
+                  </select>
+                </div>
+                
+                <!-- Custom Passenger Popover -->
+                <div class="passenger-popover hidden" id="passengerPopover">
+                  <div class="passenger-popover-header">Kabin ve yolcu seçimi</div>
+                  <div class="passenger-cabin-tabs">
+                    <button type="button" class="cabin-tab-btn active" id="tabCabinEco">Economy Class</button>
+                    <button type="button" class="cabin-tab-btn" id="tabCabinBus">Business Class</button>
                   </div>
-                  <span class="select-divider">/</span>
-                  <div class="select-block">
-                    <select id="flightCabinClass" class="cell-select">
-                      <option value="economy">ECO</option>
-                      <option value="business">BUS</option>
-                    </select>
+                  <div class="passenger-rows">
+                    <div class="passenger-row" data-type="adult">
+                      <div class="passenger-type-info">
+                        <span class="passenger-type-name">Yetişkin</span>
+                        <span class="passenger-type-desc">12+ yaş</span>
+                      </div>
+                      <div class="passenger-counter">
+                        <button type="button" class="counter-btn dec-btn">-</button>
+                        <span class="counter-val" id="cntAdult">1</span>
+                        <button type="button" class="counter-btn inc-btn">+</button>
+                      </div>
+                    </div>
+                    <div class="passenger-row" data-type="child">
+                      <div class="passenger-type-info">
+                        <span class="passenger-type-name">Çocuk</span>
+                        <span class="passenger-type-desc">2 - 12 yaş</span>
+                      </div>
+                      <div class="passenger-counter">
+                        <button type="button" class="counter-btn dec-btn">-</button>
+                        <span class="counter-val" id="cntChild">0</span>
+                        <button type="button" class="counter-btn inc-btn">+</button>
+                      </div>
+                    </div>
+                    <div class="passenger-row" data-type="infant">
+                      <div class="passenger-type-info">
+                        <span class="passenger-type-name">Bebek</span>
+                        <span class="passenger-type-desc">2 yaş altı</span>
+                      </div>
+                      <div class="passenger-counter">
+                        <button type="button" class="counter-btn dec-btn">-</button>
+                        <span class="counter-val" id="cntInfant">0</span>
+                        <button type="button" class="counter-btn inc-btn">+</button>
+                      </div>
+                    </div>
+                    <div class="passenger-row" data-type="disabled">
+                      <div class="passenger-type-info">
+                        <span class="passenger-type-name">Engelli/Refakatçi</span>
+                        <span class="passenger-type-desc">İndirimli yolcu</span>
+                      </div>
+                      <div class="passenger-counter">
+                        <button type="button" class="counter-btn dec-btn">-</button>
+                        <span class="counter-val" id="cntDisabled">0</span>
+                        <button type="button" class="counter-btn inc-btn">+</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="passenger-popover-footer">
+                    <button type="button" class="btn btn-primary btn-sm" id="btnPassengerConfirm">Tamam</button>
                   </div>
                 </div>
               </div>
@@ -237,28 +342,69 @@
         <!-- Flight Results Card -->
         <div class="flight-results-card hidden fade-in-slide" id="flightResultsCard">
           <div class="results-header">
-            <button class="back-to-search-btn" id="btnBackToSearch">← Aramayı Düzenle</button>
+            <!-- THY Search Banner Dashboard -->
+            <div class="thy-results-search-banner">
+              <div class="search-banner-fields">
+                <div class="search-banner-field">
+                  <span class="search-banner-lbl">Nereden</span>
+                  <span class="search-banner-val" id="bannerDepVal">İstanbul (Tümü)</span>
+                </div>
+                <div class="search-banner-field-divider">➔</div>
+                <div class="search-banner-field">
+                  <span class="search-banner-lbl">Nereye</span>
+                  <span class="search-banner-val" id="bannerDestVal">Roma (Tümü)</span>
+                </div>
+                <div class="search-banner-field">
+                  <span class="search-banner-lbl">Gidiş</span>
+                  <span class="search-banner-val" id="bannerDepDateVal">13 Haz</span>
+                </div>
+                <div class="search-banner-field" id="bannerRetDateBlock">
+                  <span class="search-banner-lbl">Dönüş</span>
+                  <span class="search-banner-val" id="bannerRetDateVal">28 Haz</span>
+                </div>
+                <div class="search-banner-field">
+                  <span class="search-banner-lbl">Yolcu</span>
+                  <span class="search-banner-val" id="bannerPassVal">1 Yolcu, ECO</span>
+                </div>
+              </div>
+              <button class="thy-search-banner-btn" id="btnBackToSearch">Yeniden uçuş ara →</button>
+            </div>
             
-            <!-- Booking Step Progress Indicator -->
-            <div class="booking-steps" id="bookingSteps">
-              <div class="step-item active" id="stepOutbound">
-                <span class="step-num">1</span>
-                <span class="step-label">Gidiş Uçuşu</span>
+            <!-- THY Booking steps tracker bar -->
+            <div class="thy-booking-tracker">
+              <div class="thy-tracker-step active" id="stepOutbound">
+                <span class="thy-tracker-num">1</span>
+                <span class="thy-tracker-text step-label">Gidiş Uçuşu</span>
               </div>
-              <div class="step-line" id="stepLine"></div>
-              <div class="step-item" id="stepInbound">
-                <span class="step-num">2</span>
-                <span class="step-label">Dönüş Uçuşu</span>
+              <div class="thy-tracker-step" id="stepInbound">
+                <span class="thy-tracker-num">2</span>
+                <span class="thy-tracker-text step-label">Dönüş Uçuşu</span>
+              </div>
+              <div class="thy-tracker-step">
+                <span class="thy-tracker-num">3</span>
+                <span class="thy-tracker-text">Yolcu bilgileri</span>
+              </div>
+              <div class="thy-tracker-step">
+                <span class="thy-tracker-num">4</span>
+                <span class="thy-tracker-text">Ödeme</span>
               </div>
             </div>
 
-            <div class="results-header-banner">
-              <div class="results-header-banner-text" id="resultsRouteBanner">
-                🛫 UÇUŞ SEÇİN
-              </div>
+            <!-- Keep these hidden elements so the translation functions don't fail -->
+            <div style="display: none;">
+              <span id="resultsRouteBanner">🛫 UÇUŞ SEÇİN</span>
+              <span id="lblAvailableFlightsTitle">Uygun Uçuşlar</span>
+              <span id="resultsRouteLabel">...</span>
             </div>
 
-            <h3 class="results-title"><span id="lblAvailableFlightsTitle">Uygun Uçuşlar</span> (<span id="resultsRouteLabel">...</span>)</h3>
+            <div class="thy-results-title-row">
+              <h3 class="thy-results-title-main" id="thyResultsTitleText">İstanbul - Roma, 13 Haziran Cumartesi</h3>
+              <div class="thy-results-header-actions">
+                <span class="action-item active">Liste</span>
+                <span class="action-item">Fiyat Grafiği</span>
+                <span class="action-item">Tablo</span>
+              </div>
+            </div>
           </div>
 
           <!-- Price Alert Widget -->
@@ -282,6 +428,11 @@
 
           <div class="flight-list" id="flightListContainer">
             <!-- Flights will be loaded here dynamically -->
+          </div>
+
+          <!-- Decorative Panorama Sketch Image -->
+          <div class="thy-results-panorama-container">
+            <img src="icons/panorama.png" alt="Turkish Airlines Landmarks" class="thy-results-panorama-img">
           </div>
         </div>
         <!-- Landing Page Footer -->

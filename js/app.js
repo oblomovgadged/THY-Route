@@ -49,6 +49,9 @@ const thyApiConfig = {
       'Konumunuz tespit ediliyor...': 'Detecting your location...',
       'Konum bilgisi alınamadı. Lütfen listeden seçin.': 'Location info could not be retrieved. Please select from the list.',
       'THY Live API: CORS veya yetkilendirme engeli. Canlı dinamik simülasyona dönüldü.': 'THY Live API: CORS or auth block. Switched to live dynamic simulation.',
+      'THY Canlı Uçuş Verileri Yüklendi! ✈️': 'THY Live Flight Data Loaded! ✈️',
+      'THY API Bağlantı Sorunu. Dinamik Simülasyon Devreye Alındı.': 'THY API Connection Issue. Dynamic Simulation Activated.',
+      'Dinamik Simülasyon Aktif ✈️': 'Dynamic Simulation Active ✈️',
       'Canlı Uçuş Verileri Yüklendi! ✈️': 'Live Flight Data Loaded! ✈️',
       'Canlı Bağlantı Kısıtlaması. Dinamik Simülasyon Devreye Alındı.': 'Live Connection Restriction. Dynamic Simulation Activated.',
       'Lütfen kalkış ve varış noktalarını seçin veya geçerli bir uçuş kodu girin.': 'Please select departure and arrival points or enter a valid flight code.',
@@ -2274,6 +2277,357 @@ const thyApiConfig = {
     });
   }
 
+  // ---- CUSTOM DATEPICKER CALENDAR & PASSENGER POPOVER LOGIC ----
+  const cellDates = document.getElementById('cellDates');
+  const datepickerModal = document.getElementById('customDatePickerModal');
+  const btnCloseDatePicker = document.getElementById('btnCloseDatePicker');
+  const btnPrevMonth = document.getElementById('btnPrevMonth');
+  const btnNextMonth = document.getElementById('btnNextMonth');
+  const btnDateClear = document.getElementById('btnDateClear');
+  const btnDateConfirm = document.getElementById('btnDateConfirm');
+  const daysGrid1 = document.getElementById('daysGrid1');
+  const daysGrid2 = document.getElementById('daysGrid2');
+  const monthTitle1 = document.getElementById('monthTitle1');
+  const monthTitle2 = document.getElementById('monthTitle2');
+  
+  let selectedStartDate = depDateInput?.value || '';
+  let selectedEndDate = retDateInput?.value || '';
+  let calendarCurrentDate = new Date();
+  if (selectedStartDate) {
+    calendarCurrentDate = new Date(selectedStartDate);
+  }
+
+  function renderCustomCalendar() {
+    if (!daysGrid1 || !daysGrid2) return;
+    daysGrid1.innerHTML = '';
+    daysGrid2.innerHTML = '';
+
+    const firstMonthDate = new Date(calendarCurrentDate.getFullYear(), calendarCurrentDate.getMonth(), 1);
+    const secondMonthDate = new Date(firstMonthDate.getFullYear(), firstMonthDate.getMonth() + 1, 1);
+
+    const trMonths = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    const enMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const getMonthTitle = (d) => {
+      const m = d.getMonth();
+      const y = d.getFullYear();
+      const mName = THY.currentLanguage === 'en' ? enMonths[m] : trMonths[m];
+      return `${mName} ${y}`;
+    };
+
+    if (monthTitle1) monthTitle1.textContent = getMonthTitle(firstMonthDate);
+    if (monthTitle2) monthTitle2.textContent = getMonthTitle(secondMonthDate);
+
+    // Disable prev button if current month is <= today's month
+    const isPrevDisabled = firstMonthDate.getFullYear() <= today.getFullYear() && firstMonthDate.getMonth() <= today.getMonth();
+    if (btnPrevMonth) {
+      btnPrevMonth.disabled = isPrevDisabled;
+      btnPrevMonth.style.opacity = isPrevDisabled ? '0.3' : '1';
+      btnPrevMonth.style.pointerEvents = isPrevDisabled ? 'none' : 'auto';
+    }
+
+    renderSingleMonth(firstMonthDate, daysGrid1);
+    renderSingleMonth(secondMonthDate, daysGrid2);
+  }
+
+  function renderSingleMonth(baseDate, gridEl) {
+    const year = baseDate.getFullYear();
+    const month = baseDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const startDayIndex = (firstDay.getDay() + 6) % 7;
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    
+    // Empty slots
+    for (let i = 0; i < startDayIndex; i++) {
+      const emptySpan = document.createElement('span');
+      emptySpan.className = 'empty-day';
+      gridEl.appendChild(emptySpan);
+    }
+    
+    const todayYMD = formatDateLocal(today);
+
+    for (let d = 1; d <= totalDays; d++) {
+      const daySpan = document.createElement('span');
+      daySpan.textContent = d;
+      
+      const currentD = new Date(year, month, d);
+      const currentYMD = formatDateLocal(currentD);
+      
+      if (currentYMD < todayYMD) {
+        daySpan.className = 'past-day';
+      } else {
+        if (selectedStartDate && currentYMD === selectedStartDate) {
+          daySpan.classList.add('selected-day');
+        } else if (selectedEndDate && currentYMD === selectedEndDate) {
+          daySpan.classList.add('selected-day');
+        } else if (selectedStartDate && selectedEndDate && currentYMD > selectedStartDate && currentYMD < selectedEndDate) {
+          daySpan.classList.add('range-day');
+        }
+        
+        daySpan.addEventListener('click', () => {
+          handleDayClick(currentYMD);
+        });
+      }
+      gridEl.appendChild(daySpan);
+    }
+  }
+
+  function handleDayClick(ymd) {
+    if (currentTripType === 'one-way') {
+      selectedStartDate = ymd;
+      selectedEndDate = '';
+    } else {
+      if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
+        selectedStartDate = ymd;
+        selectedEndDate = '';
+      } else {
+        if (ymd < selectedStartDate) {
+          selectedStartDate = ymd;
+          selectedEndDate = '';
+        } else {
+          selectedEndDate = ymd;
+        }
+      }
+    }
+    renderCustomCalendar();
+  }
+
+  if (cellDates) {
+    cellDates.addEventListener('click', (e) => {
+      if (datepickerModal?.classList.contains('hidden')) {
+        selectedStartDate = depDateInput?.value || '';
+        selectedEndDate = retDateInput?.value || '';
+        if (selectedStartDate) {
+          calendarCurrentDate = new Date(selectedStartDate);
+        } else {
+          calendarCurrentDate = new Date();
+        }
+        renderCustomCalendar();
+        datepickerModal.classList.remove('hidden');
+      }
+    });
+  }
+
+  if (datepickerModal) {
+    datepickerModal.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  if (btnCloseDatePicker) {
+    btnCloseDatePicker.addEventListener('click', (e) => {
+      e.stopPropagation();
+      datepickerModal.classList.add('hidden');
+    });
+  }
+
+  if (btnDateClear) {
+    btnDateClear.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectedStartDate = '';
+      selectedEndDate = '';
+      renderCustomCalendar();
+    });
+  }
+
+  if (btnPrevMonth) {
+    btnPrevMonth.addEventListener('click', (e) => {
+      e.stopPropagation();
+      calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+      renderCustomCalendar();
+    });
+  }
+
+  if (btnNextMonth) {
+    btnNextMonth.addEventListener('click', (e) => {
+      e.stopPropagation();
+      calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+      renderCustomCalendar();
+    });
+  }
+
+  if (btnDateConfirm) {
+    btnDateConfirm.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!selectedStartDate) {
+        THY.toast(THY.currentLanguage === 'en' ? 'Please select departure date' : 'Lütfen gidiş tarihini seçin.', 'error');
+        return;
+      }
+      if (currentTripType === 'round-trip' && !selectedEndDate) {
+        THY.toast(THY.currentLanguage === 'en' ? 'Please select return date' : 'Lütfen dönüş tarihini seçin.', 'error');
+        return;
+      }
+      if (depDateInput) {
+        depDateInput.value = selectedStartDate;
+        depDateInput.dispatchEvent(new Event('change'));
+      }
+      if (retDateInput) {
+        retDateInput.value = selectedEndDate;
+        retDateInput.dispatchEvent(new Event('change'));
+      }
+      datepickerModal.classList.add('hidden');
+    });
+  }
+
+  // ---- CUSTOM PASSENGER POPOVER LOGIC ----
+  const passengerDisplay = document.getElementById('passengerDisplay');
+  const passengerPopover = document.getElementById('passengerPopover');
+  const btnPassengerConfirm = document.getElementById('btnPassengerConfirm');
+  const tabCabinEco = document.getElementById('tabCabinEco');
+  const tabCabinBus = document.getElementById('tabCabinBus');
+  const flightPassengers = document.getElementById('flightPassengers');
+  const flightCabinClass = document.getElementById('flightCabinClass');
+  const cntAdult = document.getElementById('cntAdult');
+  const cntChild = document.getElementById('cntChild');
+  const cntInfant = document.getElementById('cntInfant');
+  const cntDisabled = document.getElementById('cntDisabled');
+
+  let selectedCabin = flightCabinClass?.value || 'economy';
+
+  function updateCabinTabs() {
+    if (selectedCabin === 'economy') {
+      tabCabinEco?.classList.add('active');
+      tabCabinBus?.classList.remove('active');
+    } else {
+      tabCabinBus?.classList.add('active');
+      tabCabinEco?.classList.remove('active');
+    }
+  }
+
+  tabCabinEco?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectedCabin = 'economy';
+    updateCabinTabs();
+  });
+
+  tabCabinBus?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectedCabin = 'business';
+    updateCabinTabs();
+  });
+
+  const passengerRows = document.querySelectorAll('#passengerPopover .passenger-row');
+  passengerRows.forEach(row => {
+    const type = row.dataset.type;
+    const decBtn = row.querySelector('.dec-btn');
+    const incBtn = row.querySelector('.inc-btn');
+    const counterVal = row.querySelector('.counter-val');
+
+    incBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      let adult = parseInt(cntAdult.textContent) || 0;
+      let child = parseInt(cntChild.textContent) || 0;
+      let infant = parseInt(cntInfant.textContent) || 0;
+      let disabled = parseInt(cntDisabled.textContent) || 0;
+      let total = adult + child + infant + disabled;
+
+      if (total >= 9) {
+        THY.toast(THY.currentLanguage === 'en' ? 'Maximum 9 passengers allowed' : 'Maksimum 9 yolcu seçilebilir.', 'warning');
+        return;
+      }
+
+      if (type === 'adult') {
+        adult++;
+        cntAdult.textContent = adult;
+      } else if (type === 'child') {
+        child++;
+        cntChild.textContent = child;
+      } else if (type === 'infant') {
+        if (infant >= adult) {
+          THY.toast(THY.currentLanguage === 'en' ? 'Infants cannot exceed adults' : 'Bebek sayısı yetişkin sayısını geçemez.', 'warning');
+          return;
+        }
+        infant++;
+        cntInfant.textContent = infant;
+      } else if (type === 'disabled') {
+        disabled++;
+        cntDisabled.textContent = disabled;
+      }
+    });
+
+    decBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      let adult = parseInt(cntAdult.textContent) || 0;
+      let child = parseInt(cntChild.textContent) || 0;
+      let infant = parseInt(cntInfant.textContent) || 0;
+      let disabled = parseInt(cntDisabled.textContent) || 0;
+
+      if (type === 'adult') {
+        if (adult <= 1) return;
+        if (infant >= adult) {
+          THY.toast(THY.currentLanguage === 'en' ? 'Infants cannot exceed adults' : 'Bebek sayısı yetişkin sayısını geçemez.', 'warning');
+          return;
+        }
+        adult--;
+        cntAdult.textContent = adult;
+      } else if (type === 'child') {
+        if (child <= 0) return;
+        child--;
+        cntChild.textContent = child;
+      } else if (type === 'infant') {
+        if (infant <= 0) return;
+        infant--;
+        cntInfant.textContent = infant;
+      } else if (type === 'disabled') {
+        if (disabled <= 0) return;
+        disabled--;
+        cntDisabled.textContent = disabled;
+      }
+    });
+  });
+
+  passengerDisplay?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (passengerPopover?.classList.contains('hidden')) {
+      selectedCabin = flightCabinClass?.value || 'economy';
+      updateCabinTabs();
+      passengerPopover.classList.remove('hidden');
+    } else {
+      passengerPopover.classList.add('hidden');
+    }
+  });
+
+  if (passengerPopover) {
+    passengerPopover.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  btnPassengerConfirm?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    let adult = parseInt(cntAdult.textContent) || 0;
+    let child = parseInt(cntChild.textContent) || 0;
+    let infant = parseInt(cntInfant.textContent) || 0;
+    let disabled = parseInt(cntDisabled.textContent) || 0;
+    let total = adult + child + infant + disabled;
+
+    if (flightPassengers) {
+      flightPassengers.value = total.toString();
+      flightPassengers.dispatchEvent(new Event('change'));
+    }
+    if (flightCabinClass) {
+      flightCabinClass.value = selectedCabin;
+      flightCabinClass.dispatchEvent(new Event('change'));
+    }
+
+    const passengerDisplayText = document.getElementById('passengerDisplayText');
+    if (passengerDisplayText) {
+      const isEn = THY.currentLanguage === 'en';
+      const label = selectedCabin === 'economy' ? 'ECO' : 'BUS';
+      if (isEn) {
+        passengerDisplayText.textContent = `${total} Passenger${total > 1 ? 's' : ''} / ${label}`;
+      } else {
+        passengerDisplayText.textContent = `${total} Yolcu / ${label}`;
+      }
+    }
+    passengerPopover?.classList.add('hidden');
+  });
+
+  document.addEventListener('click', () => {
+    datepickerModal?.classList.add('hidden');
+    passengerPopover?.classList.add('hidden');
+  });
+
   // Gidiş tarihi değiştiğinde dönüş tarihini otomatik olarak 4 gün sonrasına güncelle
   if (depDateInput && retDateInput) {
     depDateInput.addEventListener('change', () => {
@@ -2445,52 +2799,102 @@ const thyApiConfig = {
     }
   }
 
-  // ---- AVIATIONSTACK LIVE FLIGHT API INTEGRATION (via Server Proxy) ----
-  async function fetchAviationstackFlights(fromCode, toCode, date) {
+  // ---- THY APIM LIVE FLIGHT API INTEGRATION (via Server Proxy) ----
+  async function fetchTHYApiFlights(fromCode, toCode, date, returnDate, passengers, cabinClass) {
     try {
-      const res = await fetch(`/api/flights?type=route&from=${fromCode}&to=${toCode}`);
+      let url = `/api/flights?type=route&from=${fromCode}&to=${toCode}`;
+      if (date) url += `&date=${date}`;
+      if (returnDate) url += `&returnDate=${returnDate}`;
+      if (passengers) url += `&passengers=${passengers}`;
+      if (cabinClass) url += `&class=${cabinClass}`;
+
+      const res = await fetch(url);
       if (!res.ok) {
-        throw new Error('Server proxy call failed: ' + res.statusText);
+        throw new Error('THY API proxy call failed: ' + res.statusText);
       }
-      
+
       const data = await res.json();
-      
+
       if (data.error) {
-        throw new Error('API response error: ' + (data.details || data.error));
+        throw new Error('THY API response error: ' + (data.details || data.error));
       }
-      
-      const flights = [];
-      if (data.data && data.data.length > 0) {
-        data.data.forEach(item => {
-          const carrier = item.airline?.iata || item.airline?.icao;
-          const matchesCarrier = carrier === 'TK' || carrier === 'THY' || item.flight?.iata?.startsWith('TK');
-          
-          if (matchesCarrier) {
-            const depTimeRaw = item.departure?.scheduled;
-            const arrTimeRaw = item.arrival?.scheduled;
-            
-            if (depTimeRaw && arrTimeRaw) {
-              const depTime = new Date(depTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-              const arrTime = new Date(arrTimeRaw).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-              const flightNo = item.flight?.iata || `TK ${item.flight?.number || '1862'}`;
-              const gate = item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
-              const delay = item.departure?.delay || 0;
-              const status = item.flight_status || 'scheduled';
-              flights.push({ dep: depTime, arr: arrTime, flightNo, gate, delay, status });
-            }
+
+      const isSimulation = data.source === 'SIMULATION';
+
+      // Parse outbound flights from new THY APIM format
+      const outbound = [];
+      const outboundData = data.outbound || data.data || [];
+      if (Array.isArray(outboundData) && outboundData.length > 0) {
+        outboundData.forEach(item => {
+          const depTime = item.departure?.time || item.dep || '';
+          const arrTime = item.arrival?.time || item.arr || '';
+          const flightNo = item.flightNumber || item.flightNo || `TK ${Math.floor(1000 + Math.random() * 9000)}`;
+          const gate = item.gate || item.departure?.gate || 'A' + Math.floor(Math.random() * 10 + 1);
+          const delay = item.delay || 0;
+          const status = item.status || 'Scheduled';
+          const aircraft = item.aircraft || '';
+          const duration = item.duration || '';
+          const durationMinutes = item.durationMinutes || 0;
+          const stops = item.stops || 0;
+          const price = item.price || null;
+          const fareFamily = item.fareFamily || null;
+          const seatAvailability = item.seatAvailability || null;
+
+          if (depTime && arrTime) {
+            outbound.push({
+              dep: depTime, arr: arrTime, flightNo, gate, delay, status,
+              aircraft, duration, durationMinutes, stops, price, fareFamily, seatAvailability
+            });
           }
         });
       }
-      
-      if (flights.length > 0) {
-        THY.toast('Canlı Uçuş Verileri Yüklendi! ✈️', 'success');
-        return flights;
+
+      // Parse inbound flights
+      const inbound = [];
+      const inboundData = data.inbound || [];
+      if (Array.isArray(inboundData) && inboundData.length > 0) {
+        inboundData.forEach(item => {
+          const depTime = item.departure?.time || item.dep || '';
+          const arrTime = item.arrival?.time || item.arr || '';
+          const flightNo = item.flightNumber || item.flightNo || `TK ${Math.floor(1000 + Math.random() * 9000)}`;
+          const gate = item.gate || 'B' + Math.floor(Math.random() * 10 + 1);
+          const delay = item.delay || 0;
+          const status = item.status || 'Scheduled';
+          const aircraft = item.aircraft || '';
+          const duration = item.duration || '';
+          const durationMinutes = item.durationMinutes || 0;
+          const stops = item.stops || 0;
+          const price = item.price || null;
+          const fareFamily = item.fareFamily || null;
+          const seatAvailability = item.seatAvailability || null;
+
+          if (depTime && arrTime) {
+            inbound.push({
+              dep: depTime, arr: arrTime, flightNo, gate, delay, status,
+              aircraft, duration, durationMinutes, stops, price, fareFamily, seatAvailability
+            });
+          }
+        });
+      }
+
+      if (outbound.length > 0) {
+        const source = isSimulation ? 'Dinamik Simülasyon' : 'THY APIM';
+        THY.toast(isSimulation
+          ? (THY.currentLanguage === 'en' ? 'Dynamic Simulation Active ✈️' : 'Dinamik Simülasyon Aktif ✈️')
+          : (THY.currentLanguage === 'en' ? 'THY Live Flight Data Loaded! ✈️' : 'THY Canlı Uçuş Verileri Yüklendi! ✈️'),
+          'success');
+        return { outbound, inbound, source: data.source || 'THY_APIM' };
       }
       return null;
-      
+
     } catch (err) {
-      console.warn('Aviationstack proxy call failed:', err);
-      THY.toast('Canlı Bağlantı Kısıtlaması. Dinamik Simülasyon Devreye Alındı.', 'info', 4500);
+      console.warn('THY API proxy call failed:', err);
+      THY.toast(
+        THY.currentLanguage === 'en'
+          ? 'THY API Connection Issue. Dynamic Simulation Activated.'
+          : 'THY API Bağlantı Sorunu. Dinamik Simülasyon Devreye Alındı.',
+        'info', 4500
+      );
       return null;
     }
   }
@@ -2741,6 +3145,7 @@ const thyApiConfig = {
     const depDate = document.getElementById('flightDepartureDate')?.value;
     const retDate = document.getElementById('flightReturnDate')?.value;
     const cabin = document.getElementById('flightCabinClass')?.value;
+    const flightPassengers = document.getElementById('flightPassengers');
     
     THY.lastFlightSearch = {
       depCode: depCode,
@@ -2777,6 +3182,50 @@ const thyApiConfig = {
     let selectedOutbound = null;
     let selectedInbound = null;
     let lastTransitionTime = 0;
+
+    // Update the Turkish Airlines Search Results Banner fields
+    const bannerDepVal = document.getElementById('bannerDepVal');
+    const bannerDestVal = document.getElementById('bannerDestVal');
+    const bannerDepDateVal = document.getElementById('bannerDepDateVal');
+    const bannerRetDateVal = document.getElementById('bannerRetDateVal');
+    const bannerRetDateBlock = document.getElementById('bannerRetDateBlock');
+    const bannerPassVal = document.getElementById('bannerPassVal');
+
+    if (bannerDepVal) bannerDepVal.textContent = depInput?.value || '';
+    if (bannerDestVal) bannerDestVal.textContent = destInput?.value || '';
+    
+    const formatDateShort = (dateStr) => {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      const monthsTr = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+      const monthsEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const m = d.getMonth();
+      const day = d.getDate();
+      const mName = THY.currentLanguage === 'en' ? monthsEn[m] : monthsTr[m];
+      return `${day} ${mName}`;
+    };
+
+    if (bannerDepDateVal) bannerDepDateVal.textContent = formatDateShort(depDate);
+    if (bannerRetDateVal) bannerRetDateVal.textContent = formatDateShort(retDate);
+    
+    if (bannerRetDateBlock) {
+      if (currentTripType === 'one-way' || isFlightCodeSearch) {
+        bannerRetDateBlock.style.display = 'none';
+      } else {
+        bannerRetDateBlock.style.display = 'block';
+      }
+    }
+    
+    if (bannerPassVal) {
+      const paxCount = flightPassengers?.value || '1';
+      const cab = cabin === 'business' ? 'BUS' : 'ECO';
+      const isEn = THY.currentLanguage === 'en';
+      if (isEn) {
+        bannerPassVal.textContent = `${paxCount} Pax, ${cab}`;
+      } else {
+        bannerPassVal.textContent = `${paxCount} Yolcu, ${cab}`;
+      }
+    }
  
     function renderFlights(direction) {
       // 1. Fade out current content
@@ -2787,13 +3236,27 @@ const thyApiConfig = {
         listContainer.innerHTML = '';
         
         const isOutbound = direction === 'outbound';
-             // Show loading spinner
         const isEn = THY.currentLanguage === 'en';
+
+        // Update step indicators
+        const stepOutbound = document.getElementById('stepOutbound');
+        const stepInbound = document.getElementById('stepInbound');
+        if (isOutbound) {
+          stepOutbound?.classList.add('active');
+          stepOutbound?.classList.remove('completed');
+          stepInbound?.classList.remove('active', 'completed');
+        } else {
+          stepOutbound?.classList.add('completed');
+          stepOutbound?.classList.remove('active');
+          stepInbound?.classList.add('active');
+          stepInbound?.classList.remove('completed');
+        }
+        
         listContainer.innerHTML = `
           <div class="empty-state">
             <div class="empty-state__icon">✈️</div>
-            <div class="empty-state__title">${isEn ? 'Searching Flights' : 'Uçuşlar Sorgulanıyor'}</div>
-            <div class="empty-state__text">${isEn ? 'Connecting to Aviationstack live flight database...' : 'Aviationstack canlı uçuş veritabanına bağlanılıyor...'}</div>
+            <div class="empty-state__title">${isEn ? 'Searching THY Flights' : 'THY Uçuşları Sorgulanıyor'}</div>
+            <div class="empty-state__text">${isEn ? 'Connecting to Turkish Airlines flight database...' : 'Türk Hava Yolları uçuş veritabanına bağlanılıyor...'}</div>
           </div>
         `;
         
@@ -2836,12 +3299,18 @@ const thyApiConfig = {
           const fromCode = isOutbound ? depCode : destCode;
           const toCode = isOutbound ? destCode : depCode;
           try {
-            flightOptions = await fetchThyLiveFlights(fromCode, toCode, searchDate, cabin);
+            // Call THY APIM proxy (with real fare families, prices, deeplinks)
+            const thyResult = await fetchTHYApiFlights(fromCode, toCode, searchDate, isOutbound ? retDate : null, flightPassengers?.value, cabin);
+            if (thyResult && thyResult.outbound && thyResult.outbound.length > 0) {
+              flightOptions = isOutbound ? thyResult.outbound : (thyResult.inbound || thyResult.outbound);
+              // Store THY result for inbound reuse
+              if (isOutbound) THY._lastTHYResult = thyResult;
+            }
             if (!flightOptions) {
-              flightOptions = await fetchAviationstackFlights(fromCode, toCode, searchDate);
+              flightOptions = await fetchThyLiveFlights(fromCode, toCode, searchDate, cabin);
             }
           } catch (e) {
-            console.warn('Live fetch error:', e);
+            console.warn('THY API fetch error:', e);
           }
         }
 
@@ -2850,13 +3319,25 @@ const thyApiConfig = {
         const routeLabel = isEn
           ? (isOutbound ? `Select Outbound Flight (${fromCode} ➔ ${toCode})` : `Select Inbound Flight (${fromCode} ➔ ${toCode})`)
           : (isOutbound ? `Gidiş Uçuşu Seçin (${fromCode} ➔ ${toCode})` : `Dönüş Uçuşu Seçin (${fromCode} ➔ ${toCode})`);
-        document.getElementById('resultsRouteLabel').textContent = routeLabel;
+        
+        const routeLabelEl = document.getElementById('resultsRouteLabel');
+        if (routeLabelEl) routeLabelEl.textContent = routeLabel;
  
         const bannerText = isEn
           ? (isOutbound ? `🛫 SELECT OUTBOUND FLIGHT (${fromCode} ➔ ${toCode})` : `🛬 SELECT INBOUND FLIGHT (${fromCode} ➔ ${toCode})`)
           : (isOutbound ? `🛫 GİDİŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})` : `🛬 DÖNÜŞ UÇUŞU SEÇİN (${fromCode} ➔ ${toCode})`);
         const bannerEl = document.getElementById('resultsRouteBanner');
         if (bannerEl) bannerEl.textContent = bannerText;
+
+        // Update search title label dynamically
+        const fromCity = AIRPORTS.find(a => a.code === fromCode)?.city || depInput.dataset.city || fromCode;
+        const toCity = AIRPORTS.find(a => a.code === toCode)?.city || destInput.dataset.city || toCode;
+        const opt = { day: 'numeric', month: 'long', weekday: 'long' };
+        const formattedDateStr = new Date(searchDate).toLocaleDateString(THY.currentLanguage === 'en' ? 'en-US' : 'tr-TR', opt);
+        const titleEl = document.getElementById('thyResultsTitleText');
+        if (titleEl) {
+          titleEl.textContent = `${fromCity} - ${toCity}, ${formattedDateStr}`;
+        }
 
         listContainer.innerHTML = '';
 
@@ -2868,7 +3349,6 @@ const thyApiConfig = {
         let flightDurationMinutes = 200; // default 3h 20m
         if (!isNaN(depLat) && !isNaN(depLng) && !isNaN(destLat) && !isNaN(destLng)) {
           const dist = getDistance(depLat, depLng, destLat, destLng);
-          // speed 800 km/h: distance * 0.075 + 30 mins overhead
           flightDurationMinutes = Math.max(45, Math.round(dist * 0.075 + 30));
         }
         const durationHoursStr = isEn
@@ -2877,7 +3357,6 @@ const thyApiConfig = {
 
         const isSearchToday = formatDateLocal(new Date(searchDate)) === formatDateLocal(today);
 
-        // Filter API flights if searching for today (only for route search, not specific flight code search)
         if (flightOptions && isSearchToday && !isFlightCodeSearch) {
           const currentHour = today.getHours();
           const currentMin = today.getMinutes();
@@ -2892,15 +3371,14 @@ const thyApiConfig = {
           }
         }
 
+        const dateSeed = new Date(searchDate).getDate() || today.getDate();
+
         if (!flightOptions) {
-          // Dynamic Simulator Engine (Generates different hours/nos based on Date seed & City Pair distance)
-          const dateSeed = new Date(searchDate).getDate() || today.getDate();
           let baseHours = isOutbound ? [8, 13, 18] : [9, 15, 20];
           
           if (isSearchToday) {
             const currentHour = today.getHours();
             baseHours = baseHours.map(h => {
-              // If the hour is in the past, shift it to a future hour (at least currentHour + 1)
               if (h <= currentHour) {
                 return (currentHour + 1 + (h % 3)) % 24;
               }
@@ -2910,7 +3388,7 @@ const thyApiConfig = {
           }
           
           flightOptions = baseHours.map((hour, idx) => {
-            const offsetMinutes = ((dateSeed * 7 + idx * 13) % 45); // offset between 0 and 45 minutes
+            const offsetMinutes = ((dateSeed * 7 + idx * 13) % 45);
             const depMin = (idx * 5 + offsetMinutes) % 60;
             const depHour = hour;
             
@@ -2937,127 +3415,289 @@ const thyApiConfig = {
           });
         }
         
+        const formatPrice = (val) => Math.floor(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        const directLabel = isEn ? 'Nonstop' : 'Direkt';
+
         flightOptions.forEach((fo, idx) => {
-          const baseVal = cabin === 'business' ? 14900 : 3400;
-          const price = baseVal + idx * 800 + Math.floor(Math.random() * 300);
-          
-          // Generate delay and gate HTML
-          const delayHtml = fo.delay > 0 
-            ? `<span class="flight-status delay-status">⚠️ ${isEn ? `Delay: ${fo.delay} min` : `Rötar: ${fo.delay} dk`}</span>` 
-            : `<span class="flight-status normal-status">🟢 ${isEn ? 'On Time' : 'Zamanında'}</span>`;
-          const gateHtml = `<span class="flight-gate">🚪 ${isEn ? `Gate: ${fo.gate}` : `Kapı: ${fo.gate}`}</span>`;
+          const priceEco = 3400 + idx * 800 + Math.floor(Math.random() * 300);
+          const priceBus = priceEco * 3.2;
+
+          const aircrafts = ['Boeing 787-9', 'Airbus A350-900', 'Airbus A321neo'];
+          const aircraftModel = aircrafts[(dateSeed + idx) % aircrafts.length];
 
           const item = document.createElement('div');
-          item.className = 'flight-item';
+          item.className = 'thy-flight-row';
+          item.dataset.index = idx;
           
-          const flightTypeLabel = isEn
-            ? (isOutbound ? '🛫 OUTBOUND FLIGHT' : '🛬 INBOUND FLIGHT')
-            : (isOutbound ? '🛫 GİDİŞ UÇUŞU' : '🛬 DÖNÜŞ UÇUŞU');
-          
-          const directLabel = isEn ? 'Nonstop' : 'Direkt';
-          const selectLabel = isEn ? 'Select' : 'Seç';
-
           item.innerHTML = `
-            <span class="flight-type-badge ${isOutbound ? 'outbound-badge' : 'inbound-badge'}">
-              ${flightTypeLabel}
-            </span>
-            <div class="flight-carrier">
-              <div class="flight-logo-small">
-                <img src="icons/logo-badge.png" alt="THY Logo">
+            <div class="thy-flight-main-card">
+              <div class="flight-info-col">
+                <div class="flight-times-row">
+                  <div class="time-block">
+                    <span class="time">${fo.dep}</span>
+                    <span class="airport-code">${fromCode}</span>
+                    <span class="city">${fromCity}</span>
+                  </div>
+                  <div class="path-block">
+                    <span class="path-type">${durationHoursStr}</span>
+                    <div class="path-line"></div>
+                    <span class="path-type">${directLabel}</span>
+                  </div>
+                  <div class="time-block">
+                    <span class="time">${fo.arr}</span>
+                    <span class="airport-code">${toCode}</span>
+                    <span class="city">${toCity}</span>
+                  </div>
+                </div>
+                <div class="flight-details-row">
+                  <span class="aircraft-model">${aircraftModel}</span>
+                  <span class="details-divider">|</span>
+                  <button type="button" class="btn-toggle-flight-details" data-index="${idx}">
+                    ${isEn ? 'Flight details' : 'Seyahat detayları'}
+                  </button>
+                </div>
               </div>
-              <div class="carrier-details">
-                <span class="flight-no">${fo.flightNo}</span>
-                <div class="carrier-status-gate">
-                  ${delayHtml}
-                  ${gateHtml}
+              
+              <div class="flight-prices-col">
+                <div class="fare-price-box economy-box" data-cabin="economy" data-index="${idx}">
+                  <div class="fare-box-header">ECONOMY</div>
+                  <div class="fare-box-body">
+                    <span class="radio-indicator"></span>
+                    <div class="price-info">
+                      <span class="price-lbl">${isEn ? 'Per Passenger' : 'Yolcu başına'}</span>
+                      <span class="price-value">${formatPrice(priceEco)} TRY</span>
+                    </div>
+                  </div>
+                  ${idx === 0 ? `<span class="fare-badge">${isEn ? 'Best Price' : 'En Uygun'}</span>` : ''}
+                </div>
+                
+                <div class="fare-price-box business-box" data-cabin="business" data-index="${idx}">
+                  <div class="fare-box-header">BUSINESS</div>
+                  <div class="fare-box-body">
+                    <span class="radio-indicator"></span>
+                    <div class="price-info">
+                      <span class="price-lbl">${isEn ? 'Per Passenger' : 'Yolcu başına'}</span>
+                      <span class="price-value">${formatPrice(priceBus)} TRY</span>
+                    </div>
+                  </div>
+                  ${idx === 2 ? `<span class="fare-badge warning">${isEn ? 'Only 4 left' : 'Son 4 koltuk'}</span>` : ''}
                 </div>
               </div>
             </div>
-            <div class="flight-schedule">
-              <div class="schedule-block">
-                <span class="schedule-time">${fo.dep}</span>
-                <span class="schedule-code">${fromCode}</span>
-              </div>
-              <div class="flight-duration-path">
-                <span class="duration-text">${durationHoursStr}</span>
-                <div class="duration-line">
-                  <span class="duration-plane">✈️</span>
-                </div>
-                <span class="duration-text">${directLabel}</span>
-              </div>
-              <div class="schedule-block">
-                <span class="schedule-time">${fo.arr}</span>
-                <span class="schedule-code">${toCode}</span>
-              </div>
-            </div>
-            <div class="flight-price-action">
-              <div class="price-tag">
-                <span class="price-amount">${Math.floor(price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</span>
-                <span class="price-currency">TRY</span>
-              </div>
-              <button class="btn btn-primary btn-select-flight" 
-                data-no="${fo.flightNo}" 
-                data-dep="${fromCode}" 
-                data-arr="${toCode}"
-                data-gate="${fo.gate}"
-                data-delay="${fo.delay || 0}"
-                data-status="${fo.status || 'scheduled'}">${selectLabel}</button>
-            </div>
-          `;
-          listContainer.appendChild(item);
-        });
-  
-        // Attach event listeners to new buttons
-        listContainer.querySelectorAll('.btn-select-flight').forEach(btn => {
-          btn.addEventListener('click', () => {
-            // Cooldown check (ignore click within 800ms of render)
-            if (Date.now() - lastTransitionTime < 800) {
-              console.log('[Debounce] Click ignored due to cooldown.');
-              return;
-            }
-
-            // Immediately lock and fade all buttons
-            listContainer.querySelectorAll('.btn-select-flight').forEach(b => {
-              b.disabled = true;
-              b.style.pointerEvents = 'none';
-              b.style.opacity = '0.4';
-            });
-
-            // Make the clicked button green and set to selected
-            btn.textContent = isEn ? 'Selected ✓' : 'Seçildi ✓';
-            btn.style.opacity = '1';
-            btn.style.background = '#22C55E';
-            btn.style.borderColor = '#22C55E';
-            btn.style.color = 'white';
-
-            const no = btn.dataset.no;
-            const dep = btn.dataset.dep;
-            const arr = btn.dataset.arr;
-            const gate = btn.dataset.gate;
-            const delay = parseInt(btn.dataset.delay) || 0;
-            const status = btn.dataset.status || 'scheduled';
             
-            // Introduce a 600ms visual delay so user sees selected state before loading
-            setTimeout(() => {
-              if (isOutbound) {
-                selectedOutbound = { no, dep, arr, gate, delay, status };
-                if (currentTripType === 'one-way' || isFlightCodeSearch) {
-                  completeBooking();
-                } else {
-                  const toastMsg = isEn 
-                    ? 'Outbound flight selected! Now select your inbound flight. ✈️'
-                    : 'Gidiş uçuşu seçildi! Şimdi dönüş uçuşunuzu seçin. ✈️';
-                  THY.toast(toastMsg, 'success');
-                  renderFlights('inbound');
-                }
+            <div class="fare-details-expansion hidden" id="expansion-${idx}"></div>
+          `;
+          
+          listContainer.appendChild(item);
+          // Details click handler
+          item.querySelector('.btn-toggle-flight-details')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const gateText = isEn ? `Gate: ${fo.gate}` : `Kapı: ${fo.gate}`;
+            const statusText = isEn ? `Status: ${fo.status === 'incident' ? 'Delayed' : 'On Time'}` : `Durum: ${fo.status === 'incident' ? 'Rötarlı' : 'Zamanında'}`;
+            const detailsMsg = `${fo.flightNo} | ${aircraftModel} | ${gateText} | ${statusText}`;
+            THY.toast(detailsMsg, 'info', 4500);
+          });
+
+          // Price box clicks
+          const ecoBox = item.querySelector('.economy-box');
+          const busBox = item.querySelector('.business-box');
+          const expansionEl = item.querySelector(`#expansion-${idx}`);
+
+          const toggleSubclasses = (cabinType) => {
+            const isEco = cabinType === 'economy';
+            const targetBox = isEco ? ecoBox : busBox;
+            const otherBox = isEco ? busBox : ecoBox;
+
+            if (targetBox.classList.contains('active')) {
+              targetBox.classList.remove('active');
+              expansionEl.classList.add('hidden');
+              expansionEl.innerHTML = '';
+            } else {
+              targetBox.classList.add('active');
+              otherBox.classList.remove('active');
+              expansionEl.classList.remove('hidden');
+              
+              if (isEco) {
+                const ecoFares = [
+                  { name: 'EcoFly', desc: isEn ? 'Cabin bag & basics' : 'Kabin bagajı ve temel seyahat ihtiyaçları', price: priceEco, ticks: [isEn ? '✓ Cabin bag (8kg)' : '✓ Kabin bagajı (8 kg)', isEn ? '✓ Catering' : '✓ Uçuş esnasında ikram', '✗', '✗', '25% Mil'] },
+                  { name: 'ExtraFly', desc: isEn ? 'Extra baggage & standard seat' : 'Ekstra bagaj hakkı ve standart koltuk seçimi', price: priceEco + 800, ticks: [isEn ? '✓ Cabin bag + 20kg checked' : '✓ Kabin bagajı + 20 kg Bagaj', isEn ? '✓ Hot Meal' : '✓ Sıcak İkram', isEn ? '✓ Standard Seat' : '✓ Standart Koltuk', '✗', '100% Mil'] },
+                  { name: 'FlexFly', desc: isEn ? 'Flexible dates & refund right' : 'Esnek seyahat planları için değişiklik hakkı', price: priceEco + 1600, ticks: [isEn ? '✓ Cabin bag + 20kg checked' : '✓ Kabin bagajı + 20 kg Bagaj', isEn ? '✓ Hot Meal' : '✓ Sıcak İkram', isEn ? '✓ Standard Seat' : '✓ Standart Koltuk', isEn ? '✓ Refund/Change (Fee applies)' : '✓ Cezalı İade/Değişiklik', '150% Mil'], recommended: true },
+                  { name: 'PrimeFly', desc: isEn ? 'Max flexibility & premium dining' : 'Maksimum esneklik ve zengin ikram seçenekleri', price: priceEco + 2800, ticks: [isEn ? '✓ Cabin bag + 23kg checked' : '✓ Kabin bagajı + 23 kg Bagaj', isEn ? '✓ Gourmet Meal' : '✓ Gurme İkram', isEn ? '✓ Free Selection' : '✓ Ücretsiz Seçim', isEn ? '✓ Free Refund/Change' : '✓ Ücretsiz İade/Değişiklik', '200% Mil'] }
+                ];
+                
+                expansionEl.innerHTML = `
+                  <div class="fare-package-table">
+                    <div class="fare-package-left-checklist">
+                      <div class="checklist-row-lbl">${isEn ? 'Cabin baggage (8 kg)' : 'Kabin bagajı (8 kg)'}</div>
+                      <div class="checklist-row-lbl">${isEn ? 'In-flight catering' : 'Uçuş esnasında ikram'}</div>
+                      <div class="checklist-row-lbl">${isEn ? 'Seat selection' : 'Koltuk seçimi'}</div>
+                      <div class="checklist-row-lbl">${isEn ? 'Refund / Change' : 'İade / Değişiklik'}</div>
+                      <div class="checklist-row-lbl">${isEn ? 'Miles earning' : 'Mil kazanımı'}</div>
+                    </div>
+                    <div class="fare-package-cols">
+                      ${ecoFares.map(fare => `
+                        <div class="fare-subclass-card ${fare.recommended ? 'recommend-border' : ''}">
+                          <div class="subclass-header">
+                            <div>
+                              <span class="subclass-name">${fare.name}</span>
+                              <span class="subclass-desc">${fare.desc}</span>
+                            </div>
+                            <span class="price-value">${formatPrice(fare.price)} TRY</span>
+                          </div>
+                          <div class="subclass-features-list">
+                            ${fare.ticks.map(tick => {
+                              let tickClass = 'tick-yes';
+                              if (tick === '✗') tickClass = 'tick-no';
+                              else if (!tick.startsWith('✓')) tickClass = 'tick-info-text';
+                              return `<div class="feature-item-tick ${tickClass}">${tick}</div>`;
+                            }).join('')}
+                          </div>
+                          <button type="button" class="btn-subclass-select" 
+                            data-subclass="${fare.name}" 
+                            data-price="${fare.price}">
+                            ${isEn ? 'Select Flight' : 'Uçuşu Seç'}
+                          </button>
+                        </div>
+                      `).join('')}
+                    </div>
+                  </div>
+                `;
               } else {
-                selectedInbound = { no, dep, arr, gate, delay, status };
-                completeBooking();
+                const busFares = [
+                  { name: 'BusinessFly', desc: isEn ? 'Business comfort & lounge' : 'Business konforu ve Lounge erişimi', price: priceBus, ticks: [isEn ? '✓ Cabin bag + 30kg checked' : '✓ Kabin bagajı + 30 kg Bagaj', isEn ? '✓ Business Dining' : '✓ Sıcak Gurme İkramı', isEn ? '✓ Standard Seat' : '✓ Ücretsiz Koltuk Seçimi', isEn ? '✓ Refund/Change (Fee applies)' : '✓ Cezalı İade/Değişiklik', '150% Mil'] },
+                  { name: 'BusinessPrime', desc: isEn ? 'Unmatched comfort & full flexibility' : 'Eşsiz konfor ve tam esneklik', price: priceBus + 2500, ticks: [isEn ? '✓ Cabin bag + 40kg checked' : '✓ Kabin bagajı + 40 kg Bagaj', isEn ? '✓ Gourmet Experience' : '✓ Gurme İkram Ayrıcalığı', isEn ? '✓ All Seats Free' : '✓ Tüm Koltuklar Ücretsiz', isEn ? '✓ Free Refund/Change' : '✓ Ücretsiz İade/Değişiklik', '200% Mil'] }
+                ];
+
+                expansionEl.innerHTML = `
+                  <div class="fare-package-table">
+                    <div class="fare-package-left-checklist">
+                      <div class="checklist-row-lbl">${isEn ? 'Cabin baggage (8 kg)' : 'Kabin bagajı (8 kg)'}</div>
+                      <div class="checklist-row-lbl">${isEn ? 'In-flight catering' : 'Uçuş esnasında ikram'}</div>
+                      <div class="checklist-row-lbl">${isEn ? 'Seat selection' : 'Koltuk seçimi'}</div>
+                      <div class="checklist-row-lbl">${isEn ? 'Refund / Change' : 'İade / Değişiklik'}</div>
+                      <div class="checklist-row-lbl">${isEn ? 'Miles earning' : 'Mil kazanımı'}</div>
+                    </div>
+                    <div class="fare-package-cols">
+                      ${busFares.map(fare => `
+                        <div class="fare-subclass-card">
+                          <div class="subclass-header">
+                            <div>
+                              <span class="subclass-name">${fare.name}</span>
+                              <span class="subclass-desc">${fare.desc}</span>
+                            </div>
+                            <span class="price-value">${formatPrice(fare.price)} TRY</span>
+                          </div>
+                          <div class="subclass-features-list">
+                            ${fare.ticks.map(tick => {
+                              let tickClass = 'tick-yes';
+                              if (tick === '✗') tickClass = 'tick-no';
+                              else if (!tick.startsWith('✓')) tickClass = 'tick-info-text';
+                              return `<div class="feature-item-tick ${tickClass}">${tick}</div>`;
+                            }).join('')}
+                          </div>
+                          <button type="button" class="btn-subclass-select" 
+                            data-subclass="${fare.name}" 
+                            data-price="${fare.price}">
+                            ${isEn ? 'Select Flight' : 'Uçuşu Seç'}
+                          </button>
+                        </div>
+                      `).join('')}
+                      <div class="privilege-card">
+                        <div class="privilege-card-title">${isEn ? 'Business Class Privileges' : 'Business Class Ayrıcalıkları'}</div>
+                        <div class="privilege-card-desc">${isEn ? 'Make your flight premium with Lounge access, priority check-in and boarding.' : 'Özel dinlenme salonu (Lounge), öncelikli check-in ve bagaj teslimi ile uçuşunuzu premium hale getirin.'}</div>
+                        <div class="privilege-items-grid">
+                          <div class="privilege-item">
+                            <span class="privilege-item-icon">🛋️</span>
+                            <span class="privilege-item-lbl">${isEn ? 'Lounge' : 'Lounge İzni'}</span>
+                          </div>
+                          <div class="privilege-item">
+                            <span class="privilege-item-icon">🍽️</span>
+                            <span class="privilege-item-lbl">${isEn ? 'Catering' : 'Gurme İkram'}</span>
+                          </div>
+                          <div class="privilege-item">
+                            <span class="privilege-item-icon">🏎️</span>
+                            <span class="privilege-item-lbl">${isEn ? 'Fast Track' : 'Öncelikli Geçiş'}</span>
+                          </div>
+                          <div class="privilege-item">
+                            <span class="privilege-item-icon">💺</span>
+                            <span class="privilege-item-lbl">${isEn ? 'Lie-flat Seat' : 'Yatak Koltuk'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `;
               }
-            }, 600);
+
+              // Bind subclass selects
+              expansionEl.querySelectorAll('.btn-subclass-select').forEach(subBtn => {
+                subBtn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+
+                  if (Date.now() - lastTransitionTime < 800) {
+                    return;
+                  }
+
+                  // Visual feedback: lock select
+                  expansionEl.querySelectorAll('.btn-subclass-select').forEach(b => {
+                    b.disabled = true;
+                    b.style.pointerEvents = 'none';
+                    b.style.opacity = '0.4';
+                  });
+
+                  subBtn.textContent = isEn ? 'Selected ✓' : 'Seçildi ✓';
+                  subBtn.style.opacity = '1';
+                  subBtn.style.background = '#22C55E';
+                  subBtn.style.borderColor = '#22C55E';
+                  subBtn.style.color = 'white';
+
+                  const subclassName = subBtn.dataset.subclass;
+                  const finalPrice = subBtn.dataset.price;
+
+                  const selectedDetails = {
+                    no: fo.flightNo,
+                    dep: fromCode,
+                    arr: toCode,
+                    gate: fo.gate,
+                    delay: fo.delay || 0,
+                    status: fo.status || 'scheduled',
+                    price: finalPrice,
+                    subclass: subclassName,
+                    cabin: cabinType
+                  };
+
+                  setTimeout(() => {
+                    if (isOutbound) {
+                      selectedOutbound = selectedDetails;
+                      if (currentTripType === 'one-way' || isFlightCodeSearch) {
+                        completeBooking();
+                      } else {
+                        const toastMsg = isEn 
+                          ? 'Outbound flight selected! Now select your inbound flight. ✈️'
+                          : 'Gidiş uçuşu seçildi! Şimdi dönüş uçuşunuzu seçin. ✈️';
+                        THY.toast(toastMsg, 'success');
+                        renderFlights('inbound');
+                      }
+                    } else {
+                      selectedInbound = selectedDetails;
+                      completeBooking();
+                    }
+                  }, 600);
+                });
+              });
+            }
+          };
+
+          ecoBox.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSubclasses('economy');
+          });
+
+          busBox.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSubclasses('business');
           });
         });
-  
         async function completeBooking() {
           if (typeof THY.playSplitFlapSound === 'function') {
             THY.playSplitFlapSound(16);
