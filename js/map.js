@@ -526,6 +526,7 @@ function initMap() {
     if (!list) return;
 
     list.innerHTML = '';
+    list.classList.remove('timeline');
 
     const showAll = (THY.activeDay === 0);
     const isEn = THY.currentLanguage === 'en';
@@ -556,46 +557,42 @@ function initMap() {
       return;
     }
 
-    activeWaypoints.forEach((wp, i) => {
-      const wpColor = THY.dayColors[((wp.day || 1) - 1) % THY.dayColors.length] || '#E31837';
+    list.classList.add('timeline');
+    let lastRenderedDay = null;
 
-      // Connector lines
-      if (i > 0) {
-        const prevWp = activeWaypoints[i - 1];
-        const connectorRow = document.createElement('div');
-        connectorRow.className = 'waypoint-connection-row';
-        
-        let connColor = wpColor;
-        if (showAll) {
-          if (prevWp.day !== wp.day) {
-            connColor = '#94A3B8'; // gray for cross-day connections
-          } else {
-            connColor = THY.dayColors[((wp.day || 1) - 1) % THY.dayColors.length] || '#E31837';
-          }
-        }
-        
-        connectorRow.innerHTML = `
-          <div class="waypoint-connector-line" style="border-left-color: ${connColor}"></div>
+    activeWaypoints.forEach((wp, i) => {
+      const wpDay   = wp.day || 1;
+      const wpColor = THY.dayColors[(wpDay - 1) % THY.dayColors.length] || '#E31837';
+      const isLast  = (i === activeWaypoints.length - 1);
+
+      // ── Day separator (Tam Rota view only, on day change) ──────────
+      if (showAll && wpDay !== lastRenderedDay) {
+        lastRenderedDay = wpDay;
+        const sep = document.createElement('div');
+        sep.className = 'timeline-day-sep';
+        const dayLabel = isEn ? `Day ${wpDay}` : `${wpDay}. Gün`;
+        sep.innerHTML = `
+          <div class="timeline-day-sep__line"></div>
+          <span class="timeline-day-sep__label" style="border-color:${wpColor}55;color:${wpColor};">${dayLabel}</span>
+          <div class="timeline-day-sep__line"></div>
         `;
-        list.appendChild(connectorRow);
+        list.appendChild(sep);
       }
 
-      const item = document.createElement('div');
-      item.className = 'waypoint-item';
-      
+      // ── Day badge (inside card, only in showAll mode) ──────────────
       let dayBadgeHtml = '';
       if (showAll) {
         const contrastColor = getContrastColor(wpColor);
-        dayBadgeHtml = `<span style="font-size: 10px; padding: 2px 6px; background: ${wpColor}; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; color: ${contrastColor}; font-weight: 700; margin-left: 6px; display: inline-block; vertical-align: middle;">${isEn ? `Day ${wp.day}` : `${wp.day}. Gün`}</span>`;
+        dayBadgeHtml = `<span class="timeline-day-badge" style="background:${wpColor};color:${contrastColor};">${isEn ? `Day ${wpDay}` : `${wpDay}. Gün`}</span>`;
       }
 
+      // ── Transit navigation links ───────────────────────────────────
       let transitHtml = '';
       if (i > 0) {
-        const prevWp = activeWaypoints[i - 1];
+        const prevWp   = activeWaypoints[i - 1];
         const gMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${prevWp.lat},${prevWp.lng}&destination=${wp.lat},${wp.lng}&travelmode=transit`;
         const aMapsUrl = `https://maps.apple.com/?saddr=${prevWp.lat},${prevWp.lng}&daddr=${wp.lat},${wp.lng}&dirflg=r`;
         const yMapsUrl = `https://yandex.com/maps/?rtext=${prevWp.lat},${prevWp.lng}~${wp.lat},${wp.lng}&rtt=mt`;
-
         transitHtml = `
           <div class="waypoint-card-transit">
             <span class="transit-label">
@@ -611,10 +608,28 @@ function initMap() {
         `;
       }
 
+      // ── Rail: gray-dashed on cross-day boundary ────────────────────
+      const nextWp     = activeWaypoints[i + 1];
+      const isCrossDay = showAll && nextWp && (nextWp.day || 1) !== wpDay;
+      const railColor  = isCrossDay ? '#475569' : wpColor;
+
+      // ── Build timeline item ────────────────────────────────────────
+      const item = document.createElement('div');
+      item.className = 'timeline-item';
+      item.style.animationDelay = `${i * 55}ms`;
+
       item.innerHTML = `
-        <div class="waypoint-marker" style="background-color: ${wpColor}; box-shadow: 0 0 10px ${wpColor}80">${i + 1}</div>
-        <div class="waypoint-info">
-          <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+        <div class="timeline-left">
+          <div class="timeline-node"
+               style="background: radial-gradient(circle at 38% 32%, ${wpColor}ee, ${wpColor}99);
+                      box-shadow: 0 0 14px ${wpColor}55, inset 0 1px 0 rgba(255,255,255,0.18);">
+            ${i + 1}
+          </div>
+          ${!isLast ? `<div class="timeline-rail${isCrossDay ? ' cross-day' : ''}"
+               style="background: linear-gradient(180deg, ${railColor}bb 0%, ${railColor}22 100%);"></div>` : ''}
+        </div>
+        <div class="timeline-card">
+          <div class="timeline-card__header">
             <div class="waypoint-name">${wp.name}</div>
             ${dayBadgeHtml}
           </div>
@@ -625,21 +640,21 @@ function initMap() {
             </div>` : ''}
           <div class="waypoint-coords">${wp.lat.toFixed(5)}, ${wp.lng.toFixed(5)}</div>
           ${transitHtml}
-        </div>
-        <div class="waypoint-actions" style="display: flex; gap: 6px; align-items: center;">
-          <button class="waypoint-note-btn" data-index="${wp.originalIndex}" title="${isEn ? 'Add/Edit Note' : 'Not Ekle/Düzenle'}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>
-          </button>
-          <button class="waypoint-remove" data-index="${wp.originalIndex}" title="${isEn ? 'Remove' : 'Kaldır'}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
+          <div class="waypoint-actions" style="display: flex; gap: 6px; align-items: center;">
+            <button class="waypoint-note-btn" data-index="${wp.originalIndex}" title="${isEn ? 'Add/Edit Note' : 'Not Ekle/Düzenle'}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4z"></path></svg>
+            </button>
+            <button class="waypoint-remove" data-index="${wp.originalIndex}" title="${isEn ? 'Remove' : 'Kaldır'}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
         </div>
       `;
 
-      item.addEventListener('click', (e) => {
-        const isClickOnActionBtn = e.target.closest('.waypoint-note-btn') || e.target.closest('.waypoint-remove') || e.target.closest('.transit-link');
-        if (!isClickOnActionBtn) {
-          item.classList.toggle('active-tap');
+      const card = item.querySelector('.timeline-card');
+      card.addEventListener('click', (e) => {
+        if (!e.target.closest('.waypoint-note-btn') && !e.target.closest('.waypoint-remove') && !e.target.closest('.transit-link')) {
+          card.classList.toggle('active-tap');
         }
       });
 

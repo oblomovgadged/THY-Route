@@ -628,33 +628,34 @@ const thyApiConfig = {
       if (!nameEl || !offerEl) return;
       
       const isEn = lang === 'en';
-      if (query === 'Avis') {
-        nameEl.textContent = isEn ? 'Avis Car Rental' : 'Avis Araç Kiralama';
-        offerEl.textContent = isEn ? '30% Discount + 500 Miles!' : '%30 İndirim + 500 Mil!';
-      } else if (query === 'Budget Rent A Car') {
-        nameEl.textContent = 'Budget Rent A Car';
-        offerEl.textContent = isEn ? '25% Discount + 400 Miles!' : '%25 İndirim + 400 Mil!';
-      } else if (query === 'Hilton Hotel') {
-        nameEl.textContent = 'Hilton Hotels & Resorts';
-        offerEl.textContent = isEn ? '3x Miles on Stays!' : 'Konaklamalarda 3 Kat Mil!';
-      } else if (query === 'Marriott Hotel') {
-        nameEl.textContent = 'Marriott Bonvoy';
-        offerEl.textContent = isEn ? '500 Miles per Stay!' : 'Her Konaklamada 500 Mil!';
-      } else if (query === 'Rixos Hotel') {
-        nameEl.textContent = 'Rixos Hotels';
-        offerEl.textContent = isEn ? '15% Discount + Double Miles!' : '%15 İndirim + Çift Mil!';
-      } else if (query === 'Airport Transfer Shuttle') {
-        nameEl.textContent = isEn ? 'Havaş & Havaist Transport' : 'Havaş & Havaist Ulaşım';
-        offerEl.textContent = isEn ? '20% Mile Discount on Tickets!' : 'Bilet Alımlarında %20 Mil İndirimi!';
-      } else if (query === 'Secure Drive Airport Transfer') {
-        nameEl.textContent = 'Secure Drive VIP Transfer';
-        offerEl.textContent = isEn ? '200 Bonus Miles on Transfer!' : 'Transferde 200 Mil Hediye!';
-      } else if (query === 'Setur') {
-        nameEl.textContent = isEn ? 'Setur Travel Agency' : 'Setur Seyahat Acentası';
-        offerEl.textContent = isEn ? '2,500 Bonus Miles on Tours!' : 'Turlarda 2.500 Mil Hediye!';
-      } else if (query === 'Jolly Tur') {
-        nameEl.textContent = 'Jolly Tur';
-        offerEl.textContent = isEn ? '10% Extra Mile Earnings!' : '%10 Ek Mil Kazanımı!';
+      const partnerData = {
+        'Avis':                   { tr: ['Avis', 'Kiralama başına min. 125 Mil Kazanın'],                  en: ['Avis', 'Earn min. 125 Miles per rental'] },
+        'Budget Rent A Car':      { tr: ['Budget', 'Kiralama başına min. 125 Mil Kazanın'],                en: ['Budget', 'Earn min. 125 Miles per rental'] },
+        'Hertz':                  { tr: ['Hertz', 'Kiralama başına min. 100 Mil Kazanın'],                 en: ['Hertz', 'Earn min. 100 Miles per rental'] },
+        'Europcar':               { tr: ['Europcar', 'Kiralama başına min. 100 Mil Kazanın'],              en: ['Europcar', 'Earn min. 100 Miles per rental'] },
+        'Sixt Rent A Car':        { tr: ['Sixt', 'Kiralama başına min. 100 Mil Kazanın'],                  en: ['Sixt', 'Earn min. 100 Miles per rental'] },
+        'Hilton Hotel':           { tr: ['Hilton Honors', 'Geceleme başına Mil Kazanın'],                  en: ['Hilton Honors', 'Earn Miles per night stay'] },
+        'Marriott Hotel':         { tr: ['Marriott Bonvoy', 'Geceleme başına Mil Kazanın'],                en: ['Marriott Bonvoy', 'Earn Miles per night stay'] },
+        'IHG Hotel':              { tr: ['IHG One Rewards', 'Geceleme başına Mil Kazanın'],                en: ['IHG One Rewards', 'Earn Miles per night stay'] },
+        'Radisson Hotel':         { tr: ['Radisson Rewards', 'Geceleme başına Mil Kazanın'],               en: ['Radisson Rewards', 'Earn Miles per night stay'] },
+        'Wyndham Hotel':          { tr: ['Wyndham Rewards', 'Geceleme başına Mil Kazanın'],                en: ['Wyndham Rewards', 'Earn Miles per night stay'] },
+        'Rixos Hotel':            { tr: ['Rixos Hotels', 'Geceleme başına Mil Kazanın'],                   en: ['Rixos Hotels', 'Earn Miles per night stay'] },
+        'Divan Hotel':            { tr: ['Divan Hotels', 'Geceleme başına Mil Kazanın'],                   en: ['Divan Hotels', 'Earn Miles per night stay'] },
+        'Havaş Shuttle':          { tr: ['Havaş', 'Havalimanı transferlerinde Mil Kazanın'],               en: ['Havaş', 'Earn Miles on airport transfers'] },
+        'Havaist Istanbul Airport': { tr: ['Havaist', 'Havalimanı servisinde Mil Kazanın'],                en: ['Havaist', 'Earn Miles on airport service'] },
+        'Setur':                  { tr: ['Setur', 'Tur ve rezervasyonlarda Mil Kazanın'],                  en: ['Setur', 'Earn Miles on tours & bookings'] },
+        'Jolly Tur':              { tr: ['Jolly Tur', 'Tur satın alımlarında Mil Kazanın'],                en: ['Jolly Tur', 'Earn Miles on tour purchases'] },
+        'Garanti Bankası':        { tr: ['Garanti BBVA', 'Harcamalarınızla Mil Kazanın'],                  en: ['Garanti BBVA', 'Earn Miles with your spending'] },
+        'Akbank':                 { tr: ['Akbank', 'Harcamalarınızla Mil Kazanın'],                        en: ['Akbank', 'Earn Miles with your spending'] },
+        'Yapı Kredi Bankası':     { tr: ['Yapı Kredi', 'Harcamalarınızla Mil Kazanın'],                   en: ['Yapı Kredi', 'Earn Miles with your spending'] },
+        'İş Bankası':             { tr: ['Türkiye İş Bankası', 'Harcamalarınızla Mil Kazanın'],            en: ['İş Bankası', 'Earn Miles with your spending'] },
+        'QNB Finansbank':         { tr: ['QNB Finansbank', 'Harcamalarınızla Mil Kazanın'],                en: ['QNB Finansbank', 'Earn Miles with your spending'] },
+      };
+      const pd = partnerData[query];
+      if (pd) {
+        const [name, offer] = isEn ? pd.en : pd.tr;
+        nameEl.textContent = name;
+        offerEl.textContent = offer;
       }
     });
 

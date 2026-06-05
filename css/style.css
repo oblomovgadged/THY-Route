@@ -5628,6 +5628,223 @@ input, textarea, select {
 }
 
 
+/* ============================================================
+   TIMELINE CONNECTOR — Premium Route View  (Öneri #1)
+   ============================================================ */
+
+/* Transit links revealed on timeline-card hover too */
+.timeline-card:hover .waypoint-card-transit,
+.timeline-card.active-tap .waypoint-card-transit {
+  max-height: 40px;
+  opacity: 1;
+  margin-top: 8px;
+  padding-top: 6px;
+}
+
+/* Container resets */
+.waypoint-list.timeline {
+  gap: 0;
+  padding: 4px 0 8px;
+}
+
+/* ── Day Separator ──────────────────────────────────────── */
+.timeline-day-sep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 2px;
+  padding: 0 2px;
+}
+
+.timeline-day-sep__line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(197,160,89,0.22) 50%, transparent 100%);
+}
+
+.timeline-day-sep__label {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(197,160,89,0.06);
+  border: 1px solid;          /* color set inline */
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Timeline Row ───────────────────────────────────────── */
+.timeline-item {
+  display: flex;
+  align-items: stretch;
+  animation: timelineItemIn 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes timelineItemIn {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Left Column ────────────────────────────────────────── */
+.timeline-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 38px;
+  flex-shrink: 0;
+  padding-top: 11px;
+}
+
+/* ── Number Node ────────────────────────────────────────── */
+.timeline-node {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(255,255,255,0.13);
+  position: relative;
+  z-index: 2;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  font-family: 'JetBrains Mono', monospace;
+  cursor: default;
+}
+
+/* Inner shine */
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.22) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.timeline-item:hover .timeline-node {
+  transform: scale(1.12);
+}
+
+/* ── Vertical Rail ──────────────────────────────────────── */
+.timeline-rail {
+  width: 2px;
+  flex: 1;
+  border-radius: 2px;
+  margin-top: 4px;
+  margin-bottom: -6px;   /* bridges the gap between items */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Flowing light on the rail */
+.timeline-rail::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: 0; right: 0;
+  height: 35%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 100%);
+  border-radius: 2px;
+  animation: railFlow 3.2s ease-in-out infinite;
+}
+
+@keyframes railFlow {
+  0%   { top: -30%; opacity: 0; }
+  15%  { opacity: 0.85; }
+  85%  { opacity: 0.25; }
+  100% { top: 115%;  opacity: 0; }
+}
+
+/* Cross-day: dashed gray, no flow */
+.timeline-rail.cross-day {
+  background: transparent !important;
+  border-left: 2px dashed rgba(71,85,105,0.45);
+  width: 0;
+  border-radius: 0;
+}
+.timeline-rail.cross-day::after { display: none; }
+
+/* ── Content Card ───────────────────────────────────────── */
+.timeline-card {
+  flex: 1;
+  background: rgba(19, 34, 55, 0.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.055);
+  border-top: 1px solid rgba(255,255,255,0.088);
+  border-radius: var(--radius-md);
+  padding: 10px 10px 10px 12px;
+  margin: 6px 0 6px 8px;
+  cursor: pointer;
+  transition:
+    transform var(--transition-base),
+    background-color var(--transition-base),
+    box-shadow var(--transition-base),
+    border-color var(--transition-base);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 2px 8px rgba(0,0,0,0.32);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top-left shimmer line */
+.timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 55%; height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.10) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.timeline-card:hover {
+  transform: translateX(3px);
+  background: rgba(27, 47, 76, 0.76);
+  border-color: rgba(197,160,89,0.17);
+  box-shadow:
+    -3px 0 0 rgba(197,160,89,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 4px 16px rgba(0,0,0,0.38);
+}
+
+.timeline-card.active-tap {
+  background: rgba(27, 47, 76, 0.88);
+  border-color: rgba(183,49,44,0.32);
+  box-shadow:
+    -3px 0 0 var(--thy-red),
+    0 4px 12px rgba(0,0,0,0.38);
+}
+
+/* ── Card Header (name + day badge) ────────────────────── */
+.timeline-card__header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+/* ── Inline Day Badge ───────────────────────────────────── */
+.timeline-day-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+  line-height: 1.4;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.11);
+}
+
+
 
 
 
