@@ -213,15 +213,12 @@ input, textarea, select {
   overflow: hidden;
 }
 
+/* Clean header — no background image overlay */
 .flight-board::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('../icons/panorama.png');
-  background-repeat: repeat-x;
-  background-position: center bottom;
-  background-size: auto 100%;
-  opacity: 0.4;
+  background: linear-gradient(90deg, rgba(10,22,40,0.95), rgba(10,22,40,0.85));
   z-index: 1;
   pointer-events: none;
 }
@@ -1744,15 +1741,20 @@ input, textarea, select {
   transition: opacity 0.6s cubic-bezier(0.85, 0, 0.15, 1), transform 0.6s cubic-bezier(0.85, 0, 0.15, 1), visibility 0.6s cubic-bezier(0.85, 0, 0.15, 1);
 }
 
+/* THY corporate hero background — clean gradient matching turkishairlines.com */
 .landing-screen::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.45)), url('../icons/AnaEkran.png');
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: cover;
-  opacity: 0.95; /* Bright vivid beach image */
+  background:
+    linear-gradient(165deg,
+      #0A1628 0%,          /* THY navy top-left */
+      #0F2340 20%,
+      #142D4F 40%,
+      #1A3A60 55%,
+      #B7312C 85%,         /* THY Red sweep */
+      #E31837 100%          /* Bright THY Red bottom-right */
+    );
   pointer-events: none;
   z-index: 0;
 }

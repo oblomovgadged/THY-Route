@@ -3374,17 +3374,13 @@ const thyApiConfig = {
         const dateSeed = new Date(searchDate).getDate() || today.getDate();
 
         if (!flightOptions) {
-          let baseHours = isOutbound ? [8, 13, 18] : [9, 15, 20];
-          
+          // Generate 5-6 realistic flight times (matching real THY schedules)
+          let baseHours = isOutbound ? [7, 10, 12, 16, 19, 21] : [8, 11, 14, 17, 20, 22];
+
           if (isSearchToday) {
             const currentHour = today.getHours();
-            baseHours = baseHours.map(h => {
-              if (h <= currentHour) {
-                return (currentHour + 1 + (h % 3)) % 24;
-              }
-              return h;
-            });
-            baseHours.sort((a, b) => a - b);
+            baseHours = baseHours.filter(h => h > currentHour);
+            if (baseHours.length === 0) baseHours = [currentHour + 1, currentHour + 3];
           }
           
           flightOptions = baseHours.map((hour, idx) => {
