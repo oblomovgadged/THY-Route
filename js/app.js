@@ -2395,6 +2395,7 @@ const thyApiConfig = {
 
   if (cellDates) {
     cellDates.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent document-level handler from re-hiding the modal
       if (datepickerModal?.classList.contains('hidden')) {
         selectedStartDate = depDateInput?.value || '';
         selectedEndDate = retDateInput?.value || '';
