@@ -1005,21 +1005,23 @@ function initMap() {
       let currentDay = 1;
 
       segments.forEach((seg, segIdx) => {
-        const sightCount = Math.min(seg.sights.length, seg.days * 2);
-        const sightsToUse = seg.sights.slice(0, sightCount);
-        let dayInSeg = 0;
+        const sightsToUse = seg.sights.slice(0, Math.min(seg.sights.length, seg.days * 2));
+        const totalSights = sightsToUse.length;
+        const segDays = seg.days;
 
+        // Distribute sights evenly across all days of this segment
         sightsToUse.forEach((sight, si) => {
-          const wpDay = currentDay + Math.min(dayInSeg, seg.days - 1);
+          // Map sight index to day: spread evenly across segDays
+          const dayOffset = Math.floor((si / totalSights) * segDays);
+          const wpDay = currentDay + Math.min(dayOffset, segDays - 1);
           allWaypoints.push({
             lat: sight.lat, lng: sight.lng,
             name: sight.name, note: '', day: wpDay
           });
-          if ((si + 1) % 2 === 0) dayInSeg++;
         });
 
-        const lastDayOfSegment = currentDay + seg.days - 1;
-        currentDay += seg.days;
+        const lastDayOfSegment = currentDay + segDays - 1;
+        currentDay += segDays;
 
         if (segIdx < segments.length - 1) {
           const nextSeg = segments[segIdx + 1];
