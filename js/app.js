@@ -2451,13 +2451,24 @@ const thyApiConfig = {
   if (btnDateConfirm) {
     btnDateConfirm.addEventListener('click', (e) => {
       e.stopPropagation();
+      const isEn = THY.currentLanguage === 'en';
       if (!selectedStartDate) {
-        THY.toast(THY.currentLanguage === 'en' ? 'Please select departure date' : 'Lütfen gidiş tarihini seçin.', 'error');
+        // Show warning inside datepicker (toast is behind modal)
+        btnDateConfirm.style.animation = 'none';
+        btnDateConfirm.offsetHeight; // reflow
+        btnDateConfirm.style.animation = 'shake 0.4s ease';
+        btnDateConfirm.textContent = isEn ? 'Select departure date!' : 'Gidiş tarihini seçin!';
+        btnDateConfirm.style.background = '#c81a28';
+        setTimeout(() => { btnDateConfirm.textContent = isEn ? 'Confirm' : 'Tamam'; btnDateConfirm.style.background = ''; }, 2000);
         return;
       }
       if (currentTripType === 'round-trip' && !selectedEndDate) {
-        THY.toast(THY.currentLanguage === 'en' ? 'Please select return date' : 'Lütfen dönüş tarihini seçin.', 'error');
-        return;
+        // Auto-set return = start + 4 days instead of blocking
+        const parts = selectedStartDate.split('-');
+        const autoReturn = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+        autoReturn.setDate(autoReturn.getDate() + 4);
+        selectedEndDate = formatDateLocal(autoReturn);
+        renderCustomCalendar();
       }
       if (depDateInput) {
         depDateInput.value = selectedStartDate;
