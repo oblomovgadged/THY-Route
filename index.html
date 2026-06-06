@@ -38,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/style.css?v=6.7">
+  <link rel="stylesheet" href="css/style.css?v=7.0">
 
   <!-- Firebase SDK Compat -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -583,30 +583,40 @@
               </div>
             </div>
 
+            <!-- Domestic Flight Split Button -->
+            <button class="city-split-btn" id="btnCitySplit">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span id="lblCitySplitBtn">İç Hat Uçuşu Ekle / Şehirlere Böl</span>
+            </button>
+
             <div class="route-actions">
               <div class="route-actions-row">
                 <button class="btn btn-primary btn-full" id="btnSaveTrip">
-                  <span class="icon">💾</span>
-                  Kaydet
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  <span id="lblSaveTrip">Kaydet</span>
                 </button>
                 <button class="btn btn-secondary btn-full" id="btnNewTrip">
-                  <span class="icon">➕</span>
-                  Yeni Trip
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <span id="lblNewTrip">Yeni Trip</span>
                 </button>
               </div>
               <div class="route-actions-row">
                 <button class="btn btn-secondary btn-full" id="btnExportTrip">
-                  <span class="icon">📤</span>
-                  Dışa Aktar
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <span id="lblExportTrip">Dışa Aktar</span>
                 </button>
                 <button class="btn btn-secondary btn-full" id="btnImportTrip">
-                  <span class="icon">📥</span>
-                  İçe Aktar
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span id="lblImportTrip">İçe Aktar</span>
                 </button>
               </div>
               <button class="btn btn-gold btn-full margin-top-sm width-100" id="btnReturnToLanding">
-                <span class="icon">🛫</span>
-                Yeni Uçuş Ara / Ana Sayfa
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                <span id="lblReturnToLanding">Yeni Uçuş Ara / Ana Sayfa</span>
               </button>
             </div>
           </div>
@@ -1084,6 +1094,54 @@
       <!-- TOAST CONTAINER -->
       <div class="toast-container" id="toastContainer"></div>
     </div>
+
+  <!-- CITY SPLIT MODAL — İç Hat Uçuşu Ekle -->
+  <div class="city-split-overlay" id="citySplitOverlay">
+    <div class="city-split-modal">
+      <div class="city-split-modal__header">
+        <div class="city-split-modal__header-icon">✈️</div>
+        <div>
+          <div class="city-split-modal__title" id="lblCitySplitTitle">İç Hat Uçuşu Ekle</div>
+          <div class="city-split-modal__subtitle" id="lblCitySplitSubtitle">Rotanıza bir THY iç hat bağlantısı ekleyin</div>
+        </div>
+      </div>
+      <div class="city-split-modal__body">
+        <div class="city-split-row">
+          <div class="city-split-label" id="lblCitySplitFrom">Kalkış Havalimanı (IATA)</div>
+          <input type="text" class="city-split-input" id="citySplitFromInput" placeholder="IST — İstanbul" maxlength="40" autocomplete="off">
+        </div>
+        <div class="city-split-row">
+          <div class="city-split-label" id="lblCitySplitTo">Varış Havalimanı (IATA)</div>
+          <input type="text" class="city-split-input" id="citySplitToInput" placeholder="AYT — Antalya" maxlength="40" autocomplete="off">
+        </div>
+        <div class="city-split-row">
+          <div class="city-split-label" id="lblCitySplitFlight">Uçuş Numarası (İsteğe Bağlı)</div>
+          <input type="text" class="city-split-input" id="citySplitFlightInput" placeholder="TK 150" maxlength="10" autocomplete="off">
+        </div>
+        <div class="city-split-row">
+          <div class="city-split-label" id="lblCitySplitAfter">Hangi Günden Sonra?</div>
+          <select class="city-split-input" id="citySplitDaySelect" style="cursor:pointer;">
+            <option value="0" id="citySplitDayOpt0">Mevcut günün sonuna ekle</option>
+          </select>
+        </div>
+        <div style="padding:10px;background:rgba(0,83,165,0.1);border-radius:8px;border:1px solid rgba(0,120,220,0.2);">
+          <div style="font-size:10px;color:rgba(100,180,255,0.8);font-weight:700;margin-bottom:4px;">💡 BİLGİ</div>
+          <div style="font-size:11px;color:rgba(178,192,209,0.75);line-height:1.5;" id="lblCitySplitInfo">
+            İç hat uçuşu eklenince rotanızda özel bir biniş kartı görünecek. Türkiye içi uçuşlar için IST, SAW, AYT, ESB, ADB, TZX kodlarını kullanabilirsiniz.
+          </div>
+        </div>
+      </div>
+      <div class="city-split-modal__footer">
+        <button class="btn btn-secondary" id="btnCitySplitCancel" style="flex:1">
+          <span id="lblCitySplitCancel">İptal</span>
+        </button>
+        <button class="btn btn-primary" id="btnCitySplitConfirm" style="flex:2">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          <span id="lblCitySplitConfirm">Uçuşu Ekle</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- JOIN MODAL -->
   <div class="modal-overlay" id="joinModal">

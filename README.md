@@ -7,11 +7,13 @@ Turkish Airlines esintili premium tasarımı, Google Maps entegrasyonu, gerçek 
 ## ✨ Özellikler
 
 * **Gerçek Zamanlı Kolaborasyon:** Aynı seyahat linkini (`?tripId=TRIP-xxxx`) paylaşarak yardımcı pilotlarınızla (diğer kullanıcılarla) aynı rota üzerinde anlık olarak ortak çalışabilir, değişiklikleri sesli ve görsel bildirimlerle takip edebilirsiniz.
+* **İç Hat Uçuşu & Şehirlere Böl:** New York → Türkiye 20 günlük seyahatte İstanbul (7 gün) → TK iç hat → Antalya (7 gün) → TK iç hat → Ankara (5 gün) şeklinde çok şehirli planlama. Her bağlantı rota listesinde "Boarding Pass" kartı olarak gösterilir.
 * **Google Maps & Yer Keşfi:** Harita üzerinde serbest rota çizme modu, yerleşik Google Places arama altyapısı (restoranlar, oteller, turistik yerler) ve harita üzeri POI etkileşimi.
-* **THY Partner Ayrıcalıkları:** Avis ve Hilton gibi THY iş ortaklarının sağladığı mil ve indirim fırsatlarını harita üzerinde sponsorlu pinler olarak görüntüleme ve tek tıkla rotaya dahil etme.
+* **THY Partner Ayrıcalıkları (21 Partner):** Avis, Budget, Hertz, Europcar, Sixt / Hilton, Marriott, IHG, Radisson, Wyndham, Rixos, Divan / Havaş, Havaist / Setur, Jolly Tur / Garanti BBVA, Akbank, Yapı Kredi, İş Bankası, QNB Finansbank — Miles&Smiles mil ve indirim fırsatlarını harita üzerinde sponsorlu pinler olarak görüntüleme.
 * **Uçuş Bilgi Panosu (Flight Board):** Aviationstack API altyapısıyla desteklenen, anlık kalkış/varış, uçuş kodu, kapı ve durum takibi sağlayan THY havalimanı panosu tasarımı.
 * **Cihazlar Arası Eşitleme (Pilot ID):** Seyahatlerinizi bulutta yedeklemek ve farklı tarayıcılardaki listelerinizi birleştirmek için kullanabileceğiniz cihaz eşitleme kodu.
 * **Seyir Defteri E-posta Raporu:** Oluşturduğunuz seyahat planını ve özel notları EmailJS aracılığıyla tek tıkla e-posta raporu olarak gönderebilme.
+* **Bagaj & Pet Doğrulama:** THY standartlarına göre bagaj boyutu ve evcil hayvan kafesi uygunluk kontrolü.
 * **PWA Desteği:** Cihazınıza yerel bir uygulama gibi kurabilme (PWA), çevrimdışı çalışma desteği, şeffaf dairesel PWA ikonları ve uçuş ağı arka planlı, üstten hizalanmış özel yükleme ekranı (Splash Screen).
 
 ---
@@ -175,6 +177,17 @@ Uygulama, güvenlik ve veri sızıntılarını önlemek amacıyla aşağıdaki 5
     * Giriş ekranı arka plan görseli olarak `AnaEkran.png` entegre edilmiş, harita belirginliği (opacity) `0.28`'e çıkarılmış, `center center` hizalanmış ve arka plan rengi harita tonlarıyla uyumlu **`#0A1628`** (koyu lacivert) olarak güncellenmiştir.
     * Uçuş Bilgi Panosu (Flight Board) başlığındaki görsel bütünlüğü korumak için arka planı koyu cam panel (`var(--bg-glass)`) ve saydam beyaz panorama silüeti (`filter: brightness(0) invert(1)`) olarak tasarlanmıştır. .flight-board__logo-img yüksekliği 44px olarak korunmuş, dikeyde ortalanıp sola dayalı hizalanmış (min-width: 160px), kırmızı THY gölgesi verilmiş ve koyu arka planla yüksek kontrast sağlaması için logo dosyası **icons/logo.png** (beyaz logo) olarak güncellenmiştir.
 
+## 📁 Proje Belgeleri
+
+| Dosya | Açıklama |
+|---|---|
+| `README.md` | Genel proje dokümantasyonu (bu dosya) |
+| `KULLANIM_KILAVUZU.md` | Son kullanıcı için adım adım kılavuz |
+| `design_system.md` | CSS token'ları, animasyon tarifleri, komponent kılavuzu |
+| `THY_PITCH_STRATEGY.md` | THY B2B satış stratejisi ve değer önerileri |
+
+---
+
 ## 🔮 Teknik Entegrasyon & API Yol Haritası (Technical Roadmap)
 
 Uygulamanın mevcut mimarisi, kurumsal ölçekte canlı entegrasyonlara hazır modüler bir veri katmanına (data abstraction layer) sahiptir. Türk Hava Yolları (THY) teknik ekiplerinden resmi API yetkileri sağlandığında gerçekleştirilecek tam zamanlı entegrasyon planı aşağıda sunulmuştur:
@@ -183,11 +196,15 @@ Uygulamanın mevcut mimarisi, kurumsal ölçekte canlı entegrasyonlara hazır m
    * **Mevcut Durum:** Aviationstack API ve dinamik kalkış/varış uçuş ağı simülasyon motoru kullanılmaktadır.
    * **Hedef Durum:** THY Live Flight Availability & Scheduling API entegrasyonu ile resmi uçuş kodları, bilet fiyatları, kapı numaraları ve uçak tipleri tam zamanlı ve %100 gerçek verilerle sunulacaktır.
 
-2. **Sadakat Programı & Mil Entegrasyonu (Miles&Smiles):**
-   * **Mevcut Durum:** M&S ortaklarına (Avis, Budget, Hilton vb.) ait mil kazanımları ve indirim oranları görsel prototip amaçlı zenginleştirilmiş mock verilerle gösterilmektedir.
-   * **Hedef Durum:** THY Miles&Smiles Partner & Award Mileage API bağlantısı kurularak; kullanıcıların canlı hesap bakiyelerine göre özel teklifler sunulacak, Avis araç kiralama veya Hilton otel konaklamalarından kazanacakları miller tam zamanlı olarak hesaplanıp doğrudan Miles&Smiles üyelik profillerine işlenebilecektir.
+2. **İç Hat + Çok Şehirli Rota Entegrasyonu:**
+   * **Mevcut Durum:** "Şehirlere Böl" özelliği ile kullanıcılar manuel olarak IST→AYT gibi iç hat bağlantısı ekleyebilir. Boarding Pass kartı rota listesinde görselleştirilir.
+   * **Hedef Durum:** THY iç hat tarifesine bağlanarak; seçilen şehir ve gün sayısına göre sistem otomatik olarak en uygun iç hat güzergahını önerer, fiyat ve müsaitlik bilgisi anlık gösterilir.
 
-3. **B2B Otel & Hizmet Rezervasyon Entegrasyonu:**
+3. **Sadakat Programı & Mil Entegrasyonu (Miles&Smiles):**
+   * **Mevcut Durum:** 21 THY M&S ortağına (Avis, Budget, Hilton vb.) ait mil kazanımları ve indirim bilgileri prototip verileriyle gösterilmektedir.
+   * **Hedef Durum:** THY Miles&Smiles Partner & Award Mileage API bağlantısı kurularak; kullanıcıların canlı hesap bakiyelerine göre özel teklifler sunulacak, miller doğrudan üyelik profillerine işlenebilecektir.
+
+4. **B2B Otel & Hizmet Rezervasyon Entegrasyonu:**
    * **Mevcut Durum:** Google Places veritabanı üzerinden yakınlardaki konaklama ve turistik noktalar listelenmektedir.
    * **Hedef Durum:** THY'nin anlaşmalı otel/konaklama API'leri ile harita üzerindeki oteller doğrudan uygulama içinden rezerve edilebilecek, mil harcama/kazanma seçenekleri dinamik olarak aktifleştirilecektir.
 
