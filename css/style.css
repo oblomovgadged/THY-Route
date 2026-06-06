@@ -710,12 +710,22 @@ input, textarea, select {
   overflow-x: auto;
   flex: 1;
   align-items: center;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+  scrollbar-width: thin; /* Thin scrollbar for Firefox */
+  scrollbar-color: rgba(197,160,89,0.35) transparent;
 }
 
 .day-tabs::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for Chrome/Safari/Opera */
+  height: 3px;
+}
+.day-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+.day-tabs::-webkit-scrollbar-thumb {
+  background: rgba(197,160,89,0.35);
+  border-radius: 3px;
+}
+.day-tabs::-webkit-scrollbar-thumb:hover {
+  background: rgba(197,160,89,0.55);
 }
 
 .day-tab-btn {
