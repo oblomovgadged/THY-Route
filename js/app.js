@@ -1826,7 +1826,7 @@ const thyApiConfig = {
 
 
   // ---- AIRPORT DATABASE & GLOBAL DATA ----
-  const AIRPORTS = [
+  const AIRPORTS = window.AIRPORTS = [
     // Türkiye - Domestic
     { code: "IST", city: "İstanbul", name: "İstanbul Havalimanı", country: "Türkiye", lat: 41.275, lng: 28.751 },
     { code: "SAW", city: "İstanbul", name: "Sabiha Gökçen Havalimanı", country: "Türkiye", lat: 40.898, lng: 29.309 },

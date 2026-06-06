@@ -729,11 +729,10 @@ function initMap() {
     const btnOpen = document.getElementById('btnCitySplit');
     if (!btnOpen) return;
 
-    // Turkish city segments with sights — ordered by tourism priority
-    const turkishCitySegments = [
-      {
-        code: 'IST', city: 'İstanbul', lat: 41.0082, lng: 28.9784,
-        sights: [
+    // City segments per country — keyed by country name from AIRPORTS
+    const countrySegments = {
+      'Türkiye': [
+        { code: 'IST', city: 'İstanbul', lat: 41.0082, lng: 28.9784, sights: [
           { name: 'Ayasofya', lat: 41.0086, lng: 28.9802 },
           { name: 'Topkapı Sarayı', lat: 41.0115, lng: 28.9833 },
           { name: 'Sultanahmet Camii', lat: 41.0054, lng: 28.9768 },
@@ -742,100 +741,255 @@ function initMap() {
           { name: 'Dolmabahçe Sarayı', lat: 41.0391, lng: 29.0005 },
           { name: 'Kız Kulesi Sahili', lat: 41.0210, lng: 29.0041 },
           { name: 'Balat Mahallesi', lat: 41.0292, lng: 28.9476 }
-        ]
-      },
-      {
-        code: 'AYT', city: 'Antalya', lat: 36.8969, lng: 30.7133,
-        sights: [
+        ]},
+        { code: 'AYT', city: 'Antalya', lat: 36.8969, lng: 30.7133, sights: [
           { name: 'Kaleiçi', lat: 36.8841, lng: 30.7056 },
           { name: 'Düden Şelalesi', lat: 36.8617, lng: 30.7419 },
           { name: 'Konyaaltı Plajı', lat: 36.8680, lng: 30.6380 },
           { name: 'Antalya Müzesi', lat: 36.8795, lng: 30.6722 },
           { name: 'Perge Antik Kenti', lat: 36.9611, lng: 30.8540 },
           { name: 'Aspendos', lat: 36.9389, lng: 31.1725 }
-        ]
-      },
-      {
-        code: 'ESB', city: 'Ankara', lat: 39.9334, lng: 32.8597,
-        sights: [
+        ]},
+        { code: 'ESB', city: 'Ankara', lat: 39.9334, lng: 32.8597, sights: [
           { name: 'Anıtkabir', lat: 39.9255, lng: 32.8369 },
           { name: 'Ankara Kalesi', lat: 39.9408, lng: 32.8639 },
           { name: 'Anadolu Medeniyetleri Müzesi', lat: 39.9378, lng: 32.8594 },
           { name: 'Kocatepe Camii', lat: 39.9200, lng: 32.8586 },
           { name: 'Gençlik Parkı', lat: 39.9346, lng: 32.8490 }
-        ]
-      },
-      {
-        code: 'ADB', city: 'İzmir', lat: 38.4192, lng: 27.1287,
-        sights: [
+        ]},
+        { code: 'ADB', city: 'İzmir', lat: 38.4192, lng: 27.1287, sights: [
           { name: 'Saat Kulesi (Konak)', lat: 38.4186, lng: 27.1286 },
           { name: 'Kemeraltı Çarşısı', lat: 38.4199, lng: 27.1318 },
           { name: 'Kordon Boyu', lat: 38.4350, lng: 27.1440 },
           { name: 'Asansör', lat: 38.4131, lng: 27.1330 },
           { name: 'Efes Antik Kenti', lat: 37.9395, lng: 27.3417 },
           { name: 'Alaçatı', lat: 38.2807, lng: 26.3756 }
-        ]
-      },
-      {
-        code: 'NAV', city: 'Kapadokya', lat: 38.6431, lng: 34.8289,
-        sights: [
+        ]},
+        { code: 'NAV', city: 'Kapadokya', lat: 38.6431, lng: 34.8289, sights: [
           { name: 'Göreme Açık Hava Müzesi', lat: 38.6431, lng: 34.8289 },
           { name: 'Uçhisar Kalesi', lat: 38.6281, lng: 34.8056 },
           { name: 'Derinkuyu Yeraltı Şehri', lat: 38.3741, lng: 34.7344 },
-          { name: 'Paşabağ Peribacaları', lat: 38.6550, lng: 34.8538 },
-          { name: 'Devrent Vadisi', lat: 38.6672, lng: 34.8606 }
-        ]
-      },
-      {
-        code: 'TZX', city: 'Trabzon', lat: 41.0027, lng: 39.7168,
-        sights: [
+          { name: 'Paşabağ Peribacaları', lat: 38.6550, lng: 34.8538 }
+        ]},
+        { code: 'TZX', city: 'Trabzon', lat: 41.0027, lng: 39.7168, sights: [
           { name: 'Sümela Manastırı', lat: 40.6917, lng: 39.6592 },
           { name: 'Uzungöl', lat: 40.6203, lng: 40.2914 },
           { name: 'Atatürk Köşkü', lat: 41.0047, lng: 39.7363 },
-          { name: 'Trabzon Kalesi', lat: 41.0020, lng: 39.7201 },
-          { name: 'Boztepe', lat: 41.0010, lng: 39.7350 }
-        ]
-      },
-      {
-        code: 'BJV', city: 'Bodrum', lat: 37.0344, lng: 27.4305,
-        sights: [
+          { name: 'Trabzon Kalesi', lat: 41.0020, lng: 39.7201 }
+        ]},
+        { code: 'BJV', city: 'Bodrum', lat: 37.0344, lng: 27.4305, sights: [
           { name: 'Bodrum Kalesi', lat: 37.0316, lng: 27.4305 },
           { name: 'Sualtı Arkeoloji Müzesi', lat: 37.0320, lng: 27.4310 },
-          { name: 'Gümbet Plajı', lat: 37.0318, lng: 27.4083 },
-          { name: 'Bitez Koyu', lat: 37.0388, lng: 27.3980 }
-        ]
-      },
-      {
-        code: 'GZT', city: 'Gaziantep', lat: 37.0662, lng: 37.3833,
-        sights: [
+          { name: 'Gümbet Plajı', lat: 37.0318, lng: 27.4083 }
+        ]},
+        { code: 'GZT', city: 'Gaziantep', lat: 37.0662, lng: 37.3833, sights: [
           { name: 'Zeugma Mozaik Müzesi', lat: 37.0698, lng: 37.3837 },
           { name: 'Gaziantep Kalesi', lat: 37.0620, lng: 37.3750 },
-          { name: 'Bakırcılar Çarşısı', lat: 37.0600, lng: 37.3730 },
-          { name: 'Emine Göğüş Mutfak Müzesi', lat: 37.0596, lng: 37.3768 }
-        ]
-      }
-    ];
+          { name: 'Bakırcılar Çarşısı', lat: 37.0600, lng: 37.3730 }
+        ]}
+      ],
+      'İtalya': [
+        { code: 'FCO', city: 'Roma', lat: 41.9028, lng: 12.4964, sights: [
+          { name: 'Kolezyum (Colosseum)', lat: 41.8902, lng: 12.4922 },
+          { name: 'Trevi Çeşmesi', lat: 41.9009, lng: 12.4833 },
+          { name: 'Panteon', lat: 41.8986, lng: 12.4769 },
+          { name: 'Vatikan Müzeleri', lat: 41.9070, lng: 12.4535 },
+          { name: 'İspanyol Merdivenleri', lat: 41.9060, lng: 12.4828 },
+          { name: 'Navona Meydanı', lat: 41.8989, lng: 12.4731 }
+        ]},
+        { code: 'MXP', city: 'Milano', lat: 45.4642, lng: 9.1900, sights: [
+          { name: 'Duomo di Milano', lat: 45.4641, lng: 9.1919 },
+          { name: 'Galleria Vittorio Emanuele', lat: 45.4657, lng: 9.1900 },
+          { name: 'Sforza Kalesi', lat: 45.4706, lng: 9.1794 },
+          { name: 'Santa Maria delle Grazie', lat: 45.4654, lng: 9.1711 },
+          { name: 'Navigli Kanalları', lat: 45.4494, lng: 9.1797 }
+        ]},
+        { code: 'VCE', city: 'Venedik', lat: 45.4408, lng: 12.3155, sights: [
+          { name: 'San Marco Meydanı', lat: 45.4343, lng: 12.3388 },
+          { name: 'Rialto Köprüsü', lat: 45.4380, lng: 12.3360 },
+          { name: 'Doge Sarayı', lat: 45.4337, lng: 12.3401 },
+          { name: 'Murano Adası', lat: 45.4586, lng: 12.3528 },
+          { name: 'Burano Adası', lat: 45.4853, lng: 12.4167 }
+        ]},
+        { code: 'NAP', city: 'Napoli', lat: 40.8518, lng: 14.2681, sights: [
+          { name: 'Pompeii Antik Kenti', lat: 40.7508, lng: 14.4869 },
+          { name: 'Amalfi Kıyısı', lat: 40.6340, lng: 14.6027 },
+          { name: 'Napoli Ulusal Arkeoloji Müzesi', lat: 40.8533, lng: 14.2503 },
+          { name: 'Castel dell\'Ovo', lat: 40.8283, lng: 14.2478 }
+        ]},
+        { code: 'BLQ', city: 'Floransa/Bolonya', lat: 43.7696, lng: 11.2558, sights: [
+          { name: 'Floransa Duomo', lat: 43.7731, lng: 11.2560 },
+          { name: 'Uffizi Galerisi', lat: 43.7677, lng: 11.2553 },
+          { name: 'Ponte Vecchio', lat: 43.7680, lng: 11.2531 },
+          { name: 'Piazzale Michelangelo', lat: 43.7629, lng: 11.2650 }
+        ]}
+      ],
+      'Fransa': [
+        { code: 'CDG', city: 'Paris', lat: 48.8566, lng: 2.3522, sights: [
+          { name: 'Eyfel Kulesi', lat: 48.8584, lng: 2.2945 },
+          { name: 'Louvre Müzesi', lat: 48.8606, lng: 2.3376 },
+          { name: 'Notre Dame', lat: 48.8530, lng: 2.3499 },
+          { name: 'Zafer Takı', lat: 48.8738, lng: 2.2950 },
+          { name: 'Montmartre', lat: 48.8867, lng: 2.3431 },
+          { name: 'Lüksemburg Bahçesi', lat: 48.8462, lng: 2.3372 }
+        ]},
+        { code: 'NCE', city: 'Nice', lat: 43.7102, lng: 7.2620, sights: [
+          { name: 'Promenade des Anglais', lat: 43.6947, lng: 7.2653 },
+          { name: 'Vieille Ville (Eski Şehir)', lat: 43.6970, lng: 7.2767 },
+          { name: 'Castle Hill', lat: 43.6952, lng: 7.2816 },
+          { name: 'Matisse Müzesi', lat: 43.7198, lng: 7.2756 }
+        ]},
+        { code: 'LYS', city: 'Lyon', lat: 45.7640, lng: 4.8357, sights: [
+          { name: 'Fourvière Bazilikası', lat: 45.7623, lng: 4.8225 },
+          { name: 'Vieux Lyon', lat: 45.7600, lng: 4.8270 },
+          { name: 'Place Bellecour', lat: 45.7578, lng: 4.8320 },
+          { name: 'Parc de la Tête d\'Or', lat: 45.7772, lng: 4.8556 }
+        ]}
+      ],
+      'İspanya': [
+        { code: 'MAD', city: 'Madrid', lat: 40.4168, lng: -3.7038, sights: [
+          { name: 'Prado Müzesi', lat: 40.4138, lng: -3.6921 },
+          { name: 'Kraliyet Sarayı', lat: 40.4180, lng: -3.7143 },
+          { name: 'Plaza Mayor', lat: 40.4154, lng: -3.7074 },
+          { name: 'Retiro Parkı', lat: 40.4153, lng: -3.6845 },
+          { name: 'Puerta del Sol', lat: 40.4169, lng: -3.7035 }
+        ]},
+        { code: 'BCN', city: 'Barselona', lat: 41.3874, lng: 2.1686, sights: [
+          { name: 'Sagrada Familia', lat: 41.4036, lng: 2.1744 },
+          { name: 'Park Güell', lat: 41.4145, lng: 2.1527 },
+          { name: 'La Rambla', lat: 41.3809, lng: 2.1734 },
+          { name: 'Casa Batlló', lat: 41.3916, lng: 2.1650 },
+          { name: 'Barceloneta Plajı', lat: 41.3784, lng: 2.1924 }
+        ]}
+      ],
+      'İngiltere': [
+        { code: 'LHR', city: 'Londra', lat: 51.5074, lng: -0.1278, sights: [
+          { name: 'British Museum', lat: 51.5194, lng: -0.1270 },
+          { name: 'Tower of London', lat: 51.5081, lng: -0.0759 },
+          { name: 'London Eye', lat: 51.5033, lng: -0.1195 },
+          { name: 'Buckingham Sarayı', lat: 51.5014, lng: -0.1419 },
+          { name: 'Big Ben & Westminster', lat: 51.5007, lng: -0.1246 },
+          { name: 'Hyde Park', lat: 51.5073, lng: -0.1657 }
+        ]},
+        { code: 'MAN', city: 'Manchester', lat: 53.4808, lng: -2.2426, sights: [
+          { name: 'Old Trafford', lat: 53.4631, lng: -2.2913 },
+          { name: 'Manchester Müzesi', lat: 53.4785, lng: -2.2307 },
+          { name: 'Northern Quarter', lat: 53.4848, lng: -2.2340 }
+        ]},
+        { code: 'EDI', city: 'Edinburgh', lat: 55.9533, lng: -3.1883, sights: [
+          { name: 'Edinburgh Kalesi', lat: 55.9486, lng: -3.1999 },
+          { name: 'Royal Mile', lat: 55.9505, lng: -3.1883 },
+          { name: 'Arthur\'s Seat', lat: 55.9441, lng: -3.1618 },
+          { name: 'Calton Hill', lat: 55.9553, lng: -3.1822 }
+        ]}
+      ],
+      'Almanya': [
+        { code: 'BER', city: 'Berlin', lat: 52.5200, lng: 13.4050, sights: [
+          { name: 'Brandenburg Kapısı', lat: 52.5163, lng: 13.3777 },
+          { name: 'Berlin Duvarı Anıtı', lat: 52.5352, lng: 13.3900 },
+          { name: 'Müze Adası', lat: 52.5210, lng: 13.3965 },
+          { name: 'Reichstag', lat: 52.5186, lng: 13.3762 },
+          { name: 'Checkpoint Charlie', lat: 52.5076, lng: 13.3904 }
+        ]},
+        { code: 'MUC', city: 'Münih', lat: 48.1351, lng: 11.5820, sights: [
+          { name: 'Marienplatz', lat: 48.1374, lng: 11.5755 },
+          { name: 'Nymphenburg Sarayı', lat: 48.1583, lng: 11.5033 },
+          { name: 'İngiliz Bahçesi', lat: 48.1642, lng: 11.6053 },
+          { name: 'BMW Müzesi', lat: 48.1770, lng: 11.5594 }
+        ]},
+        { code: 'FRA', city: 'Frankfurt', lat: 50.1109, lng: 8.6821, sights: [
+          { name: 'Römerberg', lat: 50.1106, lng: 8.6820 },
+          { name: 'Palmengarten', lat: 50.1231, lng: 8.6567 },
+          { name: 'Städel Müzesi', lat: 50.1048, lng: 8.6724 }
+        ]}
+      ],
+      'Yunanistan': [
+        { code: 'ATH', city: 'Atina', lat: 37.9838, lng: 23.7275, sights: [
+          { name: 'Akropolis', lat: 37.9715, lng: 23.7267 },
+          { name: 'Parthenon', lat: 37.9715, lng: 23.7267 },
+          { name: 'Plaka Mahallesi', lat: 37.9723, lng: 23.7298 },
+          { name: 'Akropolis Müzesi', lat: 37.9685, lng: 23.7284 },
+          { name: 'Monastiraki Meydanı', lat: 37.9763, lng: 23.7259 }
+        ]}
+      ],
+      'ABD': [
+        { code: 'JFK', city: 'New York', lat: 40.7128, lng: -74.0060, sights: [
+          { name: 'Times Meydanı', lat: 40.7580, lng: -73.9855 },
+          { name: 'Central Park', lat: 40.7829, lng: -73.9654 },
+          { name: 'Özgürlük Anıtı', lat: 40.6892, lng: -74.0445 },
+          { name: 'Empire State', lat: 40.7484, lng: -73.9857 },
+          { name: 'Brooklyn Köprüsü', lat: 40.7061, lng: -73.9969 },
+          { name: 'Metropolitan Müzesi', lat: 40.7794, lng: -73.9632 }
+        ]},
+        { code: 'LAX', city: 'Los Angeles', lat: 34.0522, lng: -118.2437, sights: [
+          { name: 'Hollywood Yazısı', lat: 34.1341, lng: -118.3215 },
+          { name: 'Santa Monica Pier', lat: 34.0094, lng: -118.4973 },
+          { name: 'Griffith Gözlemevi', lat: 34.1184, lng: -118.3004 },
+          { name: 'Venice Beach', lat: 33.9850, lng: -118.4695 }
+        ]},
+        { code: 'SFO', city: 'San Francisco', lat: 37.7749, lng: -122.4194, sights: [
+          { name: 'Golden Gate Köprüsü', lat: 37.8199, lng: -122.4783 },
+          { name: 'Fisherman\'s Wharf', lat: 37.8080, lng: -122.4177 },
+          { name: 'Alcatraz Adası', lat: 37.8267, lng: -122.4230 },
+          { name: 'Chinatown', lat: 37.7941, lng: -122.4078 }
+        ]},
+        { code: 'MIA', city: 'Miami', lat: 25.7617, lng: -80.1918, sights: [
+          { name: 'South Beach', lat: 25.7826, lng: -80.1341 },
+          { name: 'Art Deco Bölgesi', lat: 25.7814, lng: -80.1312 },
+          { name: 'Wynwood Walls', lat: 25.8012, lng: -80.1995 },
+          { name: 'Vizcaya Müzesi', lat: 25.7444, lng: -80.2107 }
+        ]},
+        { code: 'ORD', city: 'Chicago', lat: 41.8781, lng: -87.6298, sights: [
+          { name: 'Millennium Park', lat: 41.8827, lng: -87.6233 },
+          { name: 'Willis Tower', lat: 41.8789, lng: -87.6359 },
+          { name: 'Navy Pier', lat: 41.8917, lng: -87.6063 },
+          { name: 'Art Institute of Chicago', lat: 41.8796, lng: -87.6237 }
+        ]}
+      ],
+      'Japonya': [
+        { code: 'NRT', city: 'Tokyo', lat: 35.6762, lng: 139.6503, sights: [
+          { name: 'Senso-ji Tapınağı', lat: 35.7148, lng: 139.7967 },
+          { name: 'Shibuya Yaya Geçidi', lat: 35.6595, lng: 139.7005 },
+          { name: 'Meiji Jingu', lat: 35.6764, lng: 139.6993 },
+          { name: 'Tokyo Kulesi', lat: 35.6586, lng: 139.7454 },
+          { name: 'Akihabara', lat: 35.6997, lng: 139.7715 }
+        ]}
+      ],
+      'BAE': [
+        { code: 'DXB', city: 'Dubai', lat: 25.2048, lng: 55.2708, sights: [
+          { name: 'Burj Khalifa', lat: 25.1972, lng: 55.2744 },
+          { name: 'Dubai Mall', lat: 25.1985, lng: 55.2796 },
+          { name: 'Palmiye Adası', lat: 25.1124, lng: 55.1390 },
+          { name: 'Dubai Marina', lat: 25.0805, lng: 55.1403 },
+          { name: 'Gold Souk', lat: 25.2867, lng: 55.2972 }
+        ]}
+      ]
+    };
+
+    // Detect destination country from the flight search inputs
+    function getDestinationCountry() {
+      const destInput = document.getElementById('flightDestinationInput');
+      const destCode = destInput?.dataset?.code || '';
+      if (!destCode || !window.AIRPORTS) return null;
+      const ap = window.AIRPORTS.find(a => a.code === destCode);
+      return ap ? { code: ap.code, city: ap.city, country: ap.country } : null;
+    }
 
     // Pick top N cities based on total days, distribute days among them
-    function splitIntoCities(totalDays) {
-      // Minimum 3 days per city segment, at least 2 cities
-      let numCities = Math.max(2, Math.min(Math.floor(totalDays / 3), 5));
-      const cities = turkishCitySegments.slice(0, numCities);
+    function splitIntoCities(segments, totalDays) {
+      let numCities = Math.max(2, Math.min(Math.floor(totalDays / 3), segments.length));
+      const cities = segments.slice(0, numCities);
 
-      // Distribute days: first city gets more (arrival hub), last gets remainder
       const daysPerCity = [];
       let remaining = totalDays;
       for (let i = 0; i < cities.length; i++) {
         if (i === 0) {
-          // First city (IST) gets ~35%
           const d = Math.max(3, Math.round(totalDays * 0.35));
           daysPerCity.push(d);
           remaining -= d;
         } else if (i === cities.length - 1) {
-          // Last city gets remainder
           daysPerCity.push(Math.max(2, remaining));
         } else {
-          // Middle cities split evenly
           const d = Math.max(2, Math.round(remaining / (cities.length - i)));
           daysPerCity.push(d);
           remaining -= d;
@@ -851,7 +1005,6 @@ function initMap() {
       let currentDay = 1;
 
       segments.forEach((seg, segIdx) => {
-        // Add sights distributed across this segment's days
         const sightCount = Math.min(seg.sights.length, seg.days * 2);
         const sightsToUse = seg.sights.slice(0, sightCount);
         let dayInSeg = 0;
@@ -859,20 +1012,15 @@ function initMap() {
         sightsToUse.forEach((sight, si) => {
           const wpDay = currentDay + Math.min(dayInSeg, seg.days - 1);
           allWaypoints.push({
-            lat: sight.lat,
-            lng: sight.lng,
-            name: sight.name,
-            note: '',
-            day: wpDay
+            lat: sight.lat, lng: sight.lng,
+            name: sight.name, note: '', day: wpDay
           });
-          // Advance day every 2 sights
           if ((si + 1) % 2 === 0) dayInSeg++;
         });
 
         const lastDayOfSegment = currentDay + seg.days - 1;
         currentDay += seg.days;
 
-        // Add domestic flight between this city and the next (except after the last city)
         if (segIdx < segments.length - 1) {
           const nextSeg = segments[segIdx + 1];
           const tkNum = 'TK ' + (2000 + Math.floor(Math.random() * 900));
@@ -904,36 +1052,53 @@ function initMap() {
         return;
       }
 
+      // Detect destination country
+      const dest = getDestinationCountry();
+      const destCountry = dest?.country || 'Türkiye';
+      const availableSegments = countrySegments[destCountry];
+
+      if (!availableSegments || availableSegments.length === 0) {
+        THY.toast(isEn
+          ? `City split not available for ${destCountry} yet`
+          : `${destCountry} için şehir bölme henüz mevcut değil`, 'error');
+        return;
+      }
+
+      // If destination city is in segments, put it first
+      const destCode = dest?.code || '';
+      let orderedSegments = [...availableSegments];
+      const destIdx = orderedSegments.findIndex(s => s.code === destCode);
+      if (destIdx > 0) {
+        const [destSeg] = orderedSegments.splice(destIdx, 1);
+        orderedSegments.unshift(destSeg);
+      }
+
       // Split and build
-      const segments = splitIntoCities(totalDays);
+      const segments = splitIntoCities(orderedSegments, totalDays);
       const newWaypoints = buildSplitWaypoints(segments);
       const newMaxDays = segments.reduce((sum, s) => sum + s.days, 0);
 
-      // Summary for toast
       const summary = segments.map(s => `${s.city} (${s.days}g)`).join(' → ');
 
-      // Play sound
       if (typeof THY.playSplitFlapSound === 'function') {
         THY.playSplitFlapSound(12);
       }
 
-      // Update maxDays + waypoints in Firestore
       THY.maxDays = newMaxDays;
-      THY.activeDay = 0; // Show full route
+      THY.activeDay = 0;
       if (typeof THY.updateDayTabs === 'function') {
         THY.updateDayTabs();
       }
       THY.updateTripInFirestore({ maxDays: newMaxDays, waypoints: newWaypoints });
 
-      // Pan map to first sight
       if (newWaypoints.length > 0) {
         map.panTo({ lat: newWaypoints[0].lat, lng: newWaypoints[0].lng });
         map.setZoom(12);
       }
 
       THY.toast(isEn
-        ? `✈ Route split: ${summary}`
-        : `✈ Rota bölündü: ${summary}`, 'success');
+        ? `✈ ${destCountry} route split: ${summary}`
+        : `✈ ${destCountry} rotası bölündü: ${summary}`, 'success');
     });
   })();
 
