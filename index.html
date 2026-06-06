@@ -590,7 +590,7 @@
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              <span id="lblCitySplitBtn">İç Hat Uçuşu Ekle / Şehirlere Böl</span>
+              <span id="lblCitySplitBtn">Şehirlere Böl + İç Hat Uçuşları</span>
             </button>
 
             <div class="route-actions">
@@ -1095,53 +1095,7 @@
       <div class="toast-container" id="toastContainer"></div>
     </div>
 
-  <!-- CITY SPLIT MODAL — İç Hat Uçuşu Ekle -->
-  <div class="city-split-overlay" id="citySplitOverlay">
-    <div class="city-split-modal">
-      <div class="city-split-modal__header">
-        <div class="city-split-modal__header-icon">✈️</div>
-        <div>
-          <div class="city-split-modal__title" id="lblCitySplitTitle">İç Hat Uçuşu Ekle</div>
-          <div class="city-split-modal__subtitle" id="lblCitySplitSubtitle">Rotanıza bir THY iç hat bağlantısı ekleyin</div>
-        </div>
-      </div>
-      <div class="city-split-modal__body">
-        <div class="city-split-row">
-          <div class="city-split-label" id="lblCitySplitFrom">Kalkış Havalimanı (IATA)</div>
-          <input type="text" class="city-split-input" id="citySplitFromInput" placeholder="IST — İstanbul" maxlength="40" autocomplete="off">
-        </div>
-        <div class="city-split-row">
-          <div class="city-split-label" id="lblCitySplitTo">Varış Havalimanı (IATA)</div>
-          <input type="text" class="city-split-input" id="citySplitToInput" placeholder="AYT — Antalya" maxlength="40" autocomplete="off">
-        </div>
-        <div class="city-split-row">
-          <div class="city-split-label" id="lblCitySplitFlight">Uçuş Numarası (İsteğe Bağlı)</div>
-          <input type="text" class="city-split-input" id="citySplitFlightInput" placeholder="TK 150" maxlength="10" autocomplete="off">
-        </div>
-        <div class="city-split-row">
-          <div class="city-split-label" id="lblCitySplitAfter">Hangi Günden Sonra?</div>
-          <select class="city-split-input" id="citySplitDaySelect" style="cursor:pointer;">
-            <option value="0" id="citySplitDayOpt0">Mevcut günün sonuna ekle</option>
-          </select>
-        </div>
-        <div style="padding:10px;background:rgba(0,83,165,0.1);border-radius:8px;border:1px solid rgba(0,120,220,0.2);">
-          <div style="font-size:10px;color:rgba(100,180,255,0.8);font-weight:700;margin-bottom:4px;">💡 BİLGİ</div>
-          <div style="font-size:11px;color:rgba(178,192,209,0.75);line-height:1.5;" id="lblCitySplitInfo">
-            İç hat uçuşu eklenince rotanızda özel bir biniş kartı görünecek. Türkiye içi uçuşlar için IST, SAW, AYT, ESB, ADB, TZX kodlarını kullanabilirsiniz.
-          </div>
-        </div>
-      </div>
-      <div class="city-split-modal__footer">
-        <button class="btn btn-secondary" id="btnCitySplitCancel" style="flex:1">
-          <span id="lblCitySplitCancel">İptal</span>
-        </button>
-        <button class="btn btn-primary" id="btnCitySplitConfirm" style="flex:2">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          <span id="lblCitySplitConfirm">Uçuşu Ekle</span>
-        </button>
-      </div>
-    </div>
-  </div>
+  <!-- City Split Modal removed — auto-split now runs directly on button click -->
 
   <!-- JOIN MODAL -->
   <div class="modal-overlay" id="joinModal">

@@ -724,97 +724,216 @@ function initMap() {
     });
   }
 
-  // ── City Split / Domestic Flight Modal ──────────────────────────
-  (function initCitySplitModal() {
-    const overlay = document.getElementById('citySplitOverlay');
+  // ── Auto City-Split / Domestic Flights ──────────────────────────
+  (function initAutoCitySplit() {
     const btnOpen = document.getElementById('btnCitySplit');
-    const btnCancel = document.getElementById('btnCitySplitCancel');
-    const btnConfirm = document.getElementById('btnCitySplitConfirm');
-    const fromInput = document.getElementById('citySplitFromInput');
-    const toInput = document.getElementById('citySplitToInput');
-    const flightInput = document.getElementById('citySplitFlightInput');
-    const daySelect = document.getElementById('citySplitDaySelect');
+    if (!btnOpen) return;
 
-    if (!overlay || !btnOpen) return;
-
-    function openModal() {
-      const isEn = THY.currentLanguage === 'en';
-      // Populate day options
-      daySelect.innerHTML = '';
-      const maxDay = Math.max(...(THY.waypoints.map(w => w.day || 1)), 1);
-      for (let d = 1; d <= maxDay; d++) {
-        const opt = document.createElement('option');
-        opt.value = d;
-        opt.textContent = isEn ? `After Day ${d}` : `${d}. Günden Sonra`;
-        if (d === (THY.activeDay || 1)) opt.selected = true;
-        daySelect.appendChild(opt);
+    // Turkish city segments with sights — ordered by tourism priority
+    const turkishCitySegments = [
+      {
+        code: 'IST', city: 'İstanbul', lat: 41.0082, lng: 28.9784,
+        sights: [
+          { name: 'Ayasofya', lat: 41.0086, lng: 28.9802 },
+          { name: 'Topkapı Sarayı', lat: 41.0115, lng: 28.9833 },
+          { name: 'Sultanahmet Camii', lat: 41.0054, lng: 28.9768 },
+          { name: 'Kapalıçarşı', lat: 41.0107, lng: 28.9680 },
+          { name: 'Galata Kulesi', lat: 41.0256, lng: 28.9741 },
+          { name: 'Dolmabahçe Sarayı', lat: 41.0391, lng: 29.0005 },
+          { name: 'Kız Kulesi Sahili', lat: 41.0210, lng: 29.0041 },
+          { name: 'Balat Mahallesi', lat: 41.0292, lng: 28.9476 }
+        ]
+      },
+      {
+        code: 'AYT', city: 'Antalya', lat: 36.8969, lng: 30.7133,
+        sights: [
+          { name: 'Kaleiçi', lat: 36.8841, lng: 30.7056 },
+          { name: 'Düden Şelalesi', lat: 36.8617, lng: 30.7419 },
+          { name: 'Konyaaltı Plajı', lat: 36.8680, lng: 30.6380 },
+          { name: 'Antalya Müzesi', lat: 36.8795, lng: 30.6722 },
+          { name: 'Perge Antik Kenti', lat: 36.9611, lng: 30.8540 },
+          { name: 'Aspendos', lat: 36.9389, lng: 31.1725 }
+        ]
+      },
+      {
+        code: 'ESB', city: 'Ankara', lat: 39.9334, lng: 32.8597,
+        sights: [
+          { name: 'Anıtkabir', lat: 39.9255, lng: 32.8369 },
+          { name: 'Ankara Kalesi', lat: 39.9408, lng: 32.8639 },
+          { name: 'Anadolu Medeniyetleri Müzesi', lat: 39.9378, lng: 32.8594 },
+          { name: 'Kocatepe Camii', lat: 39.9200, lng: 32.8586 },
+          { name: 'Gençlik Parkı', lat: 39.9346, lng: 32.8490 }
+        ]
+      },
+      {
+        code: 'ADB', city: 'İzmir', lat: 38.4192, lng: 27.1287,
+        sights: [
+          { name: 'Saat Kulesi (Konak)', lat: 38.4186, lng: 27.1286 },
+          { name: 'Kemeraltı Çarşısı', lat: 38.4199, lng: 27.1318 },
+          { name: 'Kordon Boyu', lat: 38.4350, lng: 27.1440 },
+          { name: 'Asansör', lat: 38.4131, lng: 27.1330 },
+          { name: 'Efes Antik Kenti', lat: 37.9395, lng: 27.3417 },
+          { name: 'Alaçatı', lat: 38.2807, lng: 26.3756 }
+        ]
+      },
+      {
+        code: 'NAV', city: 'Kapadokya', lat: 38.6431, lng: 34.8289,
+        sights: [
+          { name: 'Göreme Açık Hava Müzesi', lat: 38.6431, lng: 34.8289 },
+          { name: 'Uçhisar Kalesi', lat: 38.6281, lng: 34.8056 },
+          { name: 'Derinkuyu Yeraltı Şehri', lat: 38.3741, lng: 34.7344 },
+          { name: 'Paşabağ Peribacaları', lat: 38.6550, lng: 34.8538 },
+          { name: 'Devrent Vadisi', lat: 38.6672, lng: 34.8606 }
+        ]
+      },
+      {
+        code: 'TZX', city: 'Trabzon', lat: 41.0027, lng: 39.7168,
+        sights: [
+          { name: 'Sümela Manastırı', lat: 40.6917, lng: 39.6592 },
+          { name: 'Uzungöl', lat: 40.6203, lng: 40.2914 },
+          { name: 'Atatürk Köşkü', lat: 41.0047, lng: 39.7363 },
+          { name: 'Trabzon Kalesi', lat: 41.0020, lng: 39.7201 },
+          { name: 'Boztepe', lat: 41.0010, lng: 39.7350 }
+        ]
+      },
+      {
+        code: 'BJV', city: 'Bodrum', lat: 37.0344, lng: 27.4305,
+        sights: [
+          { name: 'Bodrum Kalesi', lat: 37.0316, lng: 27.4305 },
+          { name: 'Sualtı Arkeoloji Müzesi', lat: 37.0320, lng: 27.4310 },
+          { name: 'Gümbet Plajı', lat: 37.0318, lng: 27.4083 },
+          { name: 'Bitez Koyu', lat: 37.0388, lng: 27.3980 }
+        ]
+      },
+      {
+        code: 'GZT', city: 'Gaziantep', lat: 37.0662, lng: 37.3833,
+        sights: [
+          { name: 'Zeugma Mozaik Müzesi', lat: 37.0698, lng: 37.3837 },
+          { name: 'Gaziantep Kalesi', lat: 37.0620, lng: 37.3750 },
+          { name: 'Bakırcılar Çarşısı', lat: 37.0600, lng: 37.3730 },
+          { name: 'Emine Göğüş Mutfak Müzesi', lat: 37.0596, lng: 37.3768 }
+        ]
       }
-      // Autofill from most recent non-flight waypoint
-      const lastWp = [...THY.waypoints].reverse().find(w => !w.type);
-      if (lastWp && !fromInput.value) {
-        fromInput.placeholder = lastWp.name.substring(0, 30);
-      }
-      overlay.classList.add('visible');
-      setTimeout(() => fromInput.focus(), 200);
-    }
+    ];
 
-    function closeModal() {
-      overlay.classList.remove('visible');
-    }
+    // Pick top N cities based on total days, distribute days among them
+    function splitIntoCities(totalDays) {
+      // Minimum 3 days per city segment, at least 2 cities
+      let numCities = Math.max(2, Math.min(Math.floor(totalDays / 3), 5));
+      const cities = turkishCitySegments.slice(0, numCities);
 
-    btnOpen.addEventListener('click', openModal);
-    btnCancel.addEventListener('click', closeModal);
-    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
-
-    btnConfirm.addEventListener('click', () => {
-      const from = (fromInput.value || fromInput.placeholder || 'IST').trim().toUpperCase().substring(0, 3);
-      const to   = (toInput.value || 'DST').trim().toUpperCase().substring(0, 3);
-      const fn   = (flightInput.value || 'TK').trim().toUpperCase();
-      const afterDay = parseInt(daySelect.value) || 1;
-      const isEn = THY.currentLanguage === 'en';
-
-      if (!toInput.value.trim()) {
-        toInput.style.borderColor = 'rgba(183,49,44,0.6)';
-        setTimeout(() => toInput.style.borderColor = '', 1500);
-        return;
-      }
-
-      // Find insert position: after last waypoint of afterDay
-      let insertIdx = THY.waypoints.length; // default: append
-      for (let i = THY.waypoints.length - 1; i >= 0; i--) {
-        if ((THY.waypoints[i].day || 1) === afterDay) {
-          insertIdx = i + 1;
-          break;
+      // Distribute days: first city gets more (arrival hub), last gets remainder
+      const daysPerCity = [];
+      let remaining = totalDays;
+      for (let i = 0; i < cities.length; i++) {
+        if (i === 0) {
+          // First city (IST) gets ~35%
+          const d = Math.max(3, Math.round(totalDays * 0.35));
+          daysPerCity.push(d);
+          remaining -= d;
+        } else if (i === cities.length - 1) {
+          // Last city gets remainder
+          daysPerCity.push(Math.max(2, remaining));
+        } else {
+          // Middle cities split evenly
+          const d = Math.max(2, Math.round(remaining / (cities.length - i)));
+          daysPerCity.push(d);
+          remaining -= d;
         }
       }
 
-      // Build flight waypoint (uses centroid of map for lat/lng placeholder)
-      const center = map ? map.getCenter() : { lat: () => 39.0, lng: () => 35.0 };
-      const flightWp = {
-        name: `${from} → ${to}`,
-        lat: center.lat(),
-        lng: center.lng(),
-        day: afterDay,
-        type: 'flight',
-        from: from,
-        to: to,
-        flightNumber: fn,
-        note: isEn ? `THY domestic flight ${fn}` : `THY iç hat seferi ${fn}`
-      };
+      return cities.map((c, i) => ({ ...c, days: daysPerCity[i] }));
+    }
 
-      THY.waypoints.splice(insertIdx, 0, flightWp);
-      THY.persistTrip && THY.persistTrip();
-      updateWaypointUI();
-      closeModal();
+    // Build waypoints with domestic flights between segments
+    function buildSplitWaypoints(segments) {
+      const allWaypoints = [];
+      let currentDay = 1;
 
-      // Reset inputs
-      fromInput.value = '';
-      toInput.value = '';
-      flightInput.value = '';
+      segments.forEach((seg, segIdx) => {
+        // Add sights distributed across this segment's days
+        const sightCount = Math.min(seg.sights.length, seg.days * 2);
+        const sightsToUse = seg.sights.slice(0, sightCount);
+        let dayInSeg = 0;
+
+        sightsToUse.forEach((sight, si) => {
+          const wpDay = currentDay + Math.min(dayInSeg, seg.days - 1);
+          allWaypoints.push({
+            lat: sight.lat,
+            lng: sight.lng,
+            name: sight.name,
+            note: '',
+            day: wpDay
+          });
+          // Advance day every 2 sights
+          if ((si + 1) % 2 === 0) dayInSeg++;
+        });
+
+        const lastDayOfSegment = currentDay + seg.days - 1;
+        currentDay += seg.days;
+
+        // Add domestic flight between this city and the next (except after the last city)
+        if (segIdx < segments.length - 1) {
+          const nextSeg = segments[segIdx + 1];
+          const tkNum = 'TK ' + (2000 + Math.floor(Math.random() * 900));
+          allWaypoints.push({
+            name: `${seg.code} → ${nextSeg.code}`,
+            lat: (seg.lat + nextSeg.lat) / 2,
+            lng: (seg.lng + nextSeg.lng) / 2,
+            day: lastDayOfSegment,
+            type: 'flight',
+            from: seg.code,
+            to: nextSeg.code,
+            flightNumber: tkNum,
+            note: `THY iç hat seferi ${tkNum}`
+          });
+        }
+      });
+
+      return allWaypoints;
+    }
+
+    btnOpen.addEventListener('click', () => {
+      const isEn = THY.currentLanguage === 'en';
+      const totalDays = THY.maxDays || 7;
+
+      if (totalDays < 5) {
+        THY.toast(isEn
+          ? 'At least 5 days needed for city split (currently ' + totalDays + ' days)'
+          : 'Şehirlere bölmek için en az 5 gün gerekli (şu an ' + totalDays + ' gün)', 'error');
+        return;
+      }
+
+      // Split and build
+      const segments = splitIntoCities(totalDays);
+      const newWaypoints = buildSplitWaypoints(segments);
+      const newMaxDays = segments.reduce((sum, s) => sum + s.days, 0);
+
+      // Summary for toast
+      const summary = segments.map(s => `${s.city} (${s.days}g)`).join(' → ');
+
+      // Play sound
+      if (typeof THY.playSplitFlapSound === 'function') {
+        THY.playSplitFlapSound(12);
+      }
+
+      // Update maxDays + waypoints in Firestore
+      THY.maxDays = newMaxDays;
+      THY.activeDay = 0; // Show full route
+      if (typeof THY.updateDayTabs === 'function') {
+        THY.updateDayTabs();
+      }
+      THY.updateTripInFirestore({ maxDays: newMaxDays, waypoints: newWaypoints });
+
+      // Pan map to first sight
+      if (newWaypoints.length > 0) {
+        map.panTo({ lat: newWaypoints[0].lat, lng: newWaypoints[0].lng });
+        map.setZoom(12);
+      }
 
       THY.toast(isEn
-        ? `✈ Domestic flight ${from} → ${to} added!`
-        : `✈ İç hat ${from} → ${to} rotaya eklendi!`, 'success');
+        ? `✈ Route split: ${summary}`
+        : `✈ Rota bölündü: ${summary}`, 'success');
     });
   })();
 
